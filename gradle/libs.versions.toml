@@ -1,15 +1,29 @@
 [versions]
-
+kotlin = "2.0.21"
 java = "VERSION_1_8"
 
-# Build constants
 minSdk = "26"
-compileSdk = "34"
+compileSdk = "36"
 targetSdk = "33"
 
-# Detekt
+loggingInterceptor = "4.12.0"
+navigationCompose = "2.7.1"
+roomCompiler = "2.7.2"
+roomKtx = "2.7.2"
+roomRuntime = "2.7.2"
+coroutines = "1.7.3"
+koinAndroid = "3.3.0"
+retrofit = "2.9.0"
+converterGson = "2.9.0"
+coil = "2.6.0"
+
 detekt = "1.23.3"
 detektTwitterComposeRules ="0.0.26"
+
+# --- ДОБАВЛЕНО ДЛЯ COMPOSE ---
+composeBom = "2023.08.00"        # реальный BOM, существует :contentReference[oaicite:1]{index=1}
+activity = "1.7.2"
+lifecycle = "2.6.2"
 
 [libraries]
 
@@ -22,6 +36,12 @@ staticAnalysis-detektFormatting = { module = "io.gitlab.arturbosch.detekt:detekt
 staticAnalysis-detektLibraries = { module = "io.gitlab.arturbosch.detekt:detekt-rules-libraries", version.ref = "detekt" }
 staticAnalysis-detektTwitterComposeRules = { module = "com.twitter.compose.rules:detekt", version.ref = "detektTwitterComposeRules" }
 
+# --- ДОБАВЛЕНО: Kotlin BOM ---
+kotlin-bom = { group = "org.jetbrains.kotlin", name = "kotlin-bom", version.ref = "kotlin" }
+
+# --- ДОБАВЛЕНО: coil ---
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+
 # AndroidX
 androidX-core = "androidx.core:core-ktx:1.12.0"
 androidX-appCompat = "androidx.appcompat:appcompat:1.6.1"
@@ -29,6 +49,41 @@ androidX-appCompat = "androidx.appcompat:appcompat:1.6.1"
 # UI layer libraries
 ui-material = "com.google.android.material:material:1.10.0"
 ui-constraintLayout = "androidx.constraintlayout:constraintlayout:2.1.4"
+
+# --- ДОБАВЛЕНО: COMPOSE BOM И БАЗОВЫЕ МОДУЛИ ---
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity" }
+androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle" }
+
+# --- Navigation (Compose) ---
+navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+
+# Retrofit / Gson / OkHttp
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "converterGson" }
+logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
+
+# Room
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+
+# Coroutines
+coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+
+# Koin
+koin = { group = "io.insert-koin", name = "koin-android", version.ref = "koinAndroid" }
+koinCompose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koinAndroid" }
 
 # Unit tests
 unitTests-junit = "junit:junit:4.13.2"
