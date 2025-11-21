@@ -2,4 +2,15 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Базовые цвета (light) -->
+    <color name="color_primary">#FF6200EE</color>
+    <color name="color_on_primary">#FFFFFFFF</color>
+    <color name="color_secondary">#FF03DAC5</color>
+    <color name="color_on_secondary">#FF000000</color>
+
+    <!-- BottomNavigationView (light) -->
+    <color name="bottom_nav_background">#FFFFFFFF</color>
+    <color name="bottom_nav_item_color">#FF000000</color>
+
 </resources>

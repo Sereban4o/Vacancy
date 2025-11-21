@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Базовые цвета (dark) -->
+    <color name="color_primary">#FFBB86FC</color>
+    <color name="color_on_primary">#FF000000</color>
+    <color name="color_secondary">#FF03DAC5</color>
+    <color name="color_on_secondary">#FFFFFFFF</color>
+
+    <!-- BottomNavigationView (dark) -->
+    <color name="bottom_nav_background">#FF121212</color>
+    <color name="bottom_nav_item_color">#FFFFFFFF</color>
+
+</resources>
