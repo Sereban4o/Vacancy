@@ -12,7 +12,6 @@ import ru.practicum.android.diploma.di.interactorModule
 import ru.practicum.android.diploma.di.storageModule
 import ru.practicum.android.diploma.di.viewModelModule
 
-
 class App : Application() {
 
     override fun onCreate() {
@@ -30,7 +29,7 @@ class App : Application() {
                 convertersModule,
                 storageModule,
 
-                // сюда позже добавишь модули presentation/ui и т.д.
+                // сюда позже  модули presentation/ui и т.д.
             )
         }
 
