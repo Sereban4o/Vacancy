@@ -18,12 +18,12 @@ import ru.practicum.android.diploma.R
 
 @Composable
 fun TeamScreen(modifier: Modifier) {
-
     Row(
         modifier = modifier.fillMaxWidth()
     ) {
         Text(
-            stringResource(R.string.team), style = TextStyle(
+            stringResource(R.string.team),
+            style = TextStyle(
                 color = colorResource(R.color.black),
                 fontWeight = FontWeight.Medium,
                 fontFamily = FontFamily(Font(R.font.ys_display_medium)),

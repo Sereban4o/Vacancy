@@ -18,7 +18,6 @@ import ru.practicum.android.diploma.R
 
 @Composable
 fun FavouritesScreen(modifier: Modifier) {
-
     Row(
         modifier = modifier
             .fillMaxWidth()

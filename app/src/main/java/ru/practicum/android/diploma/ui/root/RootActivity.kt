@@ -124,8 +124,12 @@ fun BottomNavigationBar(navController: NavHostController) {
 }
 
 @Composable
-fun BottomNavigationItem(icon: Painter, label: String, selected: Boolean, onClick: () -> Unit) {
-
+fun BottomNavigationItem(
+    icon: Painter,
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
     var color = colorResource(R.color.inActiveMenu)
 
     if (selected) {
