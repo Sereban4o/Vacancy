@@ -40,7 +40,6 @@ val OnSurfaceDark: Color = Color(0xFFFFFFFF)
 val ErrorColor: Color = Color(0xFFB00020)
 val OnErrorColor: Color = Color(0xFFFFFFFF)
 
-
 // -----------------------------
 // АЛИАСЫ ДЛЯ СОВМЕСТИМОСТИ (старый код)
 // -----------------------------

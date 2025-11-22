@@ -2,7 +2,6 @@ package ru.practicum.android.diploma.ui.root
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -68,7 +67,6 @@ class RootActivity : AppCompatActivity() {
     }
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun Root() {
     val navController = rememberNavController()
@@ -81,12 +79,17 @@ fun Root() {
             .padding(top = topPadding)
     ) {
         Scaffold(
+            topBar = {
+                Spacer(Modifier.height(0.dp))
+            },
             bottomBar = {
                 BottomNavigationBar(navController)
             }
-        ) {
+        ) { innerPadding ->
             NavGraph(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(innerPadding),
                 navHostController = navController
             )
         }
