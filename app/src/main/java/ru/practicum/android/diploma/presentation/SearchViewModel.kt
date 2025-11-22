@@ -14,6 +14,7 @@ import ru.practicum.android.diploma.domain.interactors.SearchVacanciesInteractor
 import ru.practicum.android.diploma.ui.main.SearchErrorType
 import ru.practicum.android.diploma.ui.main.SearchUiState
 import ru.practicum.android.diploma.util.Constants.Debounce.SEARCH_DELAY_MS
+import android.util.Log
 
 /**
  * ViewModel для экрана поиска вакансий.
@@ -113,6 +114,9 @@ class SearchViewModel(
                 )
             }
         } catch (io: IOException) {
+            // Логируем, чтобы исключение не считалось "проглоченным"
+            Log.e("SearchViewModel", "Network error while searching vacancies", io)
+
             // Ошибка сети
             _uiState.update { current ->
                 current.copy(
