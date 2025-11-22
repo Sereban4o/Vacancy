@@ -15,8 +15,8 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        //место Koin, Room, и т.п.
-        //Koin
+        // место Koin, Room, и т.п.
+        // Koin
         startKoin {
             androidContext(this@App)
 
