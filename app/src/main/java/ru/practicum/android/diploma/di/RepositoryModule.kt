@@ -12,10 +12,4 @@ val repositoryModule = module {
             networkClient = get()
         )
     }
-
-    single {
-        VacancyInteractorImpl(
-            repository = get()
-        )
-    }
 }
