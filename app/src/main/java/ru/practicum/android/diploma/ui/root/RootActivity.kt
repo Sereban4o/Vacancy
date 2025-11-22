@@ -21,6 +21,7 @@ class RootActivity : AppCompatActivity() {
 //        // ...
 //    }
 
+    @Suppress("UNUSED_VARIABLE")
     private fun networkRequestExample() {
         val accessToken = BuildConfig.API_ACCESS_TOKEN
         // TODO: использовать accessToken при инициализации клиента / запросе
