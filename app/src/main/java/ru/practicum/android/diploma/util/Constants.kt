@@ -21,7 +21,7 @@ object Constants {
          * Задержка для debounce-поиска (мс).
          * В ТЗ для Epic 1 — 2000 мс, сюда можно будет обновить под него.
          */
-        const val SEARCH_DELAY_MS: Long = 600L
+        const val SEARCH_DELAY_MS: Long = 2_000L
     }
 
     object Navigation {
