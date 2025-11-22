@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.practicum.android.diploma.R
 
-
 @Composable
 fun MainScreen(modifier: Modifier) {
     Row(

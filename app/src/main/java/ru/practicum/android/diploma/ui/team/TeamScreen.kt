@@ -28,7 +28,8 @@ fun TeamScreen(modifier: Modifier) {
                 fontWeight = FontWeight.Medium,
                 fontFamily = FontFamily(Font(R.font.ys_display_medium)),
                 fontSize = 22.sp
-            ), modifier = Modifier.padding(vertical = 19.dp)
+            ),
+            modifier = Modifier.padding(vertical = 19.dp)
         )
     }
 }

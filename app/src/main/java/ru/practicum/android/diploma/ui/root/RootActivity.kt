@@ -139,7 +139,8 @@ fun BottomNavigationItem(
     Column(modifier = Modifier.clickable(onClick = onClick), horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(painter = icon, contentDescription = label, tint = color)
         Text(
-            text = label, style = TextStyle(
+            text = label,
+            style = TextStyle(
                 color = color,
                 fontFamily = FontFamily(Font(R.font.ys_display_regular)),
                 fontWeight = FontWeight.Normal,
