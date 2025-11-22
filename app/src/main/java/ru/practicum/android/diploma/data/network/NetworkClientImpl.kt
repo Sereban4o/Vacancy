@@ -1,21 +1,19 @@
 package ru.practicum.android.diploma.data.network
 
-import ru.practicum.android.diploma.util.NetworkUtils
+import ru.practicum.android.diploma.util.NetworkStatusChecker
 import java.io.IOException
 
 /**
  * Реализация NetworkClient.
- * Сейчас использует заглушку NetworkUtils.isOnline, которая всегда true.
- * Позже заменишь реализацию NetworkUtils на реальную проверку сети.
+ * Перед любым запросом проверяет состояние сети через NetworkStatusChecker.
  */
 class NetworkClientImpl(
-    private val apiService: ApiService
+    private val apiService: ApiService,
+    private val networkStatusChecker: NetworkStatusChecker
 ) : NetworkClient {
 
     override suspend fun <T> execute(block: suspend ApiService.() -> T): T {
-        // Используем заглушку из NetworkUtils
-        if (!NetworkUtils.isOnline) {
-            // Потом можно заменить на Result/Resource/своё исключение
+        if (!networkStatusChecker.isConnected()) {
             throw IOException("No internet connection")
         }
 
