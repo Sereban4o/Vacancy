@@ -1,6 +1,5 @@
 package ru.practicum.android.diploma.data.network
 
-import ru.practicum.android.diploma.util.NetworkStatusChecker
 import java.io.IOException
 
 /**
@@ -8,11 +7,11 @@ import java.io.IOException
  * Перед любым запросом проверяет состояние сети через NetworkStatusChecker.
  */
 class NetworkClientImpl(
-    private val apiService: ApiService,
+    private val apiService: HeadHunterApiService,
     private val networkStatusChecker: NetworkStatusChecker
 ) : NetworkClient {
 
-    override suspend fun <T> execute(block: suspend ApiService.() -> T): T {
+    override suspend fun <T> execute(block: suspend HeadHunterApiService.() -> T): T {
         if (!networkStatusChecker.isConnected()) {
             throw IOException("No internet connection")
         }

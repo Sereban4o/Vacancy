@@ -1,20 +1,17 @@
 package ru.practicum.android.diploma.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import java.io.IOException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.interactors.SearchVacanciesInteractor
 import ru.practicum.android.diploma.ui.main.SearchErrorType
 import ru.practicum.android.diploma.ui.main.SearchUiState
-import ru.practicum.android.diploma.util.Constants.Debounce.SEARCH_DELAY_MS
-import android.util.Log
+import ru.practicum.android.diploma.util.debounce
 
 /**
  * ViewModel для экрана поиска вакансий.
@@ -32,10 +29,15 @@ class SearchViewModel(
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
     /**
-     * Job для текущего debounce-запроса.
-     * Каждый новый ввод текста отменяет предыдущий job.
+     * Debounce-функция, которая будет вызываться при изменении запроса.
+     * Внутри неё, через задержку, вызывается performSearch().
      */
-    private var searchJob: Job? = null
+    private val searchDebounce = debounce<String>(
+        coroutineScope = viewModelScope,
+        delayMs = SEARCH_DELAY_MS
+    ) { query ->
+        performSearch(query)
+    }
 
     /**
      * Вызывается из UI при каждом изменении текста в поле поиска.
@@ -49,9 +51,8 @@ class SearchViewModel(
             )
         }
 
-        // Если строка пустая — просто очищаем результаты и отменяем запросы.
+        // Если строка пустая — просто очищаем результаты и НЕ запускаем поиск.
         if (newQuery.isBlank()) {
-            searchJob?.cancel()
             _uiState.update { current ->
                 current.copy(
                     isLoading = false,
@@ -62,32 +63,19 @@ class SearchViewModel(
             return
         }
 
-        // Debounce: отменяем предыдущий и запускаем новый с задержкой.
-        launchDebouncedSearch(newQuery)
+        // Debounce-поиск
+        searchDebounce(newQuery)
     }
 
     /**
-     * Позволяет повторить поиск при ошибке (кнопка "Повторить").
+     * Повторить поиск при ошибке (кнопка "Повторить").
      */
     fun onRetry() {
         val currentQuery: String = _uiState.value.query
         if (currentQuery.isBlank()) return
 
-        launchDebouncedSearch(currentQuery)
-    }
-
-    private fun launchDebouncedSearch(query: String) {
-        // 1. отменяем предыдущий job (AC: повторные вызовы отменяются)
-        searchJob?.cancel()
-
-        // 2. запускаем новый debounce job
-        searchJob = viewModelScope.launch {
-            // задержка из константы (AC: 2 секунды)
-            delay(SEARCH_DELAY_MS)
-
-            // 3. после паузы запускаем реальный поиск
-            performSearch(query)
-        }
+        // Повторный запуск через тот же debounce
+        searchDebounce(currentQuery)
     }
 
     private suspend fun performSearch(query: String) {
@@ -114,10 +102,8 @@ class SearchViewModel(
                 )
             }
         } catch (io: IOException) {
-            // Логируем, чтобы исключение не считалось "проглоченным"
             Log.e("SearchViewModel", "Network error while searching vacancies", io)
 
-            // Ошибка сети
             _uiState.update { current ->
                 current.copy(
                     isLoading = false,
@@ -125,5 +111,10 @@ class SearchViewModel(
                 )
             }
         }
+    }
+
+    companion object {
+        // Константа теперь локальна для ViewModel, без глобального Constants
+        private const val SEARCH_DELAY_MS: Long = 2_000L
     }
 }

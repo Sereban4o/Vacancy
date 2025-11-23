@@ -1,14 +1,14 @@
 package ru.practicum.android.diploma.di
 
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
-// import ru.practicum.android.diploma.presentation.search.SearchViewModel
+import ru.practicum.android.diploma.presentation.SearchViewModel
 
 val viewModelModule = module {
 
-    // как только появится ViewModel — раскомментируем и добавим
-    // viewModel {
-    //     SearchViewModel(
-    //         interactor = get()
-    //     )
-    // }
+    viewModel {
+        SearchViewModel(
+            searchVacanciesInteractor = get()
+        )
+    }
 }

@@ -55,14 +55,6 @@ class RootActivity : AppCompatActivity() {
                 Root()
             }
         }
-
-        networkRequestExample()
-    }
-
-    @Suppress("UNUSED_VARIABLE")
-    private fun networkRequestExample() {
-        val accessToken = BuildConfig.API_ACCESS_TOKEN
-        // NOTE: использовать accessToken при инициализации клиента / запросе
     }
 }
 

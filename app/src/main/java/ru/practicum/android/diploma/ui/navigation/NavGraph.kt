@@ -11,8 +11,6 @@ import ru.practicum.android.diploma.ui.details.VacancyDetailsScreen
 import ru.practicum.android.diploma.ui.favorites.FavouritesScreen
 import ru.practicum.android.diploma.ui.main.MainScreen
 import ru.practicum.android.diploma.ui.team.TeamScreen
-import ru.practicum.android.diploma.util.Constants.Navigation.ARG_VACANCY_ID
-import ru.practicum.android.diploma.util.Constants.Navigation.VACANCY_DETAILS_ROUTE
 import ru.practicum.android.diploma.util.Routes
 
 @Composable

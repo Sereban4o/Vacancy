@@ -7,24 +7,11 @@ import kotlinx.coroutines.launch
 
 /**
  * Универсальная debounce-функция.
- *
- * Пример использования в ViewModel:
- *
- * private val searchDebounce = debounce<String>(
- *     coroutineScope = viewModelScope,
- *     delayMs = AppConstants.Debounce.SEARCH_DELAY_MS
- * ) { query ->
- *     performSearch(query)
- * }
- *
- * fun onSearchQueryChanged(query: String) {
- *     searchDebounce(query)
- * }
  */
 fun <T> debounce(
     coroutineScope: CoroutineScope,
-    delayMs: Long = Constants.Debounce.SEARCH_DELAY_MS,
-    onDebounced: (T) -> Unit
+    delayMs: Long,
+    onDebounced: suspend (T) -> Unit
 ): (T) -> Unit {
     var debounceJob: Job? = null
 

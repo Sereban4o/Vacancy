@@ -1,14 +1,7 @@
-package ru.practicum.android.diploma.util
+package ru.practicum.android.diploma.data.network
 
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-
-/**
- * Интерфейс для проверки состояния сети.
- */
-interface NetworkStatusChecker {
-    fun isConnected(): Boolean
-}
 
 /**
  * Реализация через ConnectivityManager.
@@ -24,4 +17,3 @@ class NetworkStatusCheckerImpl(
         return capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
     }
 }
-
