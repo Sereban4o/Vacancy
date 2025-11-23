@@ -12,6 +12,7 @@ import ru.practicum.android.diploma.domain.interactors.SearchVacanciesInteractor
 import ru.practicum.android.diploma.ui.main.SearchErrorType
 import ru.practicum.android.diploma.ui.main.SearchUiState
 import ru.practicum.android.diploma.util.debounce
+
 /**
  * ViewModel для экрана поиска вакансий.
  *
