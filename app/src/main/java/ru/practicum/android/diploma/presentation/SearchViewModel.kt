@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,6 +11,7 @@ import ru.practicum.android.diploma.domain.interactors.SearchVacanciesInteractor
 import ru.practicum.android.diploma.ui.main.SearchErrorType
 import ru.practicum.android.diploma.ui.main.SearchUiState
 import ru.practicum.android.diploma.util.debounce
+import java.io.IOException
 
 /**
  * ViewModel для экрана поиска вакансий.
