@@ -27,6 +27,13 @@ val VacancyTypography = Typography(
         lineHeight = TextLineHeightSmall,
         letterSpacing = TextLetterSpacingSmall,
     ),
+    displayLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Bold,
+        fontSize = TextSizeDisplayLarge,
+        lineHeight = TextLineHeightDisplayLarge,
+        letterSpacing = TextLetterSpacingLarge,
+    )
 )
 
 // Для совместимости со старым кодом Issue 3

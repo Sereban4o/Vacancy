@@ -8,4 +8,12 @@
     <string name="error_network">Проверьте подключение к интернету</string>
     <string name="error_general">Произошла ошибка</string>
 
+    // Teamscreen
+    <string name="team_title">Над приложением работали</string>
+    <string-array name="team_members">
+        <item>Виталий Ярош</item>
+        <item>Сергей Васенин</item>
+        <item>Андрей Хлоповских</item>
+        <item>Аманжол Аимов</item>
+    </string-array>
 </resources>

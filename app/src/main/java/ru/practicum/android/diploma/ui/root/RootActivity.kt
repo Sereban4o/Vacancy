@@ -39,10 +39,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import ru.practicum.android.diploma.BuildConfig
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.ui.navigation.NavGraph
 import ru.practicum.android.diploma.ui.theme.AppTheme
+import ru.practicum.android.diploma.ui.theme.PaddingScreenHorizontal
 import ru.practicum.android.diploma.util.Routes
 
 class RootActivity : AppCompatActivity() {
@@ -79,7 +79,7 @@ fun Root() {
         ) { innerPadding ->
             NavGraph(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = PaddingScreenHorizontal)
                     .padding(innerPadding),
                 navHostController = navController
             )
@@ -105,7 +105,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 BottomNavigationItem(
-                    icon = painterResource(R.drawable.main_menu),
+                    icon = painterResource(R.drawable.ic_main_24),
                     label = stringResource(R.string.main),
                     selected = currentDestination?.route == Routes.Main.name,
                     onClick = {
@@ -120,7 +120,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                 )
 
                 BottomNavigationItem(
-                    icon = painterResource(R.drawable.favorites_menu),
+                    icon = painterResource(R.drawable.ic_favorites_24),
                     label = stringResource(R.string.favorites),
                     selected = currentDestination?.route == Routes.Favorites.name,
                     onClick = {
@@ -135,7 +135,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                 )
 
                 BottomNavigationItem(
-                    icon = painterResource(R.drawable.team_menu),
+                    icon = painterResource(R.drawable.ic_team_24),
                     label = stringResource(R.string.team),
                     selected = currentDestination?.route == Routes.Team.name,
                     onClick = {
