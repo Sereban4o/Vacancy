@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
-import ru.practicum.android.diploma.ui.theme.PaddingScreenHorizontal
 import ru.practicum.android.diploma.ui.theme.PaddingScreenTitleVertical
 import ru.practicum.android.diploma.ui.theme.PaddingSmall
 
