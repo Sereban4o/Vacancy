@@ -13,67 +13,55 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ru.practicum.android.diploma.R
-import ru.practicum.android.diploma.presentation.SearchViewModel
+import ru.practicum.android.diploma.presentation.search.SearchViewModel
+import ru.practicum.android.diploma.ui.components.SearchInputField
 import ru.practicum.android.diploma.ui.components.VacancyItem
 
-/**
- * Входная точка экрана поиска.
- * Здесь работаем с ViewModel и подписываемся на uiState.
- */
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel,
     onVacancyClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val state = viewModel.uiState.collectAsState().value
-
-    SearchContent(
-        uiState = state,
-        onVacancyClick = onVacancyClick,
-        modifier = modifier
-    )
-}
-
-/**
- * Чистый UI-компонент, который ничего не знает о ViewModel.
- * Принимает готовый uiState и колбэк клика по вакансии.
- */
-@Composable
-fun SearchContent(
-    uiState: SearchUiState,
-    onVacancyClick: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    // текст ошибки, если она есть
-    val errorText: String? = when (uiState.errorType) {
-        SearchErrorType.NONE -> null
-        SearchErrorType.NETWORK -> stringResource(R.string.error_network)
-        SearchErrorType.GENERAL -> stringResource(R.string.error_general)
-    }
+    val uiState = viewModel.uiState.collectAsState().value
 
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        // Ошибка (если есть)
-        if (errorText != null) {
+        // Поле ввода текста
+        SearchInputField(
+            query = uiState.query,
+            onTextChanged = viewModel::onQueryChanged,
+            onClearClick = { viewModel.onQueryChanged("") }
+        )
+
+        // Ошибка
+        if (uiState.errorType != SearchErrorType.NONE) {
             Text(
-                text = errorText,
+                text = when (uiState.errorType) {
+                    SearchErrorType.NETWORK ->
+                        stringResource(R.string.error_network)
+                    SearchErrorType.GENERAL ->
+                        stringResource(R.string.error_general)
+                    else -> ""
+                },
                 color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                modifier = Modifier.padding(16.dp)
             )
         }
 
-        // Кол-во найденных (только если это уже не самый первый экран)
+        // Количество найденных вакансий
         if (!uiState.isInitial) {
             Text(
                 text = "Найдено ${uiState.totalFound} вакансий",
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.padding(
+                    horizontal = 16.dp,
+                    vertical = 8.dp
+                )
             )
         }
-
-        // NOTE: сюда добавишь поле ввода запроса (TextField), когда будешь верстать поиск
 
         // Список вакансий
         LazyColumn(
@@ -81,7 +69,7 @@ fun SearchContent(
         ) {
             items(
                 items = uiState.vacancies,
-                key = { it.id } // стабильный ключ — важен для "стабильного отображения"
+                key = { it.id }
             ) { vacancy ->
                 VacancyItem(
                     vacancy = vacancy,

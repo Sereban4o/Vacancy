@@ -7,11 +7,11 @@ import java.io.IOException
  * Перед любым запросом проверяет состояние сети через NetworkStatusChecker.
  */
 class NetworkClientImpl(
-    private val apiService: HeadHunterApiService,
+    private val apiService: VacanciesApiService,
     private val networkStatusChecker: NetworkStatusChecker
 ) : NetworkClient {
 
-    override suspend fun <T> execute(block: suspend HeadHunterApiService.() -> T): T {
+    override suspend fun <T> execute(block: suspend VacanciesApiService.() -> T): T {
         if (!networkStatusChecker.isConnected()) {
             throw IOException("No internet connection")
         }

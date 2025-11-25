@@ -3,6 +3,7 @@ package ru.practicum.android.diploma.data.network
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import ru.practicum.android.diploma.data.dto.VacancyDetailDto
 import ru.practicum.android.diploma.data.dto.VacancySearchRequestDto
 import ru.practicum.android.diploma.data.dto.VacancySearchResponseDto
 
@@ -48,4 +49,11 @@ class VacanciesRemoteDataSourceImpl(
             searchVacancies(params)
         }
     }
+
+    override suspend fun getVacancyDetails(id: String): VacancyDetailDto =
+        withContext(ioDispatcher) {
+            networkClient.execute {
+                getVacancyDetails(id)
+            }
+        }
 }

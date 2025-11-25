@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.presentation
+package ru.practicum.android.diploma.presentation.search
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

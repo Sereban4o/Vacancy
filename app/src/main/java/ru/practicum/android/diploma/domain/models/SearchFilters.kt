@@ -4,7 +4,7 @@ package ru.practicum.android.diploma.domain.models
  * Единый контракт фильтров для поискового запроса вакансий.
  *
  * @param regionId идентификатор региона (как его понимает API)
- * @param regionId идентификатор индустрии (как его понимает API)
+ * @param industryId идентификатор индустрии (как его понимает API)
  * @param salaryFrom нижняя граница зарплаты (в целевой валюте API)
  * @param onlyWithSalary только вакансии с указанной зарплатой
  */

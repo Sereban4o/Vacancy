@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.data.network
 
+import ru.practicum.android.diploma.data.dto.VacancyDetailDto
 import ru.practicum.android.diploma.data.dto.VacancySearchRequestDto
 import ru.practicum.android.diploma.data.dto.VacancySearchResponseDto
 
@@ -11,4 +12,6 @@ interface VacanciesRemoteDataSource {
     suspend fun searchVacancies(
         request: VacancySearchRequestDto
     ): VacancySearchResponseDto
+
+    suspend fun getVacancyDetails(id: String): VacancyDetailDto
 }

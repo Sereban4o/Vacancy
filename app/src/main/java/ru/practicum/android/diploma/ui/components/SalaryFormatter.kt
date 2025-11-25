@@ -25,21 +25,32 @@ private fun formatNumber(value: Int): String {
  * - валюта отображается всегда
  * - числа с разбиением на разряды
  */
-fun formatSalary(vacancy: Vacancy): String {
-    val from = vacancy.salaryFrom
-    val to = vacancy.salaryTo
-    val currencyCode = vacancy.currency ?: "RUR"
+fun formatSalary(
+    salaryFrom: Int?,
+    salaryTo: Int?,
+    currencyCode: String?
+): String {
+    val currency = currencyCode ?: "RUR"
 
-    // Пока просто показываем код валюты (RUR, USD, EUR, ...).
-    val currency = currencyCode
-
-    val fromStr = from?.let { formatNumber(it) }
-    val toStr = to?.let { formatNumber(it) }
+    val fromStr = salaryFrom?.let { formatNumber(it) }
+    val toStr = salaryTo?.let { formatNumber(it) }
 
     return when {
         fromStr != null && toStr != null -> "от $fromStr до $toStr $currency"
         fromStr != null -> "от $fromStr $currency"
         toStr != null -> "до $toStr $currency"
-        else -> "зарплата не указана"
+        else -> "Уровень зарплаты не указан"
     }
+}
+
+/**
+ * Обёртка для уже существующей доменной модели Vacancy,
+ * чтобы не переписывать старый код.
+ */
+fun formatSalary(vacancy: Vacancy): String {
+    return formatSalary(
+        salaryFrom = vacancy.salaryFrom,
+        salaryTo = vacancy.salaryTo,
+        currencyCode = vacancy.currency
+    )
 }

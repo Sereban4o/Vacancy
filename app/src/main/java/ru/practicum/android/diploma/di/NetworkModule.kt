@@ -9,7 +9,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.practicum.android.diploma.BuildConfig
 import ru.practicum.android.diploma.data.network.AuthInterceptor
-import ru.practicum.android.diploma.data.network.HeadHunterApiService
+import ru.practicum.android.diploma.data.network.VacanciesApiService
 import ru.practicum.android.diploma.data.network.NetworkClient
 import ru.practicum.android.diploma.data.network.NetworkClientImpl
 import ru.practicum.android.diploma.data.network.NetworkStatusChecker
@@ -52,8 +52,8 @@ val networkModule = module {
     }
 
     // API интерфейс
-    single<HeadHunterApiService> {
-        get<Retrofit>().create(HeadHunterApiService::class.java)
+    single<VacanciesApiService> {
+        get<Retrofit>().create(VacanciesApiService::class.java)
     }
 
     // ConnectivityManager из системного сервиса
