@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.presentation.search_screen
+package ru.practicum.android.diploma.presentation.searchScreen
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

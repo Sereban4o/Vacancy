@@ -9,7 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
-import ru.practicum.android.diploma.presentation.vacancy_details_screen.VacancyDetailsViewModel
+import ru.practicum.android.diploma.presentation.vacancyDetailsScreen.VacancyDetailsViewModel
 import ru.practicum.android.diploma.ui.vacancydetails.VacancyDetailsScreen
 import ru.practicum.android.diploma.ui.favorites.FavouritesScreen
 import ru.practicum.android.diploma.ui.main.MainScreen

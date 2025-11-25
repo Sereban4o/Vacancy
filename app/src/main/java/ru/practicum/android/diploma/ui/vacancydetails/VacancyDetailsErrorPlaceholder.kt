@@ -21,10 +21,8 @@ fun VacancyDetailsErrorPlaceholder(
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = if (isNetworkError)
-                    "Нет подключения к интернету"
-                else
-                    "Ошибка загрузки вакансии",
+                text = if (isNetworkError) "Нет подключения к интернету"
+                else "Ошибка загрузки вакансии",
                 style = MaterialTheme.typography.titleMedium
             )
 

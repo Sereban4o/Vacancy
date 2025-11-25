@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.presentation.vacancy_details_screen
+package ru.practicum.android.diploma.presentation.vacancyDetailsScreen
 
 import ru.practicum.android.diploma.domain.models.VacancyDetails
 
