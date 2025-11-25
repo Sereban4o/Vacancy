@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.presentation.vacancyDetailsScreen
+package ru.practicum.android.diploma.presentation.vacancydetails
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -21,21 +21,6 @@ class VacancyDetailsViewModel(
     init {
         loadDetails()
     }
-
-//    fun loadDetails() {
-//        _uiState.value = VacancyDetailsUiState.Loading
-//
-//        viewModelScope.launch {
-//            try {
-//                val vacancy = interactor.getVacancyDetails(vacancyId)
-//                _uiState.value = VacancyDetailsUiState.Content(vacancy)
-//            } catch (e: IOException) {
-//                _uiState.value = VacancyDetailsUiState.Error(isNetworkError = true)
-//            } catch (e: Exception) {
-//                _uiState.value = VacancyDetailsUiState.Error(isNetworkError = false)
-//            }
-//        }
-//    }
 
     fun loadDetails() {
         _uiState.value = VacancyDetailsUiState.Loading

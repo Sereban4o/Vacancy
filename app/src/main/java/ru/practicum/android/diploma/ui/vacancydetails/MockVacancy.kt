@@ -3,11 +3,19 @@ package ru.practicum.android.diploma.ui.vacancydetails
 import ru.practicum.android.diploma.domain.models.VacancyContacts
 import ru.practicum.android.diploma.domain.models.VacancyDetails
 
+private const val MOCK_APPLE_LOGO_URL =
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/" +
+        "Apple_logo_black.svg/1200px-Apple_logo_black.svg.png"
+
+private const val MOCK_APPLE_VACANCY_URL =
+    "https://cek6h0n4ffe7ur.cluster-czz5s0kz4scl.eu-west-1." +
+        "rds.amazonaws.com/vacancies/0001b24b-da81-48cd-a420-91e3fbfc5ef0"
+
 val mockVacancyDetails = VacancyDetails(
     id = "0001b24b-da81-48cd-a420-91e3fbfc5ef0",
     title = "Backend Developer в Apple",
     companyName = "Apple",
-    logoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/1200px-Apple_logo_black.svg.png",
+    logoUrl = MOCK_APPLE_LOGO_URL,
 
     salaryFrom = null,
     salaryTo = null,
@@ -47,6 +55,5 @@ val mockVacancyDetails = VacancyDetails(
         ),
         comment = null
     ),
-
-    vacancyUrl = "https://cek6h0n4ffe7ur.cluster-czz5s0kz4scl.eu-west-1.rds.amazonaws.com/vacancies/0001b24b-da81-48cd-a420-91e3fbfc5ef0"
+    vacancyUrl = MOCK_APPLE_VACANCY_URL
 )

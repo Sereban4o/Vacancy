@@ -40,6 +40,10 @@ val OnSurfaceDark: Color = Color(0xFFFFFFFF)
 val ErrorColor: Color = Color(0xFFB00020)
 val OnErrorColor: Color = Color(0xFFFFFFFF)
 
+// ------- Custom component colors -------
+// Цвет фона карточки компании в Vacancy Details Screen
+val CompanyCardBackgroundColor: Color = Color(0xFFF3F3F7)
+
 // -----------------------------
 // АЛИАСЫ ДЛЯ СОВМЕСТИМОСТИ (старый код)
 // -----------------------------
