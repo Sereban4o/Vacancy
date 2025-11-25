@@ -23,7 +23,6 @@ fun MainScreen(
     val searchViewModel: SearchViewModel = koinViewModel()
 
     Column(modifier = modifier) {
-
         // Заголовок + фильтр
         Row(
             modifier = Modifier.fillMaxWidth(),

@@ -28,7 +28,6 @@ fun SearchScreen(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-
         // Поле ввода текста
         SearchInputField(
             query = uiState.query,

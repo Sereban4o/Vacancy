@@ -27,7 +27,6 @@ fun NavGraph(
         startDestination = startDestination,
         modifier = modifier
     ) {
-
         // 🟦 Главный экран
         composable(Routes.Main.name) {
             MainScreen(
