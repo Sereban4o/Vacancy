@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -44,9 +46,18 @@ fun VacancyItem(
             Spacer(Modifier.width(12.dp))
 
             Column(Modifier.weight(1f)) {
-                Text(text = vacancy.title)
-                Text(text = formatSalary(vacancy))
-                Text(text = vacancy.company)
+                Text(
+                    text = vacancy.title,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(
+                    text = formatSalary(vacancy),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = vacancy.company,
+                    style = MaterialTheme.typography.labelSmall
+                )
             }
         }
     }

@@ -2,6 +2,9 @@ package ru.practicum.android.diploma
 
 import android.app.Application
 import android.util.Log
+import coil.ImageLoader
+import coil.ImageLoaderFactory
+import okhttp3.OkHttpClient
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import ru.practicum.android.diploma.di.convertersModule
@@ -12,7 +15,26 @@ import ru.practicum.android.diploma.di.interactorModule
 import ru.practicum.android.diploma.di.storageModule
 import ru.practicum.android.diploma.di.viewModelModule
 
-class App : Application() {
+class App : Application(), ImageLoaderFactory {
+
+    override fun newImageLoader(): ImageLoader {
+        return ImageLoader.Builder(this)
+            .okHttpClient {
+                OkHttpClient.Builder()
+                    .addInterceptor { chain ->
+                        val newRequest = chain.request()
+                            .newBuilder()
+                            .header(
+                                "User-Agent",
+                                "Mozilla/5.0 (Android; VacancyApp) Safari/537.36"
+                            )
+                            .build()
+                        chain.proceed(newRequest)
+                    }
+                    .build()
+            }
+            .build()
+    }
 
     override fun onCreate() {
         super.onCreate()
