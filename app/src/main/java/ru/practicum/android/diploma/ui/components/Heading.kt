@@ -16,7 +16,6 @@ fun Heading(
 ) {
     Row(
         modifier = modifier
-            .fillMaxWidth()
     ) {
         Text(
             text = text,
