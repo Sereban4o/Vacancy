@@ -4,6 +4,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import ru.practicum.android.diploma.R
@@ -12,7 +13,7 @@ import ru.practicum.android.diploma.R
 fun ActionIcon(
     modifier: Modifier = Modifier,
     iconRes: Int,
-    onClick: () -> Unit,
+    onClick: () -> Unit = {},
 ) {
     IconButton(
         modifier = modifier,
@@ -20,7 +21,8 @@ fun ActionIcon(
     ) {
         Icon(
             painter = painterResource(iconRes),
-            contentDescription = "Clear text or Search"
+            contentDescription = "Clear text or Search",
+            tint = colorResource(R.color.black_universal)
         )
     }
 }

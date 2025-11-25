@@ -23,6 +23,8 @@ val OnBackgroundLight: Color = Color(0xFF000000)
 val SurfaceLight: Color = Color(0xFFFFFFFF)
 val OnSurfaceLight: Color = Color(0xFF000000)
 
+val OnSurfaceVariantLight: Color = Color(0xFFAEAEB4)
+
 // ------- Dark theme -------
 val PrimaryDark: Color = Color(0xFFBB86FC) // color_primary (night)
 val OnPrimaryDark: Color = Color(0xFF000000) // color_on_primary (night)
@@ -35,6 +37,8 @@ val OnBackgroundDark: Color = Color(0xFFFFFFFF)
 
 val SurfaceDark: Color = Color(0xFF1E1E1E)
 val OnSurfaceDark: Color = Color(0xFFFFFFFF)
+
+val OnSurfaceVariantDark: Color = Color(0xFFFDFDFD)
 
 // ------- Error -------
 val ErrorColor: Color = Color(0xFFB00020)

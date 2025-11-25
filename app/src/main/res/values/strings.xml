@@ -6,4 +6,6 @@
     <string name="favorites">Избранное</string>
     <string name="team">Команда</string>
 
+    // MainScreen
+    <string name="vacancy_text_placeholder">Введите запрос</string>
 </resources>
