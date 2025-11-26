@@ -12,9 +12,9 @@ interface VacanciesRepository {
 
     suspend fun getVacancyDetails(id: String): VacancyDetails
 
-    fun searchVacanciesPaged(
+    suspend fun searchVacancies(
         query: String,
-        filters: SearchFilters? = null,
-        onTotalFound : (Int) -> Unit
-    ): Flow<PagingData<Vacancy>>
+        page: Int,
+        filters: SearchFilters?
+    ): VacanciesSearchResult
 }
