@@ -41,7 +41,5 @@ fun MainScreen(
             viewModel = searchViewModel,
             onVacancyClick = onVacancyClick
         )
-
-
     }
 }

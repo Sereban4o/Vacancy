@@ -40,7 +40,6 @@ fun SearchScreen(
 
         // Ошибка
         if (uiState.errorType != SearchErrorType.NONE) {
-
             when (uiState.errorType) {
                 SearchErrorType.NETWORK ->
                     InfoState(TypeState.NoInternet)
@@ -68,7 +67,6 @@ fun SearchScreen(
                 InfoState(TypeState.NoDataVacancy)
             }
         }
-
 
         // Список вакансий
         LazyColumn(

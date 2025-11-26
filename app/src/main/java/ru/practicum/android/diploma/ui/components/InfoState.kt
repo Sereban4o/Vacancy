@@ -19,7 +19,6 @@ import ru.practicum.android.diploma.ui.theme.PaddingExtraLarge
 import ru.practicum.android.diploma.ui.theme.PaddingMedium
 import ru.practicum.android.diploma.util.TypeState
 
-
 @Composable
 fun InfoState(state: TypeState) {
     when (state) {
@@ -100,7 +99,6 @@ fun InfoState(state: TypeState) {
         }
     }
 }
-
 
 @Composable
 private fun Info(painter: Painter, text: String = "") {
