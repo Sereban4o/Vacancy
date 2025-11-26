@@ -7,7 +7,8 @@ import ru.practicum.android.diploma.domain.models.Vacancy
  *
  * @param query текущий текст поисковой строки
  * @param isLoading флаг загрузки (показывать индикатор / скелетон)
- * @param vacancies список найденных вакансий при пагинации больше не нужен, всё хранится в контейнере Paging
+ * при пагинации больше не нужен параметр vacancies, всё хранится в контейнере Paging
+ * @param vacancies список найденных вакансий
  * @param errorMessage текст ошибки (null, если ошибки нет)
  * @param isInitial показывает, что пользователь ещё не запускал поиск
  */

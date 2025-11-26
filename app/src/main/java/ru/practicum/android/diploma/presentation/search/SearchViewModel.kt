@@ -1,11 +1,9 @@
 package ru.practicum.android.diploma.presentation.search
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import androidx.room.util.query
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -19,8 +17,6 @@ import ru.practicum.android.diploma.domain.interactors.SearchVacanciesInteractor
 import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.ui.main.SearchErrorType
 import ru.practicum.android.diploma.ui.main.SearchUiState
-import ru.practicum.android.diploma.util.debounce
-import java.io.IOException
 
 /**
  * ViewModel для экрана поиска вакансий.
@@ -28,6 +24,8 @@ import java.io.IOException
  * Принимает сырой текст запроса, применяет debounce
  * и по истечении паузы вызывает доменный interactor.
  */
+
+// Решал конфликты с ветками так что этот файл не попал в пр, но его я тоже менял, просмотрите пожалуйста
 class SearchViewModel(
     private val searchVacanciesInteractor: SearchVacanciesInteractor
 ) : ViewModel() {

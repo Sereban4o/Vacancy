@@ -1,10 +1,11 @@
 package ru.practicum.android.diploma.ui.main
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -16,8 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.presentation.search.SearchViewModel
 import ru.practicum.android.diploma.ui.components.SearchInputField
 import ru.practicum.android.diploma.ui.components.VacancyItem
@@ -33,21 +36,15 @@ fun SearchScreen(
     val pagedData = viewModel.pagingResultDataFlow.collectAsLazyPagingItems()
     val totalFound = viewModel.totalFound.collectAsState().value
 
-    // Обработка состояний загрузки
-    LaunchedEffect(pagedData.loadState){
-        when(val refreshState = pagedData.loadState.refresh){
-            is LoadState.Loading ->{
-                // Происходит загрузка данных
-            }
-            is LoadState.NotLoading -> {
-                // Всё загружено
-            }
-            is LoadState.Error -> {
-                // Какая-то ошибка
-            }
+    LaunchedEffect(Unit) {
+        // Принудительно запускаем обновление при первом рендере (без этого ищет только со 2 раза)
+        if (uiState.query.isNotBlank() && pagedData.itemCount == 0) {
 
+            pagedData.retry()
         }
     }
+
+    LoadingStateHandler(pagedData)
 
     Column(
         modifier = modifier.fillMaxSize()
@@ -87,33 +84,60 @@ fun SearchScreen(
             )
         }
 
-        // Список вакансий (обновлён для пагинации)
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(
-                count = pagedData.itemCount, // Сколько всего элементов
-                key = { index -> pagedData[index]?.id ?: index } // Для оптимизации
-            ) { vacancyIndex -> // Индекс текущего элемента
-                val vacancy = pagedData[vacancyIndex]
-                if(vacancy != null){
-                    VacancyItem(
-                        vacancy = vacancy,
-                        onClick = {onVacancyClick(vacancy.id)}
-                    )
+        CreateVacancyList(pagedData, onVacancyClick)
+    }
+
+}
+
+@Composable
+private fun CreateVacancyList(
+    pagedData: LazyPagingItems<Vacancy>,
+    onVacancyClick: (String) -> Unit
+) {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        items(
+            count = pagedData.itemCount,
+            key = { index -> pagedData[index]?.id ?: index }
+        ) { index ->
+            val vacancy = pagedData[index]
+            if (vacancy != null) {
+                VacancyItem(
+                    vacancy = vacancy,
+                    onClick = { onVacancyClick(vacancy.id) }
+                )
+            }
+        }
+
+        if (pagedData.loadState.append is LoadState.Loading) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun LoadingStateHandler(pagedData: LazyPagingItems<Vacancy>){
+    // Обработка состояний загрузки
+    LaunchedEffect(pagedData.loadState){
+        when ( val refreshState = pagedData.loadState.refresh ){
+            is LoadState.Loading ->{
+                // Происходит загрузка данных
+            }
+            is LoadState.NotLoading -> {
+                // Всё загружено
+            }
+            is LoadState.Error -> {
+                // Какая-то ошибка
             }
 
-            // Индикатор загрузки для следующих страниц, временно так
-            if(pagedData.loadState.append is LoadState.Loading){
-                item{
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .align(Alignment.CenterHorizontally)
-                    )
-                }
-            }
         }
     }
 }
