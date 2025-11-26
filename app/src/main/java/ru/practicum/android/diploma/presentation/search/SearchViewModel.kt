@@ -26,7 +26,6 @@ import ru.practicum.android.diploma.ui.main.SearchUiState
  * и по истечении паузы вызывает доменный interactor.
  */
 
-
 class SearchViewModel(
     private val searchVacanciesInteractor: SearchVacanciesInteractor
 ) : ViewModel() {
@@ -46,25 +45,26 @@ class SearchViewModel(
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     val pagingResultDataFlow: Flow<PagingData<Vacancy>> = searchQueryFlow.debounce (SEARCH_DELAY_MS)
         .flatMapLatest { query ->
-            if (query.isBlank()){
+            if (query.isBlank()) {
                 // Вернём пустой поток при пустом запросе
                 _totalFound.value = 0
                 kotlinx.coroutines.flow.flow { emit(PagingData.empty<Vacancy>()) }
-            }else{
+            } else {
                 // Пагинированный поиск через интерактор (пока без фильтров)
                 kotlinx.coroutines.flow.flow { emitAll(
                 searchVacanciesInteractor.searchPaged(
                     query = query,
                     filters = null,
-                    onTotalFound = { total ->
-                        _totalFound.value = total
-                    }
+                    onTotalFound =
+                        { total ->
+                            _totalFound.value = total
+                        }
                 )
                 )
                 }
             }
-        }
-        .cachedIn(viewModelScope)// Кеширование для последующего переиспользования данных (а не выполнения нового запроса заново)
+        }.cachedIn(viewModelScope)
+    // Кеширование для последующего переиспользования данных (а не выполнения нового запроса заново)
 
     /**
      * Вызывается из UI при каждом изменении текста в поле поиска.
@@ -90,7 +90,7 @@ class SearchViewModel(
                 )
             }
             return
-        }else {
+        } else {
             // Показываем загрузку для нового запроса
             _uiState.update { current ->
                 current.copy(
@@ -117,7 +117,6 @@ class SearchViewModel(
         // Повторный запрос
         searchQueryFlow.value = currentQuery
     }
-
 
     companion object {
         // Константа теперь локальна для ViewModel, без глобального Constants

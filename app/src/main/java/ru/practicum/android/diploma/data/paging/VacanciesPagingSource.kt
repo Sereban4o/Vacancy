@@ -2,11 +2,13 @@ package ru.practicum.android.diploma.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import retrofit2.HttpException
 import ru.practicum.android.diploma.data.dto.VacancySearchRequestDto
 import ru.practicum.android.diploma.data.mappers.toDomain
 import ru.practicum.android.diploma.data.network.VacanciesRemoteDataSource
 import ru.practicum.android.diploma.domain.models.SearchFilters
 import ru.practicum.android.diploma.domain.models.Vacancy
+import java.io.IOException
 
 class VacanciesPagingSource(
     private val remoteDataSource: VacanciesRemoteDataSource,
@@ -18,9 +20,9 @@ class VacanciesPagingSource(
     // Функция чтобы при обновлении пользователь не терял свою позицию
     override fun getRefreshKey(state: PagingState<Int, Vacancy>): Int? {
         // Вычисляем ближайшую позицию к "якорю"
-        return state.anchorPosition?.let {
-            anchorPosition ->
-            state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1) ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
+        return state.anchorPosition?.let { anchorPosition ->
+            val closestPage = state.closestPageToPosition(anchorPosition)
+            closestPage?.prevKey?.plus(1) ?: closestPage?.nextKey?.minus(1)
         }
     }
 
@@ -46,7 +48,7 @@ class VacanciesPagingSource(
             val prevPage = if (currentPage > 0) currentPage - 1 else null
             val nextPage = if (currentPage < response.pages) currentPage + 1 else null
 
-            if ( currentPage == 0 ) {
+            if (currentPage == 0) {
                 onTotalFound(response.found)
             }
 
@@ -55,7 +57,9 @@ class VacanciesPagingSource(
                 prevKey = prevPage,
                 nextKey = nextPage
             )
-        } catch (e: Exception) {
+        } catch (e: IOException) {
+            LoadResult.Error(e)
+        } catch (e: HttpException) {
             LoadResult.Error(e)
         }
     }

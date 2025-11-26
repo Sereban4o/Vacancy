@@ -8,7 +8,7 @@ import ru.practicum.android.diploma.domain.repository.VacanciesRepository
 
 class SearchVacanciesInteractorImpl(
     private val vacanciesRepository: VacanciesRepository
-) : SearchVacanciesInteractor{
+) : SearchVacanciesInteractor {
 
     // Используем этот метод
     override suspend fun searchPaged(
