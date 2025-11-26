@@ -55,12 +55,11 @@ class SearchViewModel(
                     searchVacanciesInteractor.searchPaged(
                         query = query,
                         filters = null,
-                        onTotalFound =
-                            { total ->
-                                _totalFound.value = total
-                            }
-                        )
+                        onTotalFound = { total ->
+                            _totalFound.value = total
+                        }
                     )
+                )
                 }
             }
         }.cachedIn(viewModelScope)
