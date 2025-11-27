@@ -18,13 +18,13 @@ import ru.practicum.android.diploma.ui.theme.SpacerLarge
 import ru.practicum.android.diploma.ui.theme.SpacerMedium
 
 @Composable
-fun TeamScreen(modifier: Modifier) {
+fun TeamScreen() {
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        Heading(Modifier, stringResource(R.string.team))
+        Heading(text = stringResource(R.string.team))
         Spacer(modifier = Modifier.height(SpacerMedium))
         DisplayTitle(text = stringResource(R.string.team_title))
         Spacer(modifier = Modifier.height(SpacerLarge))

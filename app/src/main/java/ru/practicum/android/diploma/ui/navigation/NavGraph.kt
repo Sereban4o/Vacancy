@@ -30,7 +30,6 @@ fun NavGraph(
         // 🟦 Главный экран
         composable(Routes.Main.name) {
             MainScreen(
-                modifier = Modifier,
                 onFilterClick = { /* откроем фильтры позже */ },
                 onVacancyClick = { id ->
                     navHostController.navigate("$VACANCY_DETAILS_ROUTE/$id")
@@ -40,12 +39,12 @@ fun NavGraph(
 
         // ⭐ Избранное
         composable(Routes.Favorites.name) {
-            FavouritesScreen(modifier)
+            FavouritesScreen()
         }
 
         // 👥 Команда
         composable(Routes.Team.name) {
-            TeamScreen(modifier)
+            TeamScreen()
         }
 
         // 📄 Детали вакансии

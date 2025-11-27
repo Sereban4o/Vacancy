@@ -6,6 +6,7 @@
     <color name="color_on_primary">#FF000000</color>
     <color name="color_secondary">#FF03DAC5</color>
     <color name="color_on_secondary">#FFFFFFFF</color>
+    <color name="text_color">#FDFDFD</color>
 
     <!-- BottomNavigationView (dark) -->
     <color name="bottom_nav_background">#FF121212</color>

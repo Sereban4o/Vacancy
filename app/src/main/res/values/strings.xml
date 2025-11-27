@@ -5,6 +5,7 @@
     <string name="mainHeading">Поиск вакансий</string>
     <string name="favorites">Избранное</string>
     <string name="team">Команда</string>
+    <string name="vacancy">Вакансия</string>
     <string name="error_network">Проверьте подключение к интернету</string>
     <string name="error_general">Произошла ошибка</string>
     <string name="found_vacancies">Найдено %d вакансий</string>
