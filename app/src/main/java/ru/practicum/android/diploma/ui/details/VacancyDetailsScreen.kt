@@ -55,7 +55,6 @@ fun VacancyDetailsScreen(
     val context = LocalContext.current
 
     when (uiState) {
-
         is VacancyDetailsUiState.Loading -> {
             Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
