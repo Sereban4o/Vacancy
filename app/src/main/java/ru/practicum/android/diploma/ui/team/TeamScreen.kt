@@ -24,10 +24,18 @@ fun TeamScreen(modifier: Modifier) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {
-        Heading(Modifier, stringResource(R.string.team))
+        // Заголовок экрана "Команда"
+        Heading(
+            text = stringResource(R.string.team)
+            // leftBlock/rightBlock не нужны
+        )
         Spacer(modifier = Modifier.height(SpacerMedium))
+
+        // Крупный подзаголовок "Наша команда"
         DisplayTitle(text = stringResource(R.string.team_title))
+
         Spacer(modifier = Modifier.height(SpacerLarge))
+
         TeamMembers(
             listOfMembers = stringArrayResource(R.array.team_members)
         )

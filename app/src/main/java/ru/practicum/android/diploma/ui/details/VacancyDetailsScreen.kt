@@ -40,6 +40,7 @@ import ru.practicum.android.diploma.domain.models.VacancyContacts
 import ru.practicum.android.diploma.domain.models.VacancyDetails
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsUiState
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel
+import ru.practicum.android.diploma.ui.components.Heading
 import ru.practicum.android.diploma.ui.components.InfoState
 import ru.practicum.android.diploma.ui.components.formatSalary
 import ru.practicum.android.diploma.ui.theme.CompanyCardBackgroundColor
@@ -78,7 +79,8 @@ fun VacancyDetailsScreen(
                 onBack = onBack,
                 onShareClick = { shareVacancy(context, vacancy.vacancyUrl) },
                 onEmailClick = { email -> openEmail(context, email) },
-                onPhoneClick = { phone -> openPhone(context, phone) }
+                onPhoneClick = { phone -> openPhone(context, phone) },
+                modifier = modifier
             )
         }
     }
@@ -90,62 +92,56 @@ fun VacancyDetailsContent(
     onBack: () -> Unit,
     onShareClick: () -> Unit,
     onEmailClick: (String) -> Unit,
-    onPhoneClick: (String) -> Unit
+    onPhoneClick: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
     ) {
-        // ← стрелка ровно на одной линии с остальными элементами
-        Row(
-            Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // 🔹 Кастомная "кнопка" назад: иконка прижата к левому краю 24×24
-            Box(
-                modifier = Modifier
-                    .size(24.dp) // тап-область nButtonкак у Ico
-                    .clickable(onClick = onBack),
-                contentAlignment = Alignment.CenterStart // ИКОНКА У ЛЕВОГО КРАЯ
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow_back_24),
-                    contentDescription = "Назад",
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-
-            // зазор
-            Spacer(modifier = Modifier.width(4.dp))
-
-            // Заголовок "Вакансия" как на других экранах (Medium/22)
-            Text(
-                text = stringResource(R.string.vacancy),
-                style = MaterialTheme.typography.titleMedium, // Medium/22
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier
-                    .weight(1f)
-            )
-
-            Row {
-                IconButton(onClick = onShareClick) {
+        // 🧩 Шапка: Heading с кастомной стрелкой и кнопками справа
+        Heading(
+            text = stringResource(R.string.vacancy),
+            leftBlock = {
+                // Кнопка "назад" с иконкой, прижатой к левому краю паддинга
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)              // область как у IconButton
+                        .clickable(onClick = onBack),
+                    contentAlignment = Alignment.CenterStart // ИКОНКА У ЛЕВОГО КРАЯ бокса
+                ) {
                     Icon(
-                        painterResource(R.drawable.ic_share_24),
-                        contentDescription = "Поделиться"
+                        painter = painterResource(R.drawable.ic_arrow_back_24),
+                        contentDescription = "Назад",
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
-                IconButton(onClick = { /* Избранное: позже */ }) {
-                    Icon(
-                        painterResource(R.drawable.ic_favorites_24),
-                        contentDescription = "Избранное"
-                    )
+
+                Spacer(Modifier.width(4.dp))
+            },
+            rightBlock = {
+                Row {
+                    IconButton(onClick = onShareClick) {
+                        Icon(
+                            painterResource(R.drawable.ic_share_18_20),
+                            contentDescription = "Поделиться",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                    IconButton(onClick = { /* Избранное: позже */ }) {
+                        Icon(
+                            painterResource(R.drawable.ic_favorites_22_20),
+                            contentDescription = "Избранное",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 }
             }
-        }
+        )
 
         Spacer(Modifier.height(8.dp))
 
@@ -281,7 +277,7 @@ fun CompanyCard(vacancy: VacancyDetails) {
                 Text(
                     text = it,
                     style = MaterialTheme.typography.bodyMedium, // Regular/16
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
         }

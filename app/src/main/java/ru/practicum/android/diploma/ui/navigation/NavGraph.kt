@@ -40,12 +40,12 @@ fun NavGraph(
 
         // ⭐ Избранное
         composable(Routes.Favorites.name) {
-            FavouritesScreen(modifier)
+            FavouritesScreen(Modifier)
         }
 
         // 👥 Команда
         composable(Routes.Team.name) {
-            TeamScreen(modifier)
+            TeamScreen(Modifier)
         }
 
         // 📄 Детали вакансии
@@ -62,8 +62,7 @@ fun NavGraph(
             }
 
             VacancyDetailsScreen(
-//                vacancyId = vacancyId,
-                modifier = modifier,
+                modifier = Modifier,
                 onBack = { navHostController.popBackStack() },
                 viewModel = vm
             )

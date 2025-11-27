@@ -7,6 +7,12 @@ import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.ui.components.Heading
 
 @Composable
-fun FavouritesScreen(modifier: Modifier) {
-    Heading(modifier, stringResource(R.string.favorites))
+fun FavouritesScreen(
+    modifier: Modifier = Modifier
+) {
+    Heading(
+        text = stringResource(R.string.favorites),
+        modifier = modifier
+    )
 }
+
