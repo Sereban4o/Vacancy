@@ -34,6 +34,12 @@ import ru.practicum.android.diploma.ui.components.SearchCountChip
 import ru.practicum.android.diploma.ui.components.SearchInputField
 import ru.practicum.android.diploma.ui.components.VacancyItem
 
+private const val SEARCH_PLACEHOLDER_WIDTH_FRACTION = 0.9f
+private const val SEARCH_PLACEHOLDER_ASPECT_RATIO_WIDTH = 328f
+private const val SEARCH_PLACEHOLDER_ASPECT_RATIO_HEIGHT = 223f
+private const val SEARCH_PLACEHOLDER_ASPECT_RATIO =
+    SEARCH_PLACEHOLDER_ASPECT_RATIO_WIDTH / SEARCH_PLACEHOLDER_ASPECT_RATIO_HEIGHT
+
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel,
@@ -89,8 +95,8 @@ fun SearchScreen(
                         painter = painterResource(R.drawable.ic_search_placeholder),
                         contentDescription = null,
                         modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .aspectRatio(328f / 223f),
+                            .fillMaxWidth(SEARCH_PLACEHOLDER_WIDTH_FRACTION)
+                            .aspectRatio(SEARCH_PLACEHOLDER_ASPECT_RATIO),
                         contentScale = ContentScale.Fit
                     )
                 }
@@ -154,7 +160,6 @@ fun SearchScreen(
 
         // 🔹 Чип поверх списка, приклеен под полем поиска
         if (!uiState.isInitial && (uiState.totalFound > 0 || noResults)) {
-
             val baseModifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = chipTopOffsetState.value)

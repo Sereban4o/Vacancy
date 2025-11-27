@@ -47,7 +47,8 @@ fun BottomNavigationBar(navController: NavHostController) {
 
         BottomAppBar(
             containerColor = MaterialTheme.colorScheme.background,
-            tonalElevation = 0.dp) {
+            tonalElevation = 0.dp,
+        ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceAround,
                 modifier = Modifier.fillMaxWidth()

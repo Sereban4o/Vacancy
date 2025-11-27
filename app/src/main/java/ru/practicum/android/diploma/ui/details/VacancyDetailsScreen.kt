@@ -43,8 +43,6 @@ import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsUi
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel
 import ru.practicum.android.diploma.ui.components.formatSalary
 import ru.practicum.android.diploma.ui.theme.CompanyCardBackgroundColor
-import ru.practicum.android.diploma.ui.theme.PaddingScreenHorizontal
-import ru.practicum.android.diploma.ui.theme.PaddingSmall
 
 @Composable
 fun VacancyDetailsScreen(
@@ -292,26 +290,25 @@ fun DescriptionBlock(text: String) {
         val line = rawLine.trim()
         if (line.isEmpty()) {
             Spacer(Modifier.height(4.dp))
-            return@forEach
-        }
+        } else {
+            Row {
+                Text(
+                    text = "• ",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Text(
+                    text = line
+                        .removePrefix("•")
+                        .removePrefix("-")
+                        .trimStart(),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
 
-        Row {
-            Text(
-                text = "• ",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Text(
-                text = line
-                    .removePrefix("•")
-                    .removePrefix("-")
-                    .trimStart(),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground
-            )
+            Spacer(Modifier.height(4.dp))
         }
-
-        Spacer(Modifier.height(4.dp))
     }
 }
 
