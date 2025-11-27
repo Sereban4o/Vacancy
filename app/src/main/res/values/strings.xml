@@ -17,13 +17,6 @@
     <!-- Errors & Empty States -->
     <string name="error_network">Проверьте подключение к интернету</string>
     <string name="error_general">Произошла ошибка</string>
-    <string name="no_internet">Нет интернета</string>
-    <string name="no_data_vacancy">Не удалось получить список вакансий</string>
-    <string name="no_region">Такого региона нет</string>
-    <string name="no_data_region">Не удалось получить список</string>
-    <string name="no_vacancy">Вакансия не найдена или удалена</string>
-    <string name="server_error">Ошибка сервера</string>
-    <string name="empty_list">Список пуст</string>
 
     <string name="no_internet">Нет интернета</string>
     <string name="no_data_vacancy">Не удалось получить список вакансий</string>
