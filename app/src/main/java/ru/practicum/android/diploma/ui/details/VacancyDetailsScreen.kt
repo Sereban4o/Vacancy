@@ -6,7 +6,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,7 +31,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -43,6 +44,7 @@ import ru.practicum.android.diploma.domain.models.VacancyDetails
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsUiState
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel
 import ru.practicum.android.diploma.ui.components.InfoState
+import ru.practicum.android.diploma.ui.components.Heading
 import ru.practicum.android.diploma.ui.components.formatSalary
 import ru.practicum.android.diploma.ui.theme.CompanyCardBackgroundColor
 import ru.practicum.android.diploma.util.TypeState
@@ -99,32 +101,54 @@ fun VacancyDetailsContent(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
-            .padding(horizontal = 16.dp)
+        // .padding(horizontal = 16.dp)
     ) {
-        Spacer(Modifier.height(16.dp))
+        // Spacer(Modifier.height(16.dp))
 
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(onClick = onBack) {
+//        Row(
+//            Modifier.fillMaxWidth(),
+//            horizontalArrangement = Arrangement.SpaceBetween,
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            IconButton(onClick = onBack) {
+//                Icon(
+//                    painterResource(R.drawable.ic_arrow_back_24),
+//                    contentDescription = "Назад"
+//                )
+//            }
+//            Row {
+//                IconButton(onClick = onShareClick) {
+//                    Icon(painterResource(R.drawable.ic_share_24), contentDescription = "Поделиться")
+//                }
+//                IconButton(onClick = { /* NOTE Избранное: будет реализовано позже */ }) {
+//                    Icon(painterResource(R.drawable.ic_favorites_24), contentDescription = "Избранное")
+//                }
+//            }
+//        }
+        Heading(
+            text = stringResource(R.string.vacancy),
+            rightBlock = {
+                Row {
+                    IconButton(onClick = onShareClick) {
+                        Icon(painterResource(R.drawable.ic_share_24), contentDescription = "Поделиться")
+                    }
+                    IconButton(onClick = { /* NOTE Избранное: будет реализовано позже */ }) {
+                        Icon(painterResource(R.drawable.ic_favorites), contentDescription = "Избранное")
+                    }
+                }
+            },
+            leftBlock = {
                 Icon(
-                    painterResource(R.drawable.ic_arrow_back_24),
-                    contentDescription = "Назад"
+                    painterResource(R.drawable.ic_arrow),
+                    contentDescription = "Назад",
+                    tint = colorResource(R.color.text_color),
+                    modifier = Modifier
+                        .clickable(onClick = onBack)
+                        .padding(end = 20.dp),
                 )
             }
-            Row {
-                IconButton(onClick = onShareClick) {
-                    Icon(painterResource(R.drawable.ic_share_24), contentDescription = "Поделиться")
-                }
-                IconButton(onClick = { /* NOTE Избранное: будет реализовано позже */ }) {
-                    Icon(painterResource(R.drawable.ic_favorites_24), contentDescription = "Избранное")
-                }
-            }
-        }
-
-        Spacer(Modifier.height(8.dp))
+        )
+        Spacer(Modifier.height(16.dp))
 
         Text(
             text = vacancy.title,
