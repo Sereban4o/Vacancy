@@ -8,6 +8,8 @@
     <string name="vacancy">Вакансия</string>
     <string name="error_network">Проверьте подключение к интернету</string>
     <string name="error_general">Произошла ошибка</string>
+    <string name="found_vacancies">Найдено %d вакансий</string>
+
     <string name="no_internet">Нет интернета</string>
     <string name="no_data_vacancy">Не удалось получить список вакансий</string>
     <string name="no_region">Такого региона нет</string>

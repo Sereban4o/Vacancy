@@ -105,5 +105,9 @@ dependencies {
     // region UI tests
     androidTestImplementation(libs.uiTests.junitExt)
     androidTestImplementation(libs.uiTests.espressoCore)
+
+    // paging
+    implementation(libs.bundles.paging)
+
     // endregion
 }

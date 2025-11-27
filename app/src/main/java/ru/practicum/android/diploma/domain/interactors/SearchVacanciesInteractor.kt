@@ -1,22 +1,15 @@
 package ru.practicum.android.diploma.domain.interactors
 
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
 import ru.practicum.android.diploma.domain.models.SearchFilters
-import ru.practicum.android.diploma.domain.models.VacanciesSearchResult
-import ru.practicum.android.diploma.domain.repository.VacanciesRepository
+import ru.practicum.android.diploma.domain.models.Vacancy
 
-class SearchVacanciesInteractor(
-    private val vacanciesRepository: VacanciesRepository
-) {
+interface SearchVacanciesInteractor {
 
-    suspend fun search(
+    fun searchPaged(
         query: String,
-        page: Int = 0,
-        filters: SearchFilters? = null
-    ): VacanciesSearchResult {
-        return vacanciesRepository.searchVacancies(
-            query = query,
-            page = page,
-            filters = filters
-        )
-    }
+        filters: SearchFilters? = null,
+        onTotalFound: (Int) -> Unit
+    ): Flow<PagingData<Vacancy>>
 }
