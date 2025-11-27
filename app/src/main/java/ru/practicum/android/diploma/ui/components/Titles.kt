@@ -67,7 +67,7 @@ fun Heading(
     BaseTitleText(
         text = text,
         modifier = modifier,
-        style = MaterialTheme.typography.titleLarge, // Medium/22
+        style = MaterialTheme.typography.titleMedium, // Medium/22
         verticalPadding = PaddingScreenTitleVertical,
     )
 }
