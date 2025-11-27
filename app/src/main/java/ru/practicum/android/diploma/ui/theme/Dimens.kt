@@ -7,6 +7,7 @@ import androidx.compose.ui.unit.sp
 val PaddingSmall = 8.dp
 val PaddingMedium = 16.dp
 val PaddingLarge = 24.dp
+val PaddingExtraLarge = 46.dp
 val PaddingScreenHorizontal = 16.dp
 
 // ---------- Радиусы ----------

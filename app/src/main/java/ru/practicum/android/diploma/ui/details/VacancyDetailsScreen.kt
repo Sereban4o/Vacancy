@@ -42,8 +42,10 @@ import ru.practicum.android.diploma.domain.models.VacancyContacts
 import ru.practicum.android.diploma.domain.models.VacancyDetails
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsUiState
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel
+import ru.practicum.android.diploma.ui.components.InfoState
 import ru.practicum.android.diploma.ui.components.formatSalary
 import ru.practicum.android.diploma.ui.theme.CompanyCardBackgroundColor
+import ru.practicum.android.diploma.util.TypeState
 
 @Composable
 fun VacancyDetailsScreen(
@@ -63,10 +65,11 @@ fun VacancyDetailsScreen(
         }
 
         is VacancyDetailsUiState.Error -> {
-            VacancyDetailsErrorPlaceholder(
-                isNetworkError = (uiState as VacancyDetailsUiState.Error).isNetworkError,
-                onRetryClick = { viewModel.loadDetails() }
-            )
+            InfoState(TypeState.NoVacancy)
+//            VacancyDetailsErrorPlaceholder(
+//                isNetworkError = (uiState as VacancyDetailsUiState.Error).isNetworkError,
+//                onRetryClick = { viewModel.loadDetails() }
+//            )
         }
 
         is VacancyDetailsUiState.Content -> {

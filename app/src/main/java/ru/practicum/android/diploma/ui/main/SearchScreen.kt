@@ -14,7 +14,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -22,8 +21,10 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.presentation.search.SearchViewModel
+import ru.practicum.android.diploma.ui.components.InfoState
 import ru.practicum.android.diploma.ui.components.SearchInputField
 import ru.practicum.android.diploma.ui.components.VacancyItem
+import ru.practicum.android.diploma.util.TypeState
 
 @Composable
 fun SearchScreen(
@@ -54,20 +55,18 @@ fun SearchScreen(
             onTextChanged = viewModel::onQueryChanged,
             onClearClick = { viewModel.onQueryChanged("") }
         )
+        if (uiState.query.isEmpty()) {
+            InfoState(TypeState.SearchVacancy)
+        }
 
         // Ошибка
         if (uiState.errorType != SearchErrorType.NONE) {
-            Text(
-                text = when (uiState.errorType) {
-                    SearchErrorType.NETWORK ->
-                        stringResource(R.string.error_network)
-                    SearchErrorType.GENERAL ->
-                        stringResource(R.string.error_general)
-                    else -> ""
-                },
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(16.dp)
-            )
+            when (uiState.errorType) {
+                SearchErrorType.NETWORK ->
+                    InfoState(TypeState.NoInternet)
+
+                else -> {}
+            }
         }
 
         // Количество найденных вакансий
@@ -81,6 +80,13 @@ fun SearchScreen(
                     vertical = 8.dp
                 )
             )
+            if (
+                !uiState.isLoading &&
+                uiState.totalFound == 0 &&
+                uiState.errorType == SearchErrorType.NONE
+            ) {
+                InfoState(TypeState.NoDataVacancy)
+            }
         }
 
         CreateVacancyList(pagedData, onVacancyClick)
