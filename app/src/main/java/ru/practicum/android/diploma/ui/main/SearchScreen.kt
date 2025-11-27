@@ -45,8 +45,6 @@ fun SearchScreen(
         }
     }
 
-    LoadingStateHandler(pagedData)
-
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -58,41 +56,76 @@ fun SearchScreen(
         )
         if (uiState.query.isEmpty()) {
             InfoState(TypeState.SearchVacancy)
-        }
+        } else {
+            when(pagedData.loadState.refresh) {
+                is LoadState.Loading -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+                is LoadState.Error -> {
+                    val error = (pagedData.loadState.refresh as LoadState.Error).error
 
-        // Ошибка
-        if (uiState.errorType != SearchErrorType.NONE) {
-            when (uiState.errorType) {
-                SearchErrorType.NETWORK ->
-                    InfoState(TypeState.NoInternet)
+                    when (error) {
+                        is java.io.IOException -> InfoState(TypeState.NoInternet)
+                        is retrofit2.HttpException -> InfoState(TypeState.ServerError)
+                        else -> {
+                            InfoState(TypeState.ServerErrorVacancy)
+                        }
+                    }
+                }
+                is LoadState.NotLoading -> {
+                    // Заголовок
+                    ShowTotalVacancyNumber(uiState,totalFound)
+                    // Если вакансий не нашлось
+                    if (pagedData.itemCount == 0 && uiState.query.isNotBlank()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .weight(1f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            InfoState(TypeState.NoDataVacancy)
+                        }
+                    } else {
+                        // Список вакансий
+                        CreateVacancyList(pagedData, onVacancyClick)
+                    }
+                }
 
-                else -> {}
             }
         }
-
-        // Количество найденных вакансий
-        if (!uiState.isInitial) {
-            Text(
-                text = stringResource(R.string.found_vacancies, totalFound),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(
-                    horizontal = 16.dp,
-                    vertical = 8.dp
-                )
-            )
-            if (
-                !uiState.isLoading &&
-                uiState.totalFound == 0 &&
-                uiState.errorType == SearchErrorType.NONE
-            ) {
-                InfoState(TypeState.NoDataVacancy)
-            }
-        }
-
-        CreateVacancyList(pagedData, onVacancyClick)
     }
 
+}
+
+// Так потом наверное проще будет переделывать
+@Composable
+private fun ShowTotalVacancyNumber(uiState: SearchUiState, totalFound: Int){
+    // Количество найденных вакансий
+    if (!uiState.isInitial) {
+        Text(
+            text = stringResource(R.string.found_vacancies, totalFound),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(
+                horizontal = 16.dp,
+                vertical = 8.dp
+            )
+        )
+        if (
+            !uiState.isLoading &&
+            uiState.totalFound == 0 &&
+            uiState.errorType == SearchErrorType.NONE
+        ) {
+            InfoState(TypeState.NoDataVacancy)
+        }
+    }
 }
 
 @Composable
@@ -129,21 +162,3 @@ private fun CreateVacancyList(
     }
 }
 
-@Composable
-private fun LoadingStateHandler(pagedData: LazyPagingItems<Vacancy>) {
-    // Обработка состояний загрузки
-    LaunchedEffect(pagedData.loadState) {
-        when (val refreshState = pagedData.loadState.refresh) {
-            is LoadState.Loading -> {
-                // Происходит загрузка данных
-            }
-            is LoadState.NotLoading -> {
-                // Всё загружено
-            }
-            is LoadState.Error -> {
-                // Какая-то ошибка
-            }
-
-        }
-    }
-}
