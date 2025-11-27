@@ -47,6 +47,7 @@ import ru.practicum.android.diploma.ui.components.InfoState
 import ru.practicum.android.diploma.ui.components.Heading
 import ru.practicum.android.diploma.ui.components.formatSalary
 import ru.practicum.android.diploma.ui.theme.CompanyCardBackgroundColor
+import ru.practicum.android.diploma.util.TypeState
 
 @Composable
 fun VacancyDetailsScreen(
