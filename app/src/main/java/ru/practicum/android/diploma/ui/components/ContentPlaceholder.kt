@@ -57,8 +57,7 @@ fun ContentPlaceholderPreviewLight() {
 
 @Preview(showBackground = true)
 @Composable
-fun ContentPlaceholderPreviewDark(
-) {
+fun ContentPlaceholderPreviewDark() {
     AppTheme(
         darkTheme = true
     ) {
@@ -68,5 +67,3 @@ fun ContentPlaceholderPreviewDark(
         )
     }
 }
-
-
