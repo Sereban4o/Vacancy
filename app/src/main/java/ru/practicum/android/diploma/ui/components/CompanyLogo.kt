@@ -33,7 +33,7 @@ fun CompanyLogo(
             .build(),
         contentDescription = null,
         modifier = finalModifier,
-        contentScale = ContentScale.Crop,
+        contentScale = ContentScale.Inside,
         placeholder = painterResource(R.drawable.ic_company_placeholder), // при загрузке
         fallback = painterResource(R.drawable.ic_company_placeholder), // если null
         error = painterResource(R.drawable.ic_company_placeholder) // если ошибка
