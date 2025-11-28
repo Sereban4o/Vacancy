@@ -36,13 +36,24 @@ class VacancyDetailsViewModel(
                 _uiState.value = VacancyDetailsUiState.Content(vacancy)
 
             } catch (e: IOException) {
-                // сетевые ошибки
+                // 🔌 Нет интернета / проблемы с сетью
                 Log.e(TAG, "ОШИБКА СЕТИ: ${e.message}", e)
                 _uiState.value = VacancyDetailsUiState.Error(isNetworkError = true)
 
             } catch (e: HttpException) {
-                // HTTP-ошибки (4xx/5xx)
+                // 🌐 HTTP-ошибки (4xx/5xx)
                 Log.e(TAG, "ОШИБКА HTTP ${e.code()}: ${e.message()}", e)
+
+                if (e.code() == 404) {
+                    // 🧩 Вакансия не найдена / удалена
+                    _uiState.value = VacancyDetailsUiState.NoVacancy
+                } else {
+                    // Остальные HTTP-ошибки → общий серверный плейсхолдер
+                    _uiState.value = VacancyDetailsUiState.Error(isNetworkError = false)
+                }
+            } catch (e: Exception) {
+                // На всякий пожарный: если вдруг прилетит что-то ещё
+                Log.e(TAG, "НЕИЗВЕСТНАЯ ОШИБКА: ${e.message}", e)
                 _uiState.value = VacancyDetailsUiState.Error(isNetworkError = false)
             }
         }

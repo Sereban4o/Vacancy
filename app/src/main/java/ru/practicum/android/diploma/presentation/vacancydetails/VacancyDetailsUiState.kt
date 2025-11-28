@@ -6,4 +6,7 @@ sealed interface VacancyDetailsUiState {
     object Loading : VacancyDetailsUiState
     data class Content(val vacancy: VacancyDetails) : VacancyDetailsUiState
     data class Error(val isNetworkError: Boolean) : VacancyDetailsUiState
+
+    // отдельный кейс: вакансия не найдена / удалена
+    data object NoVacancy : VacancyDetailsUiState
 }

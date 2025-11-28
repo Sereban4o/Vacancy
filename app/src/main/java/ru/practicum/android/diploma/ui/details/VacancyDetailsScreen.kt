@@ -56,64 +56,19 @@ fun VacancyDetailsScreen(
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-    when (uiState) {
-        is VacancyDetailsUiState.Loading -> {
-            Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-        }
-
-        is VacancyDetailsUiState.Error -> {
-            val error = uiState as VacancyDetailsUiState.Error
-
-            if (error.isNetworkError) {
-                InfoState(TypeState.NoInternet)
-            } else {
-                InfoState(TypeState.ServerErrorVacancy)
-            }
-        }
-
-        is VacancyDetailsUiState.Content -> {
-            val vacancy = (uiState as VacancyDetailsUiState.Content).vacancy
-            VacancyDetailsContent(
-                vacancy = vacancy,
-                onBack = onBack,
-                onShareClick = { shareVacancy(context, vacancy.vacancyUrl) },
-                onEmailClick = { email -> openEmail(context, email) },
-                onPhoneClick = { phone -> openPhone(context, phone) },
-                modifier = modifier
-            )
-        }
-    }
-}
-
-@Composable
-fun VacancyDetailsContent(
-    vacancy: VacancyDetails,
-    onBack: () -> Unit,
-    onShareClick: () -> Unit,
-    onEmailClick: (String) -> Unit,
-    onPhoneClick: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val scrollState = rememberScrollState()
-
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
+        modifier = modifier.fillMaxSize()
     ) {
-        // 🧩 Шапка: Heading с кастомной стрелкой и кнопками справа
+        // 🧩 Шапка экрана — всегда одна и та же, независимо от состояния
         Heading(
             text = stringResource(R.string.vacancy),
             leftBlock = {
-                // Кнопка "назад" с иконкой, прижатой к левому краю паддинга
                 Box(
                     modifier = Modifier
                         .size(24.dp)
-                        .padding(end = 4.dp) // область как у IconButton
+                        .padding(end = 4.dp)
                         .clickable(onClick = onBack),
-                    contentAlignment = Alignment.CenterStart // ИКОНКА У ЛЕВОГО КРАЯ бокса
+                    contentAlignment = Alignment.CenterStart
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_arrow_back_24),
@@ -122,19 +77,29 @@ fun VacancyDetailsContent(
                         tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
-
                 Spacer(Modifier.width(4.dp))
             },
             rightBlock = {
                 Row {
-                    IconButton(onClick = onShareClick) {
+                    // Кнопка "Поделиться" – работает только, когда есть контент
+                    val vacancy =
+                        (uiState as? VacancyDetailsUiState.Content)?.vacancy
+                    IconButton(
+                        onClick = {
+                            vacancy?.let {
+                                shareVacancy(context, it.vacancyUrl)
+                            }
+                        },
+                        enabled = vacancy != null
+                    ) {
                         Icon(
                             painterResource(R.drawable.ic_share_18_20),
                             contentDescription = "Поделиться",
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
-                    IconButton(onClick = { /* Избранное: позже */ }) {
+
+                    IconButton(onClick = { /* TODO: избранное */ }) {
                         Icon(
                             painterResource(R.drawable.ic_favorites_22_20),
                             contentDescription = "Избранное",
@@ -147,6 +112,70 @@ fun VacancyDetailsContent(
 
         Spacer(Modifier.height(8.dp))
 
+        // 🔻 Дальше — содержимое экрана в зависимости от состояния
+        when (uiState) {
+            is VacancyDetailsUiState.Loading -> {
+                Box(
+                    Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+
+            is VacancyDetailsUiState.Error -> {
+                val error = uiState as VacancyDetailsUiState.Error
+                Box(
+                    Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (error.isNetworkError) {
+                        InfoState(TypeState.NoInternet)
+                    } else {
+                        InfoState(TypeState.ServerErrorVacancy)
+                    }
+                }
+            }
+
+            is VacancyDetailsUiState.NoVacancy -> {
+                Box(
+                    Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    InfoState(TypeState.NoVacancy)
+                }
+            }
+
+            is VacancyDetailsUiState.Content -> {
+                val vacancy = (uiState as VacancyDetailsUiState.Content).vacancy
+                VacancyDetailsContent(
+                    vacancy = vacancy,
+                    onEmailClick = { email -> openEmail(context, email) },
+                    onPhoneClick = { phone -> openPhone(context, phone) },
+                    modifier = modifier
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun VacancyDetailsContent(
+    vacancy: VacancyDetails,
+    onEmailClick: (String) -> Unit,
+    onPhoneClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+    ) {
         // 🔹 Главный заголовок вакансии — Bold/32
         Text(
             text = vacancy.title,
