@@ -37,5 +37,6 @@
 
     <!-- VacancyScreen -->
     <string name="vacancy">Вакансия</string>
+    <string name="share">Поделиться</string>
 
 </resources>

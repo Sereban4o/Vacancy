@@ -1,7 +1,8 @@
-package ru.practicum.android.diploma.domain.interactors
+package ru.practicum.android.diploma.domain.impl
 
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
+import ru.practicum.android.diploma.domain.interactors.SearchVacanciesInteractor
 import ru.practicum.android.diploma.domain.models.SearchFilters
 import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.domain.repository.VacanciesRepository
