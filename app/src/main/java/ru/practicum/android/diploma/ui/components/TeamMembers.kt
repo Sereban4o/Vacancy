@@ -9,6 +9,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import ru.practicum.android.diploma.ui.theme.PaddingMedium
 
+/**
+ * Список членов команды.
+ *
+ * Для каждой строки используется:
+ *  - YS Display
+ *  - Medium / 16 / 19 / 0%
+ *  что соответствует макету "текст членов команды".
+ */
 @Composable
 fun TeamMembers(
     modifier: Modifier = Modifier,
@@ -22,10 +30,9 @@ fun TeamMembers(
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = text,
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelMedium, // Medium/16
                 color = MaterialTheme.colorScheme.onBackground,
             )
         }
     }
 }
-

@@ -120,7 +120,8 @@ private fun Info(painter: Painter, text: String = "") {
                     .align(Alignment.CenterHorizontally)
                     .padding(horizontal = PaddingExtraLarge)
                     .padding(top = PaddingMedium),
-                style = MaterialTheme.typography.titleLarge,
+                // макет: Medium / 22, weight 500, 22px, 26px, 0%, centered 💯
+                style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Center
             )
         }
