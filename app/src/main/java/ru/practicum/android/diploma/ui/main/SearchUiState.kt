@@ -3,15 +3,12 @@ package ru.practicum.android.diploma.ui.main
 /**
  * UI-состояние экрана поиска вакансий.
  *
- * @param query      текущий текст поисковой строки
- * @param isLoading  флаг загрузки (для первичного лоадера / блокировки экрана)
- * @param errorType  тип ошибки (нет интернета / общая / без ошибки)
- * @param totalFound общее количество найденных вакансий (приходит из backend)
- * @param isInitial  true, пока пользователь ещё ни разу не запускал поиск
- *
- * ⚡️ Важно:
- * - вакансии больше НЕ храним — ими занимается Paging 3
- *   (LazyPagingItems<Vacancy> в UI).
+ * @param query текущий текст поисковой строки
+ * @param isLoading флаг загрузки (показывать индикатор / скелетон)
+ * при пагинации больше не нужен параметр vacancies, всё хранится в контейнере Paging
+ * @param vacancies список найденных вакансий
+ * @param errorMessage текст ошибки (null, если ошибки нет)
+ * @param isInitial показывает, что пользователь ещё не запускал поиск
  */
 data class SearchUiState(
     val query: String = "",

@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import ru.practicum.android.diploma.domain.interactors.SearchVacanciesInteractor
 import ru.practicum.android.diploma.domain.models.Vacancy
@@ -22,24 +22,22 @@ import ru.practicum.android.diploma.ui.main.SearchErrorType
 import ru.practicum.android.diploma.ui.main.SearchUiState
 import java.io.IOException
 
-/**
- * ViewModel для экрана поиска вакансий с пагинацией (Paging 3).
- */
-
 class SearchViewModel(
     private val searchVacanciesInteractor: SearchVacanciesInteractor
 ) : ViewModel() {
 
-    // 🔹 UI-состояние
-    private val _uiState: MutableStateFlow<SearchUiState> =
-        MutableStateFlow(SearchUiState())
+    private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
-    // 🔹 Текущий поисковый запрос (сырой текст)
+    // сырой текст запроса
     private val searchQueryFlow = MutableStateFlow("")
 
     /**
-     * Основной поток данных для UI.
+     * Основной поток PagingData<Vacancy>.
+     * Внутри:
+     *  - debounce по тексту,
+     *  - пустой поток при пустом запросе,
+     *  - interactor.searchPaged(...) при нормальном запросе.
      */
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     val pagingResultDataFlow: Flow<PagingData<Vacancy>> =
@@ -47,34 +45,32 @@ class SearchViewModel(
             .debounce(SEARCH_DELAY_MS)
             .flatMapLatest { query ->
                 if (query.isBlank()) {
-                    // Пустой запрос → очищаем состояние и отдаём пустой список
+                    // Пустой запрос: просто очищаем список
                     _uiState.update { current ->
                         current.copy(
-                            isInitial = true,
                             isLoading = false,
                             errorType = SearchErrorType.NONE,
-                            totalFound = 0
+                            totalFound = 0,
+                            isInitial = true
                         )
                     }
-                    flowOf(PagingData.empty())
+                    flow { emit(PagingData.empty()) }
                 } else {
-                    // Новый запрос → выходим из initial и показываем загрузку
+                    // Новый поиск: показываем загрузку первой страницы
                     _uiState.update { current ->
                         current.copy(
-                            isInitial = false,
                             isLoading = true,
-                            errorType = SearchErrorType.NONE
+                            errorType = SearchErrorType.NONE,
+                            isInitial = false
                         )
                     }
 
-                    // Пагинированный поиск через интерактор (без фильтров пока)
+                    // Пагинированный поиск через интерактор
                     searchVacanciesInteractor.searchPaged(
                         query = query,
                         filters = null,
                         onTotalFound = { total ->
-                            _uiState.update { state ->
-                                state.copy(totalFound = total)
-                            }
+                            _uiState.update { it.copy(totalFound = total) }
                         }
                     )
                 }
@@ -82,41 +78,26 @@ class SearchViewModel(
             .cachedIn(viewModelScope)
 
     /**
-     * Вызывается из UI при каждом изменении текста в поле поиска.
+     * Пользователь меняет текст в поиске.
      */
     fun onQueryChanged(newQuery: String) {
-        // Обновляем только текст (остальное — в потоках выше)
         _uiState.update { current ->
-            current.copy(query = newQuery)
+            current.copy(
+                query = newQuery,
+                isInitial = false,
+            )
         }
-
-        if (newQuery.isBlank()) {
-            // Пустая строка → возвращаемся к начальному экрану с плейсхолдером
-            searchQueryFlow.value = ""
-            _uiState.update { current ->
-                current.copy(
-                    isInitial = true,
-                    isLoading = false,
-                    errorType = SearchErrorType.NONE,
-                    totalFound = 0
-                )
-            }
-        } else {
-            // Непустой текст → триггерим дебаунс-поиск
-            searchQueryFlow.value = newQuery
-        }
+        searchQueryFlow.value = newQuery
     }
 
     /**
-     * Обработка состояний загрузки Paging 3.
-     *
-     * Вызывается из UI через LaunchedEffect в SearchScreen.
+     * View сообщает сюда изменения loadState Paging'а.
+     * Здесь мы обновляем isLoading + errorType.
      */
-    fun onLoadStateChanged(loadStates: CombinedLoadStates) {
-        val refreshState = loadStates.refresh
-
+    fun onLoadStateChanged(loadState: CombinedLoadStates) {
+        val refresh = loadState.refresh
         _uiState.update { current ->
-            when (refreshState) {
+            when (refresh) {
                 is LoadState.Loading -> {
                     current.copy(
                         isLoading = true,
@@ -131,9 +112,14 @@ class SearchViewModel(
                 }
 
                 is LoadState.Error -> {
+                    val errorType = if (refresh.error is IOException) {
+                        SearchErrorType.NETWORK
+                    } else {
+                        SearchErrorType.GENERAL
+                    }
                     current.copy(
                         isLoading = false,
-                        errorType = mapThrowableToErrorType(refreshState.error)
+                        errorType = errorType
                     )
                 }
             }
@@ -141,24 +127,16 @@ class SearchViewModel(
     }
 
     /**
-     * Повторить поиск при ошибке (если будет кнопка "Повторить").
+     * Повторить поиск при ошибке (если понадобится).
      */
     fun onRetry() {
         val currentQuery = _uiState.value.query
-        if (currentQuery.isBlank()) return
-
-        // Просто перезапускаем запрос для того же текста:
-        searchQueryFlow.value = currentQuery
+        if (currentQuery.isNotBlank()) {
+            searchQueryFlow.value = currentQuery
+        }
     }
 
-    private fun mapThrowableToErrorType(throwable: Throwable): SearchErrorType =
-        when (throwable) {
-            is IOException -> SearchErrorType.NETWORK
-            else -> SearchErrorType.GENERAL
-        }
-
     companion object {
-        // Задержка дебаунса (2 сек) из условия эпика
         private const val SEARCH_DELAY_MS: Long = 2_000L
     }
 }

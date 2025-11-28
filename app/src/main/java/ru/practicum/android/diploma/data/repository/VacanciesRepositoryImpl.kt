@@ -7,11 +7,13 @@ import kotlinx.coroutines.flow.Flow
 import ru.practicum.android.diploma.data.mappers.toDomainDetails
 import ru.practicum.android.diploma.data.network.VacanciesRemoteDataSource
 import ru.practicum.android.diploma.data.paging.VacanciesPagingSource
-import ru.practicum.android.diploma.data.paging.VACANCIES_PER_PAGE
 import ru.practicum.android.diploma.domain.models.SearchFilters
 import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.domain.models.VacancyDetails
 import ru.practicum.android.diploma.domain.repository.VacanciesRepository
+
+// требование ТЗ: страница = 20 элементов
+private const val VACANCIES_PER_PAGE = 20
 
 class VacanciesRepositoryImpl(
     private val remoteDataSource: VacanciesRemoteDataSource
@@ -26,7 +28,7 @@ class VacanciesRepositoryImpl(
             config = PagingConfig(
                 pageSize = VACANCIES_PER_PAGE,
                 initialLoadSize = VACANCIES_PER_PAGE,
-                enablePlaceholders = false
+                enablePlaceholders = false // Отвечает за то, прогружать ли ещё незагруженный (пустой) список
             ),
             pagingSourceFactory = {
                 VacanciesPagingSource(

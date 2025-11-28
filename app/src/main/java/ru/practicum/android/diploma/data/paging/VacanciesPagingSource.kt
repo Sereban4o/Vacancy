@@ -14,16 +14,19 @@ class VacanciesPagingSource(
     private val remoteDataSource: VacanciesRemoteDataSource,
     private val query: String,
     private val filters: SearchFilters? = null,
-    private val onTotalFound: (Int) -> Unit = {},
+    private val onTotalFound: (Int) -> Unit = {}
 ) : PagingSource<Int, Vacancy>() {
 
+    // Функция чтобы при обновлении пользователь не терял свою позицию
     override fun getRefreshKey(state: PagingState<Int, Vacancy>): Int? {
+        // Вычисляем ближайшую позицию к "якорю"
         return state.anchorPosition?.let { anchorPosition ->
             val closestPage = state.closestPageToPosition(anchorPosition)
             closestPage?.prevKey?.plus(1) ?: closestPage?.nextKey?.minus(1)
         }
     }
 
+    // Функция для загрузки вакансий с пагинацией
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Vacancy> {
         return try {
             val currentPage = params.key ?: 0
@@ -31,8 +34,7 @@ class VacanciesPagingSource(
             val requestDto = VacancySearchRequestDto(
                 text = query,
                 page = currentPage,
-                // ❗ строго по ТЗ — фиксированный размер страницы = 20
-                perPage = VACANCIES_PER_PAGE,
+                perPage = ITEMS_PER_PAGE,
                 salaryFrom = filters?.salaryFrom,
                 onlyWithSalary = filters?.onlyWithSalary ?: false,
                 regionId = filters?.regionId,
@@ -40,13 +42,12 @@ class VacanciesPagingSource(
             )
 
             val response = remoteDataSource.searchVacancies(requestDto)
+
             val vacancies = response.vacancies.map { it.toDomain() }
 
-            // ❗ response.pages — количество страниц, lastIndex = pages - 1
-            val lastPageIndex = response.pages - 1
-
             val prevPage = if (currentPage > 0) currentPage - 1 else null
-            val nextPage = if (currentPage < lastPageIndex) currentPage + 1 else null
+            val lastIndexedPage = response.pages - 1
+            val nextPage = if (currentPage < lastIndexedPage) currentPage + 1 else null
 
             if (currentPage == 0) {
                 onTotalFound(response.found)
@@ -62,5 +63,9 @@ class VacanciesPagingSource(
         } catch (e: HttpException) {
             LoadResult.Error(e)
         }
+    }
+
+    companion object{
+        const val ITEMS_PER_PAGE = 20
     }
 }
