@@ -34,7 +34,7 @@ class VacanciesPagingSource(
             val requestDto = VacancySearchRequestDto(
                 text = query,
                 page = currentPage,
-                perPage = params.loadSize,
+                perPage = ITEMS_PER_PAGE,
                 salaryFrom = filters?.salaryFrom,
                 onlyWithSalary = filters?.onlyWithSalary ?: false,
                 regionId = filters?.regionId,
@@ -46,7 +46,8 @@ class VacanciesPagingSource(
             val vacancies = response.vacancies.map { it.toDomain() }
 
             val prevPage = if (currentPage > 0) currentPage - 1 else null
-            val nextPage = if (currentPage < response.pages) currentPage + 1 else null
+            val lastIndexedPage = response.pages - 1
+            val nextPage = if (currentPage < lastIndexedPage) currentPage + 1 else null
 
             if (currentPage == 0) {
                 onTotalFound(response.found)
@@ -62,5 +63,9 @@ class VacanciesPagingSource(
         } catch (e: HttpException) {
             LoadResult.Error(e)
         }
+    }
+
+    companion object{
+        const val ITEMS_PER_PAGE = 20
     }
 }
