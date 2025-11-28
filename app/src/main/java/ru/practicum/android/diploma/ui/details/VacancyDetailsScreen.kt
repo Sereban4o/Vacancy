@@ -30,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -81,8 +82,12 @@ fun VacancyDetailsScreen(
             },
             rightBlock = {
                 Row {
-                    val vacancy =
-                        (uiState as? VacancyDetailsUiState.Content)?.vacancy
+                    // состояние контента
+                    val contentState = uiState as? VacancyDetailsUiState.Content
+                    val vacancy = contentState?.vacancy
+                    val isFavorite = contentState?.isFavorite == true
+
+                    // Кнопка "Поделиться"
                     IconButton(
                         onClick = {
                             vacancy?.let {
@@ -98,11 +103,31 @@ fun VacancyDetailsScreen(
                         )
                     }
 
-                    IconButton(onClick = { /* NOTE : избранное */ }) {
+                    // Кнопка "Избранное"
+                    val favoritePainter = if (isFavorite) {
+                        painterResource(R.drawable.ic_is_favorites)
+                    } else {
+                        painterResource(R.drawable.ic_favorites)
+                    }
+
+                    val favoriteTint = if (isFavorite) {
+                        colorResource(R.color.is_favorite_color)
+                    } else {
+                        colorResource(R.color.favorite_color)
+                    }
+
+                    IconButton(
+                        onClick = {
+                            if (vacancy != null) {
+                                viewModel.editFavorite(vacancy, isFavorite)
+                            }
+                        },
+                        enabled = vacancy != null
+                    ) {
                         Icon(
-                            painterResource(R.drawable.ic_favorites_22_20),
+                            favoritePainter,
                             contentDescription = stringResource(R.string.favorites),
-                            tint = MaterialTheme.colorScheme.onBackground
+                            tint = favoriteTint
                         )
                     }
                 }
