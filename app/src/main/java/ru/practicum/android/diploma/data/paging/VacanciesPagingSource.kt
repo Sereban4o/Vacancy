@@ -2,7 +2,6 @@ package ru.practicum.android.diploma.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import kotlinx.coroutines.delay
 import retrofit2.HttpException
 import ru.practicum.android.diploma.data.dto.VacancySearchRequestDto
 import ru.practicum.android.diploma.data.mappers.toDomain
