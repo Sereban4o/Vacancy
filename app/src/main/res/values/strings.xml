@@ -38,4 +38,15 @@
     <!-- VacancyScreen -->
     <string name="vacancy">Вакансия</string>
 
+    <!-- DetailScreen -->
+    <string name="back">Назад</string>
+    <string name="share">Поделиться</string>
+
+    <string name="required_experience">Требуемый опыт</string>
+    <string name="vacancy_description">Описание вакансии</string>
+    <string name="key_skills">Ключевые навыки</string>
+    <string name="contacts">Контакты</string>
+
+    <string name="share_vacancy_chooser_title">Поделиться вакансией</string>
+
 </resources>

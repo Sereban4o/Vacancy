@@ -56,10 +56,10 @@ fun VacancyDetailsScreen(
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
+    // 🧩 Шапка экрана
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        // 🧩 Шапка экрана — всегда одна и та же, независимо от состояния
         Heading(
             text = stringResource(R.string.vacancy),
             leftBlock = {
@@ -72,7 +72,7 @@ fun VacancyDetailsScreen(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_arrow_back_24),
-                        contentDescription = "Назад",
+                        contentDescription = stringResource(R.string.back),
                         modifier = Modifier.size(24.dp),
                         tint = MaterialTheme.colorScheme.onBackground
                     )
@@ -81,7 +81,6 @@ fun VacancyDetailsScreen(
             },
             rightBlock = {
                 Row {
-                    // Кнопка "Поделиться" – работает только, когда есть контент
                     val vacancy =
                         (uiState as? VacancyDetailsUiState.Content)?.vacancy
                     IconButton(
@@ -94,7 +93,7 @@ fun VacancyDetailsScreen(
                     ) {
                         Icon(
                             painterResource(R.drawable.ic_share_18_20),
-                            contentDescription = "Поделиться",
+                            contentDescription = stringResource(R.string.share),
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
@@ -102,7 +101,7 @@ fun VacancyDetailsScreen(
                     IconButton(onClick = { /* NOTE : избранное */ }) {
                         Icon(
                             painterResource(R.drawable.ic_favorites_22_20),
-                            contentDescription = "Избранное",
+                            contentDescription = stringResource(R.string.favorites),
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
@@ -112,7 +111,7 @@ fun VacancyDetailsScreen(
 
         Spacer(Modifier.height(8.dp))
 
-        // 🔻 Дальше — содержимое экрана в зависимости от состояния
+        // 🔻 — содержимое экрана в зависимости от состояния
         when (uiState) {
             is VacancyDetailsUiState.Loading -> {
                 Box(
@@ -201,8 +200,8 @@ fun VacancyDetailsContent(
 
         // 📌 Требуемый опыт
         Text(
-            text = "Требуемый опыт",
-            style = MaterialTheme.typography.labelMedium, // Medium/16
+            text = stringResource(R.string.required_experience),
+            style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(Modifier.height(4.dp))
@@ -210,7 +209,7 @@ fun VacancyDetailsContent(
         vacancy.experience?.let {
             Text(
                 text = it,
-                style = MaterialTheme.typography.labelMedium, // Medium/16
+                style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onBackground
             )
         }
@@ -219,7 +218,7 @@ fun VacancyDetailsContent(
 
         Text(
             text = "${vacancy.employment}, ${vacancy.schedule}",
-            style = MaterialTheme.typography.bodyMedium, // Regular/16
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onBackground
         )
 
@@ -227,8 +226,8 @@ fun VacancyDetailsContent(
 
         // 📝 Описание вакансии
         Text(
-            text = "Описание вакансии",
-            style = MaterialTheme.typography.titleMedium, // Medium/22
+            text = stringResource(R.string.vacancy_description),
+            style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(Modifier.height(8.dp))
@@ -239,15 +238,15 @@ fun VacancyDetailsContent(
         // ⭐ Навыки
         if (vacancy.skills.isNotEmpty()) {
             Text(
-                text = "Ключевые навыки",
-                style = MaterialTheme.typography.titleMedium, // Medium/22
+                text = stringResource(R.string.key_skills),
+                style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(Modifier.height(8.dp))
             vacancy.skills.forEach {
                 Text(
                     text = "• $it",
-                    style = MaterialTheme.typography.bodyMedium, // Regular/16
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Spacer(Modifier.height(4.dp))
@@ -259,8 +258,8 @@ fun VacancyDetailsContent(
         vacancy.contacts?.let { contacts ->
             if (contacts.email != null || contacts.phones.isNotEmpty()) {
                 Text(
-                    text = "Контакты",
-                    style = MaterialTheme.typography.titleMedium, // Medium/22
+                    text = stringResource(R.string.contacts),
+                    style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Spacer(Modifier.height(8.dp))
@@ -301,13 +300,13 @@ fun CompanyCard(vacancy: VacancyDetails) {
         Column {
             Text(
                 text = vacancy.companyName,
-                style = MaterialTheme.typography.titleMedium, // Medium/22
+                style = MaterialTheme.typography.titleMedium,
                 color = TextColorLight
             )
             (vacancy.address ?: vacancy.region)?.let {
                 Text(
                     text = it,
-                    style = MaterialTheme.typography.bodyMedium, // Regular/16
+                    style = MaterialTheme.typography.bodyMedium,
                     color = TextColorLight
                 )
             }
@@ -352,7 +351,7 @@ fun ContactsBlock(
     contacts.email?.let {
         Text(
             text = it,
-            style = MaterialTheme.typography.bodyMedium, // Regular/16
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable { onEmailClick(it) }
         )
@@ -362,7 +361,7 @@ fun ContactsBlock(
     contacts.phones.forEach { phone ->
         Text(
             text = phone,
-            style = MaterialTheme.typography.bodyMedium, // Regular/16
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable { onPhoneClick(phone) }
         )
@@ -373,7 +372,7 @@ fun ContactsBlock(
         Spacer(Modifier.height(8.dp))
         Text(
             text = it,
-            style = MaterialTheme.typography.bodyMedium, // Regular/16
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
@@ -384,7 +383,12 @@ fun shareVacancy(context: Context, url: String) {
         type = "text/plain"
         putExtra(Intent.EXTRA_TEXT, url)
     }
-    context.startActivity(Intent.createChooser(intent, "Поделиться вакансией"))
+    context.startActivity(
+        Intent.createChooser(
+            intent,
+            context.getString(R.string.share_vacancy_chooser_title)
+        )
+    )
 }
 
 @SuppressLint("UseKtx")
