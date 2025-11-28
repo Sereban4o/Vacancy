@@ -140,6 +140,7 @@ fun SearchScreen(
                 }
             }
         }
+    }
 
         // 🔹 Чип поверх списка — как в старой реализации
         if (!uiState.isInitial && (uiState.totalFound > 0 || noResults)) {
@@ -228,5 +229,19 @@ private fun PagedVacanciesList(
                 )
             }
         }
+
+        if (pagedData.loadState.append is LoadState.Loading) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+        }
     }
 }
+

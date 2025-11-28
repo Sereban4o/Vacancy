@@ -25,6 +25,7 @@ import java.io.IOException
 /**
  * ViewModel для экрана поиска вакансий с пагинацией (Paging 3).
  */
+
 class SearchViewModel(
     private val searchVacanciesInteractor: SearchVacanciesInteractor
 ) : ViewModel() {

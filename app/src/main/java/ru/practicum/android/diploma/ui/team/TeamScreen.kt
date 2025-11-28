@@ -18,9 +18,9 @@ import ru.practicum.android.diploma.ui.theme.SpacerLarge
 import ru.practicum.android.diploma.ui.theme.SpacerMedium
 
 @Composable
-fun TeamScreen(modifier: Modifier) {
+fun TeamScreen() {
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.Start
     ) {

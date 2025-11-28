@@ -43,4 +43,5 @@ class VacanciesRepositoryImpl(
         val dto = remoteDataSource.getVacancyDetails(id)
         return dto.toDomainDetails()
     }
+
 }

@@ -30,7 +30,6 @@ fun NavGraph(
         // 🟦 Главный экран
         composable(Routes.Main.name) {
             MainScreen(
-                modifier = Modifier,
                 onFilterClick = { /* откроем фильтры позже */ },
                 onVacancyClick = { id ->
                     navHostController.navigate("$VACANCY_DETAILS_ROUTE/$id")
