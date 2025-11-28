@@ -40,3 +40,12 @@ val TextLetterSpacingMedium = 0.sp
 val TextLetterSpacingLarge = 0.sp
 
 val PaddingScreenTitleVertical = 20.dp
+
+// ---------- Нижний навигатор ----------
+val BottomNavHeight = 69.dp
+
+// высота лоадера пагинации
+val PaginationLoaderHeight = 74.dp
+
+// размер кружка пагинации
+val PaginationLoaderSize = 32.dp

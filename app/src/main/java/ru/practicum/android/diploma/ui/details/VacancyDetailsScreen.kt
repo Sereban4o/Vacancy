@@ -44,6 +44,7 @@ import ru.practicum.android.diploma.ui.components.Heading
 import ru.practicum.android.diploma.ui.components.InfoState
 import ru.practicum.android.diploma.ui.components.formatSalary
 import ru.practicum.android.diploma.ui.theme.CompanyCardBackgroundColor
+import ru.practicum.android.diploma.ui.theme.TextColorLight
 import ru.practicum.android.diploma.util.TypeState
 
 @Composable
@@ -109,7 +110,8 @@ fun VacancyDetailsContent(
                 // Кнопка "назад" с иконкой, прижатой к левому краю паддинга
                 Box(
                     modifier = Modifier
-                        .size(24.dp)              // область как у IconButton
+                        .size(24.dp)
+                        .padding(end = 4.dp)// область как у IconButton
                         .clickable(onClick = onBack),
                     contentAlignment = Alignment.CenterStart // ИКОНКА У ЛЕВОГО КРАЯ бокса
                 ) {
@@ -271,13 +273,13 @@ fun CompanyCard(vacancy: VacancyDetails) {
             Text(
                 text = vacancy.companyName,
                 style = MaterialTheme.typography.titleMedium, // Medium/22
-                color = MaterialTheme.colorScheme.onBackground
+                color = TextColorLight
             )
             (vacancy.address ?: vacancy.region)?.let {
                 Text(
                     text = it,
                     style = MaterialTheme.typography.bodyMedium, // Regular/16
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = TextColorLight
                 )
             }
         }

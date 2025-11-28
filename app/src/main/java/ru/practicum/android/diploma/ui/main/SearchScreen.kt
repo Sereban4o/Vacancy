@@ -1,20 +1,23 @@
 package ru.practicum.android.diploma.ui.main
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,13 +26,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.presentation.search.SearchViewModel
 import ru.practicum.android.diploma.ui.components.InfoState
 import ru.practicum.android.diploma.ui.components.SearchCountChip
 import ru.practicum.android.diploma.ui.components.SearchInputField
 import ru.practicum.android.diploma.ui.components.VacancyItem
+import ru.practicum.android.diploma.ui.theme.PaginationLoaderHeight
+import ru.practicum.android.diploma.ui.theme.PaginationLoaderSize
+import ru.practicum.android.diploma.ui.theme.ResultsChipBlue
 import ru.practicum.android.diploma.util.TypeState
 
 @Composable
@@ -40,15 +51,27 @@ fun SearchScreen(
 ) {
     val uiState = viewModel.uiState.collectAsState().value
 
-    val noResults = !uiState.isInitial &&
-        !uiState.isLoading &&
-        uiState.errorType == SearchErrorType.NONE &&
-        uiState.vacancies.isEmpty()
+    // 🔹 Paging-данные
+    val pagedData: LazyPagingItems<Vacancy> =
+        viewModel.pagingResultDataFlow.collectAsLazyPagingItems()
 
+    // 🔥 Синхронизируем loadState Paging'а с uiState во ViewModel
+    LaunchedEffect(pagedData.loadState) {
+        viewModel.onLoadStateChanged(pagedData.loadState)
+    }
+
+    // 🔹 Логика чипа
     val density = LocalDensity.current
     val chipExtraOffset = 5.dp
     val chipTopOffsetState = remember { mutableStateOf(0.dp) }
     val chipHeightState = remember { mutableStateOf(0.dp) }
+
+    // noResults — через Paging
+    val noResults = !uiState.isInitial &&
+        !uiState.isLoading &&
+        uiState.errorType == SearchErrorType.NONE &&
+        pagedData.itemCount == 0 &&
+        pagedData.loadState.refresh is LoadState.NotLoading
 
     Box(
         modifier = modifier
@@ -74,6 +97,7 @@ fun SearchScreen(
                     onClearClick = { viewModel.onQueryChanged("") }
                 )
             }
+
             // 🔥 БЛОК СОСТОЯНИЙ ЭКРАНА
             when {
                 // 1️⃣ Первый запуск
@@ -91,8 +115,8 @@ fun SearchScreen(
                     InfoState(TypeState.ServerError)
                 }
 
-                // 4️⃣ Загрузка
-                uiState.isLoading -> {
+                // 4️⃣ Загрузка первой страницы — крутим по центру
+                uiState.isLoading && pagedData.itemCount == 0 -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -101,32 +125,23 @@ fun SearchScreen(
                     }
                 }
 
-                // 5️⃣ Вакансий нет (важно!)
+                // 5️⃣ Вакансий нет
                 noResults -> {
-                    // В центре — картинка + текст
                     InfoState(TypeState.NoDataVacancy)
                 }
 
-                // 6️⃣ Список вакансий
+                // 6️⃣ Список вакансий (Paging 3)
                 else -> {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(
-                            top = chipHeightState.value + 8.dp
-                        )
-                    ) {
-                        items(uiState.vacancies, key = { it.id }) { vacancy ->
-                            VacancyItem(
-                                vacancy = vacancy,
-                                onClick = { onVacancyClick(vacancy.id) }
-                            )
-                        }
-                    }
+                    PagedVacanciesList(
+                        pagedData = pagedData,
+                        topPadding = chipHeightState.value + 8.dp,
+                        onVacancyClick = onVacancyClick
+                    )
                 }
             }
         }
 
-        // 🔹 Чип поверх списка — работает как раньше
+        // 🔹 Чип поверх списка — как в старой реализации
         if (!uiState.isInitial && (uiState.totalFound > 0 || noResults)) {
             val baseModifier = Modifier
                 .align(Alignment.TopCenter)
@@ -137,13 +152,11 @@ fun SearchScreen(
                 }
 
             if (uiState.totalFound > 0) {
-                // ✔ нашли вакансии
                 SearchCountChip(
                     total = uiState.totalFound,
                     modifier = baseModifier
                 )
             } else {
-                // ✔ вакансий нет — чип с текстом
                 Surface(
                     modifier = baseModifier,
                     shape = RoundedCornerShape(16.dp),
@@ -156,6 +169,63 @@ fun SearchScreen(
                         color = MaterialTheme.colorScheme.onTertiary
                     )
                 }
+            }
+        }
+
+        // 🔥 Индикатор пагинации поверх, с "пустым" фоном под ним
+        val isAppending = pagedData.loadState.append is LoadState.Loading
+        if (isAppending && pagedData.itemCount > 0) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 0.dp)
+            ) {
+                // полоса фона, чтобы под кружком было пусто
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(PaginationLoaderHeight)
+                        .background(MaterialTheme.colorScheme.background),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(PaginationLoaderSize),
+                        color = ResultsChipBlue,
+                        strokeWidth = 3.dp
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Список вакансий c Paging 3, с отступом под чип.
+ * Лоадер пагинации рисуется оверлеем в SearchScreen.
+ */
+@Composable
+private fun PagedVacanciesList(
+    pagedData: LazyPagingItems<Vacancy>,
+    topPadding: Dp,
+    onVacancyClick: (String) -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(
+            top = topPadding,
+            bottom = 16.dp
+        )
+    ) {
+        items(
+            count = pagedData.itemCount,
+            key = { index -> pagedData[index]?.id ?: index }
+        ) { index ->
+            val vacancy = pagedData[index]
+            if (vacancy != null) {
+                VacancyItem(
+                    vacancy = vacancy,
+                    onClick = { onVacancyClick(vacancy.id) }
+                )
             }
         }
     }

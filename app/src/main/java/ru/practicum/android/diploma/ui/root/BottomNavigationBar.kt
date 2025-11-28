@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.ui.theme.BottomNavHeight
 import ru.practicum.android.diploma.util.Routes
 
 @Composable
@@ -41,6 +42,7 @@ fun BottomNavigationBar(navController: NavHostController) {
         )
 
         BottomAppBar(
+            modifier = Modifier.height(BottomNavHeight),
             containerColor = MaterialTheme.colorScheme.background,
             tonalElevation = 0.dp,
         ) {

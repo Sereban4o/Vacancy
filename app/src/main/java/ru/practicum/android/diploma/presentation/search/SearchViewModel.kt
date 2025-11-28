@@ -1,136 +1,163 @@
 package ru.practicum.android.diploma.presentation.search
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.CombinedLoadStates
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
-import retrofit2.HttpException
 import ru.practicum.android.diploma.domain.interactors.SearchVacanciesInteractor
+import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.ui.main.SearchErrorType
 import ru.practicum.android.diploma.ui.main.SearchUiState
-import ru.practicum.android.diploma.util.debounce
 import java.io.IOException
 
 /**
- * ViewModel для экрана поиска вакансий.
- *
- * Принимает сырой текст запроса, применяет debounce
- * и по истечении паузы вызывает доменный interactor.
+ * ViewModel для экрана поиска вакансий с пагинацией (Paging 3).
  */
 class SearchViewModel(
     private val searchVacanciesInteractor: SearchVacanciesInteractor
 ) : ViewModel() {
 
+    // 🔹 UI-состояние
     private val _uiState: MutableStateFlow<SearchUiState> =
         MutableStateFlow(SearchUiState())
-
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
+    // 🔹 Текущий поисковый запрос (сырой текст)
+    private val searchQueryFlow = MutableStateFlow("")
+
     /**
-     * Debounce-функция, которая будет вызываться при изменении запроса.
-     * Внутри неё, через задержку, вызывается performSearch().
+     * Основной поток данных для UI.
      */
-    private val searchDebounce = debounce<String>(
-        coroutineScope = viewModelScope,
-        delayMs = SEARCH_DELAY_MS
-    ) { query ->
-        performSearch(query)
-    }
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+    val pagingResultDataFlow: Flow<PagingData<Vacancy>> =
+        searchQueryFlow
+            .debounce(SEARCH_DELAY_MS)
+            .flatMapLatest { query ->
+                if (query.isBlank()) {
+                    // Пустой запрос → очищаем состояние и отдаём пустой список
+                    _uiState.update { current ->
+                        current.copy(
+                            isInitial = true,
+                            isLoading = false,
+                            errorType = SearchErrorType.NONE,
+                            totalFound = 0
+                        )
+                    }
+                    flowOf(PagingData.empty())
+                } else {
+                    // Новый запрос → выходим из initial и показываем загрузку
+                    _uiState.update { current ->
+                        current.copy(
+                            isInitial = false,
+                            isLoading = true,
+                            errorType = SearchErrorType.NONE
+                        )
+                    }
+
+                    // Пагинированный поиск через интерактор (без фильтров пока)
+                    searchVacanciesInteractor.searchPaged(
+                        query = query,
+                        filters = null,
+                        onTotalFound = { total ->
+                            _uiState.update { state ->
+                                state.copy(totalFound = total)
+                            }
+                        }
+                    )
+                }
+            }
+            .cachedIn(viewModelScope)
 
     /**
      * Вызывается из UI при каждом изменении текста в поле поиска.
-     * Принимает "сырой" текст, как того требует Issue 3.2.
      */
     fun onQueryChanged(newQuery: String) {
-        // просто обновляем текст
+        // Обновляем только текст (остальное — в потоках выше)
         _uiState.update { current ->
-            current.copy(
-                query = newQuery
-                // isInitial тут НЕ трогаем
-            )
+            current.copy(query = newQuery)
         }
 
-        // если строка пустая — вернуться к начальному состоянию с плейсхолдером
         if (newQuery.isBlank()) {
+            // Пустая строка → возвращаемся к начальному экрану с плейсхолдером
+            searchQueryFlow.value = ""
             _uiState.update { current ->
                 current.copy(
                     isInitial = true,
                     isLoading = false,
-                    vacancies = emptyList(),
                     errorType = SearchErrorType.NONE,
                     totalFound = 0
                 )
             }
-            return
+        } else {
+            // Непустой текст → триггерим дебаунс-поиск
+            searchQueryFlow.value = newQuery
         }
-
-        // запускаем debounce-поиск; isInitial сменим уже в самом поиске
-        searchDebounce(newQuery)
     }
 
     /**
-     * Повторить поиск при ошибке (кнопка "Повторить").
-     * она пустая так как нет в ТЗ на эпик 1 и как опция
+     * Обработка состояний загрузки Paging 3.
+     *
+     * Вызывается из UI через LaunchedEffect в SearchScreen.
+     */
+    fun onLoadStateChanged(loadStates: CombinedLoadStates) {
+        val refreshState = loadStates.refresh
+
+        _uiState.update { current ->
+            when (refreshState) {
+                is LoadState.Loading -> {
+                    current.copy(
+                        isLoading = true,
+                        errorType = SearchErrorType.NONE
+                    )
+                }
+
+                is LoadState.NotLoading -> {
+                    current.copy(
+                        isLoading = false
+                    )
+                }
+
+                is LoadState.Error -> {
+                    current.copy(
+                        isLoading = false,
+                        errorType = mapThrowableToErrorType(refreshState.error)
+                    )
+                }
+            }
+        }
+    }
+
+    /**
+     * Повторить поиск при ошибке (если будет кнопка "Повторить").
      */
     fun onRetry() {
-        val currentQuery: String = _uiState.value.query
+        val currentQuery = _uiState.value.query
         if (currentQuery.isBlank()) return
 
-        // Повторный запуск через тот же debounce
-        searchDebounce(currentQuery)
+        // Просто перезапускаем запрос для того же текста:
+        searchQueryFlow.value = currentQuery
     }
 
-    private suspend fun performSearch(query: String) {
-        // loading
-        _uiState.update { current ->
-            current.copy(
-                isInitial = false,
-                isLoading = true,
-                errorType = SearchErrorType.NONE
-            )
+    private fun mapThrowableToErrorType(throwable: Throwable): SearchErrorType =
+        when (throwable) {
+            is IOException -> SearchErrorType.NETWORK
+            else -> SearchErrorType.GENERAL
         }
-
-        try {
-            val result = searchVacanciesInteractor.search(
-                query = query,
-                page = 0,
-                filters = null
-            )
-
-            _uiState.update { current ->
-                current.copy(
-                    isLoading = false,
-                    vacancies = result.vacancies,
-                    errorType = SearchErrorType.NONE,
-                    totalFound = result.found
-                )
-            }
-        } catch (io: IOException) {
-            Log.e("SearchViewModel", "Network error while searching vacancies", io)
-
-            _uiState.update { current ->
-                current.copy(
-                    isLoading = false,
-                    errorType = SearchErrorType.NETWORK
-                )
-            }
-        } catch (http: HttpException) {
-            Log.e("SearchViewModel", "Http error while searching vacancies", http)
-
-            _uiState.update { current ->
-                current.copy(
-                    isLoading = false,
-                    errorType = SearchErrorType.GENERAL
-                )
-            }
-        }
-    }
 
     companion object {
-        // Константа теперь локальна для ViewModel, без глобального Constants
+        // Задержка дебаунса (2 сек) из условия эпика
         private const val SEARCH_DELAY_MS: Long = 2_000L
     }
 }
