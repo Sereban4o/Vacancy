@@ -64,8 +64,9 @@ val OnErrorColor: Color = Color(0xFFFFFFFF)
 
 // ------- Custom component colors -------
 
-// Цвет фона карточки компании в деталях
-val CompanyCardBackgroundColor: Color = Color(0xFFE6E8EB)
+// Цвет фона карточки компании в Vacancy Details Screen
+val CompanyCardBackgroundColor: Color = Color(0xFFF3F3F7)
+val BoxBackground: Color = Color(0xFF3772E7)
 
 // Синий чип "Найдено N вакансий"
 val ResultsChipBlue: Color = Color(0xFF3772E7)

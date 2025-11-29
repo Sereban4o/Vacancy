@@ -4,7 +4,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 // ---------- Отступы (можно оставить как есть) ----------
+val Padding4 = 4.dp
 val PaddingSmall = 8.dp
+val Padding12 = 12.dp
 val PaddingMedium = 16.dp
 val PaddingLarge = 24.dp
 val PaddingExtraLarge = 46.dp // <-- Сергея центровка
@@ -17,6 +19,7 @@ val CornerRadiusLarge = 16.dp
 
 // ---------- Отступы между компонентами ----------
 val SpacerSmall = 8.dp
+val Spacer12 = 12.dp
 val SpacerMedium = 16.dp
 val SpacerLarge = 24.dp
 

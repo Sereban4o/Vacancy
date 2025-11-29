@@ -8,7 +8,6 @@
 
     <!-- MainScreen -->
     <string name="mainHeading">Поиск вакансий</string>
-    <string name="vacancy_text_placeholder">Введите запрос</string>
 
     <!-- SearchScreen -->
     <string name="vacancy_search_empty">Таких вакансий нет</string>
@@ -35,8 +34,15 @@
         <item>Аманжол Аимов</item>
     </string-array>
 
+    // MainScreen
+    <string name="vacancy_text_placeholder">Введите запрос</string>
+
+    // SearchScreen
+    <string name="no_vacancies">Таких вакансий нет</string>
+    <string name="vacancies_found">Найдено %1$d вакансий</string>
     <!-- VacancyScreen -->
     <string name="vacancy">Вакансия</string>
+    <string name="share">Поделиться</string>
 
     <!-- DetailScreen -->
     <string name="back">Назад</string>
