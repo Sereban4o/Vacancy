@@ -15,11 +15,12 @@ val viewModelModule = module {
     }
 
     // ViewModel с параметром vacancyId
-    viewModel { (vacancyId: String) ->
+    viewModel { (vacancyId: String, fromApi: Boolean) ->
         VacancyDetailsViewModel(
             vacancyId = vacancyId,
             interactor = get(),
-            favoritesInteractor = get()
+            favoritesInteractor = get(),
+            fromApi = fromApi
         )
     }
 

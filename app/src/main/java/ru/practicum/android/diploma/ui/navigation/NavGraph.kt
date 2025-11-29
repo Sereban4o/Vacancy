@@ -33,22 +33,27 @@ fun NavGraph(
             MainScreen(
                 onFilterClick = { /* откроем фильтры позже */ },
                 onVacancyClick = { id ->
+                    // ⚠️ ВАЖНО:
+                    // здесь fromApi не передаём — сработает defaultValue = true
+                    // т.е. из поиска данные будут грузиться из API
                     navHostController.navigate("$VACANCY_DETAILS_ROUTE/$id")
+                    // Можно и явно:
+                    // navHostController.navigate("$VACANCY_DETAILS_ROUTE/$id?$ARG_FROM_API=true")
                 }
             )
         }
 
         // ⭐ Избранное
         composable(Routes.Favorites.name) {
-            val vm: FavoritesViewModel = koinViewModel {
-                parametersOf()
-            }
+            val vm: FavoritesViewModel = koinViewModel()
 
             FavouritesScreen(
-                Modifier,
+                modifier = Modifier,
                 viewModel = vm,
-                onVacancyClick = {id ->
-                    navHostController.navigate("$VACANCY_DETAILS_ROUTE/$id")}
+                onVacancyClick = { id ->
+                    // Из избранного - грузим из БД
+                    navHostController.navigate("$VACANCY_DETAILS_ROUTE/$id?$ARG_FROM_API=false")
+                }
             )
         }
 
@@ -60,15 +65,24 @@ fun NavGraph(
         // 📄 Детали вакансии
         composable(
             route = "$VACANCY_DETAILS_ROUTE/{$ARG_VACANCY_ID}",
-            arguments = listOf(navArgument(ARG_VACANCY_ID) {
-                type = NavType.StringType
-            })
+            arguments = listOf(
+                navArgument(ARG_VACANCY_ID) {
+                    type = NavType.StringType
+                },
+                navArgument(ARG_FROM_API) {
+                    type = NavType.BoolType
+                    defaultValue = true // по умолчанию считаем, что грузим из API
+                }
+            )
         ) { backStackEntry ->
 
             val vacancyId = backStackEntry.arguments!!.getString(ARG_VACANCY_ID)!!
-            val vm: VacancyDetailsViewModel = koinViewModel {
-                parametersOf(vacancyId)
-            }
+            val fromApi = backStackEntry.arguments?.getBoolean(ARG_FROM_API) ?: true
+
+            // parametersOf(vacancyId, fromApi)
+            val vm: VacancyDetailsViewModel = koinViewModel(
+                parameters = { parametersOf(vacancyId, fromApi) }
+            )
 
             VacancyDetailsScreen(
                 modifier = Modifier,

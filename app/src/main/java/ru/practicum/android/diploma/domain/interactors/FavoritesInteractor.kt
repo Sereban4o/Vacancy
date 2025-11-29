@@ -9,4 +9,5 @@ interface FavoritesInteractor {
     suspend fun addFavorite(vacancy: VacancyDetails)
     suspend fun checkFavorite(vacancyId: String): Boolean
     suspend fun deleteFavorite(vacancyId: String)
+    suspend fun getVacancyDetailsFromDb(id: String): VacancyDetails?
 }

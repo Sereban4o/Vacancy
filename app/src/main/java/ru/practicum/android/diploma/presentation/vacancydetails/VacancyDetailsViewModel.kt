@@ -3,7 +3,9 @@ package ru.practicum.android.diploma.presentation.vacancydetails
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -11,15 +13,20 @@ import ru.practicum.android.diploma.domain.interactors.FavoritesInteractor
 import ru.practicum.android.diploma.domain.interactors.VacancyDetailsInteractor
 import ru.practicum.android.diploma.domain.models.VacancyDetails
 import java.io.IOException
+import java.net.HttpURLConnection.HTTP_NOT_FOUND
 
 class VacancyDetailsViewModel(
     private val vacancyId: String,
     private val interactor: VacancyDetailsInteractor,
-    private val favoritesInteractor: FavoritesInteractor
+    private val favoritesInteractor: FavoritesInteractor,
+    private val fromApi: Boolean, // 👈 новый флаг
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<VacancyDetailsUiState>(VacancyDetailsUiState.Loading)
     val uiState: StateFlow<VacancyDetailsUiState> = _uiState
+
+    private val _events = MutableSharedFlow<VacancyDetailsEvent>()
+    val events: SharedFlow<VacancyDetailsEvent> = _events
 
     init {
         loadDetails()
@@ -29,28 +36,42 @@ class VacancyDetailsViewModel(
         _uiState.value = VacancyDetailsUiState.Loading
 
         viewModelScope.launch {
-            Log.d(TAG, "Запрашиваем детали вакансии через interactor, id=$vacancyId")
-
             try {
-                val vacancy = interactor.getVacancyDetails(vacancyId)
+                // 1️⃣ Выбираем источник данных
+                val vacancy: VacancyDetails? = if (fromApi) {
+                    // открыли из поиска → идём в API
+                    interactor.getVacancyDetails(vacancyId) // не null
+                } else {
+                    // Открыли из избранного → берём из локальной БД
+                    favoritesInteractor.getVacancyDetailsFromDb(vacancyId) // может быть null
+                }
 
-                Log.d(TAG, "УСПЕХ: получили VacancyDetails: $vacancy")
+                // 2️⃣ Если из БД ничего не нашли → показываем NoVacancy
+                if (vacancy == null) {
+                    _uiState.value = VacancyDetailsUiState.NoVacancy
+                } else {
+                    // 3️⃣ Иначе — обычный успешный сценарий
+                    val isFavorite = favoritesInteractor.checkFavorite(vacancyId)
 
-                _uiState.value = VacancyDetailsUiState.Content(
-                    vacancy,
-                    vacancyId.let {
-                        favoritesInteractor.checkFavorite(it)
-                    })
+                    _uiState.value = VacancyDetailsUiState.Content(
+                        vacancy = vacancy,
+                        isFavorite = isFavorite
+                    )
+                }
 
             } catch (e: IOException) {
-                // сетевые ошибки
-                Log.e(TAG, "ОШИБКА СЕТИ: ${e.message}", e)
+                // 🔌 Нет интернета / проблемы с сетью (актуально при fromApi = true)
                 _uiState.value = VacancyDetailsUiState.Error(isNetworkError = true)
 
             } catch (e: HttpException) {
-                // HTTP-ошибки (4xx/5xx)
-                Log.e(TAG, "ОШИБКА HTTP ${e.code()}: ${e.message()}", e)
-                _uiState.value = VacancyDetailsUiState.Error(isNetworkError = false)
+                // 🌐 HTTP-ошибки (4xx/5xx)
+                if (e.code() == HTTP_NOT_FOUND) {
+                    // 🧩 Вакансия не найдена / удалена
+                    _uiState.value = VacancyDetailsUiState.NoVacancy
+                } else {
+                    // Остальные HTTP-ошибки → общий серверный плейсхолдер
+                    _uiState.value = VacancyDetailsUiState.Error(isNetworkError = false)
+                }
             }
         }
     }
@@ -69,8 +90,21 @@ class VacancyDetailsViewModel(
         }
     }
 
-    companion object {
-        private const val TAG = "VacancyDetailsViewModel"
+    fun onShareClick(url: String) {
+        viewModelScope.launch {
+            _events.emit(VacancyDetailsEvent.Share(url))
+        }
     }
 
+    fun onEmailClick(email: String) {
+        viewModelScope.launch {
+            _events.emit(VacancyDetailsEvent.Email(email))
+        }
+    }
+
+    fun onPhoneClick(phone: String) {
+        viewModelScope.launch {
+            _events.emit(VacancyDetailsEvent.Call(phone))
+        }
+    }
 }

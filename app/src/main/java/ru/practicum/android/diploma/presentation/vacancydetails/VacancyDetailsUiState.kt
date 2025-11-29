@@ -8,6 +8,6 @@ sealed interface VacancyDetailsUiState {
         val vacancy: VacancyDetails,
         val isFavorite: Boolean
     ) : VacancyDetailsUiState
-
     data class Error(val isNetworkError: Boolean) : VacancyDetailsUiState
+    data object NoVacancy : VacancyDetailsUiState
 }

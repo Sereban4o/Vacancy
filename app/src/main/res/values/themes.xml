@@ -3,26 +3,8 @@
     <!-- Базовая СВЕТЛАЯ тема приложения -->
     <style name="Base.Theme.PracticumAndroidDiploma" parent="Theme.Material3.Light.NoActionBar">
         <!-- Базовые цвета темы -->
-        <item name="colorPrimary">@color/color_primary</item>
-        <item name="colorOnPrimary">@color/color_on_primary</item>
-        <item name="colorSecondary">@color/color_secondary</item>
-        <item name="colorOnSecondary">@color/color_on_secondary</item>
-        <item name="android:statusBarColor">@color/color_primary</item>
-
-        <!-- Стиль по умолчанию для BottomNavigationView -->
-        <item name="bottomNavigationStyle">@style/Widget.PracticumAndroidDiploma.BottomNavigationView</item>
     </style>
-
     <!-- Основная тема, которая используется в манифесте -->
     <style name="Theme.PracticumAndroidDiploma" parent="Base.Theme.PracticumAndroidDiploma" />
-
-    <!-- Стиль BottomNavigationView (светлая тема) -->
-    <style name="Widget.PracticumAndroidDiploma.BottomNavigationView"
-        parent="Widget.Material3.BottomNavigationView">
-
-        <item name="android:background">@color/bottom_nav_background</item>
-        <item name="itemIconTint">@color/bottom_nav_item_color</item>
-        <item name="itemTextColor">@color/bottom_nav_item_color</item>
-    </style>
 
 </resources>

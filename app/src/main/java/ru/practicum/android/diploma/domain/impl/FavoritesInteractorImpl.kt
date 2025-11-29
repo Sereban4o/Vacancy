@@ -23,4 +23,7 @@ class FavoritesInteractorImpl(
     override suspend fun deleteFavorite(vacancyId: String) {
         return favoritesRepository.deleteFavorite(vacancyId)
     }
+
+    override suspend fun getVacancyDetailsFromDb(id: String): VacancyDetails? =
+        favoritesRepository.getFavoriteDetails(id)
 }
