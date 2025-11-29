@@ -25,6 +25,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.ui.theme.BottomNavActive
+import ru.practicum.android.diploma.ui.theme.BottomNavInactive
+import ru.practicum.android.diploma.ui.theme.DividerColor
 import ru.practicum.android.diploma.util.Routes
 
 @Composable
@@ -37,7 +40,7 @@ fun BottomNavigationBar(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(1.dp)
-                .background(colorResource(R.color.divider))
+                .background(DividerColor) // вместо R.color.divider
         )
 
         BottomAppBar(
@@ -105,11 +108,7 @@ fun BottomNavigationItem(
     selected: Boolean,
     onClick: () -> Unit
 ) {
-    val color = if (selected) {
-        colorResource(R.color.activeMenu)
-    } else {
-        colorResource(R.color.inActiveMenu)
-    }
+    val color = if (selected) BottomNavActive else BottomNavInactive
 
     Column(
         modifier = Modifier.clickable(onClick = onClick),

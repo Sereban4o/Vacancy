@@ -15,9 +15,12 @@ interface VacancyDao {
     @Insert(entity = VacancyEntity::class, onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(vacancy: VacancyEntity)
 
-    @Query("SELECT * FROM vacancies WHERE Id = :vacancyId")
+    @Query("SELECT * FROM vacancies WHERE id = :vacancyId")
     suspend fun checkFavorite(vacancyId: String): List<VacancyEntity>
 
-    @Query("DELETE FROM vacancies WHERE Id = :vacancyId")
+    @Query("DELETE FROM vacancies WHERE id = :vacancyId")
     suspend fun delete(vacancyId: String)
+
+    @Query("SELECT * FROM vacancies WHERE id = :id LIMIT 1")
+    suspend fun getById(id: String): VacancyEntity?
 }

@@ -31,4 +31,9 @@ class FavoritesRepositoryImpl(
     override suspend fun deleteFavorite(vacancyId: String) {
         appDatabase.vacancyDao().delete(vacancyId)
     }
+
+    override suspend fun getFavoriteDetails(vacancyId: String): VacancyDetails? {
+        val entity = appDatabase.vacancyDao().getById(vacancyId)
+        return entity?.let { vacancyDbConvertor.map(it) }
+    }
 }

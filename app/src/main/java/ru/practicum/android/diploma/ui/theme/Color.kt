@@ -90,3 +90,16 @@ val TextColorLight: Color = Color(0xFF1A1B22)
 
 // текст НОЧЬЮ (белый)
 val TextColorDark: Color = Color(0xFFFDFDFD)
+
+// Bottom navigation
+val BottomNavActive = Color(0xFF3772E7) // был activeMenu
+val BottomNavInactive = Color(0xFFAEAFB4) // был inActiveMenu
+val DividerColor = Color(0xFFE6E8EB) // был divider
+
+// ------- Favorites -------
+
+// цвет иконки "не в избранном"
+val FavoriteInactive = Color(0xFF1A1B22) // был favorite_color (day)
+
+// цвет иконки "в избранном"
+val FavoriteActive = Color(0xFFF56B6C) // был is_favorite_color (day/night)

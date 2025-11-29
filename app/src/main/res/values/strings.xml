@@ -34,14 +34,21 @@
         <item>Аманжол Аимов</item>
     </string-array>
 
-    // MainScreen
+    <!-- MainScreen -->
     <string name="vacancy_text_placeholder">Введите запрос</string>
 
-    // SearchScreen
+    <!-- SearchScreen -->
     <string name="no_vacancies">Таких вакансий нет</string>
     <string name="vacancies_found">Найдено %1$d вакансий</string>
-    <!-- VacancyScreen -->
+
+    <!-- DetailScreen -->
     <string name="vacancy">Вакансия</string>
+    <string name="back">Назад</string>
     <string name="share">Поделиться</string>
+    <string name="required_experience">Требуемый опыт</string>
+    <string name="vacancy_description">Описание вакансии</string>
+    <string name="key_skills">Ключевые навыки</string>
+    <string name="contacts">Контакты</string>
+    <string name="share_vacancy_chooser_title">Поделиться вакансией</string>
 
 </resources>
