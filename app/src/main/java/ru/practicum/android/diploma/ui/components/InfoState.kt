@@ -97,6 +97,14 @@ fun InfoState(state: TypeState) {
                 stringResource(R.string.empty_list)
             )
         }
+        TypeState.EmptyFavorites -> {
+            Info(
+                painterResource(
+                    R.drawable.ic_no_favorites
+                ),
+                stringResource(R.string.emptyFavorites)
+            )
+        }
     }
 }
 

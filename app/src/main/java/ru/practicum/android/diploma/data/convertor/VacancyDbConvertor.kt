@@ -48,7 +48,7 @@ class VacancyDbConvertor {
             vacancy.schedule,
             vacancy.employment,
             gson.fromJson(vacancy.skills, object : TypeToken<MutableList<String>>() {}.type),
-            gson.fromJson(vacancy.contacts, object : TypeToken<MutableList<VacancyContacts>>() {}.type),
+            gson.fromJson(vacancy.contacts, VacancyContacts::class.java),
             vacancy.vacancyUrl
         )
     }

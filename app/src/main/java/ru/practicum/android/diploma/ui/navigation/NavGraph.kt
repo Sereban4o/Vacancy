@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import ru.practicum.android.diploma.presentation.favorites.FavoritesViewModel
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel
 import ru.practicum.android.diploma.ui.main.MainScreen
 import ru.practicum.android.diploma.ui.team.TeamScreen
@@ -39,7 +40,16 @@ fun NavGraph(
 
         // ⭐ Избранное
         composable(Routes.Favorites.name) {
-            FavouritesScreen(Modifier)
+            val vm: FavoritesViewModel = koinViewModel {
+                parametersOf()
+            }
+
+            FavouritesScreen(
+                Modifier,
+                viewModel = vm,
+                onVacancyClick = {id ->
+                    navHostController.navigate("$VACANCY_DETAILS_ROUTE/$id")}
+            )
         }
 
         // 👥 Команда

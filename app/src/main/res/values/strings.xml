@@ -39,4 +39,7 @@
     <string name="vacancy">Вакансия</string>
     <string name="share">Поделиться</string>
 
+    <!-- FavoritesScreen-->
+    <string name="emptyFavorites">Список пуст</string>
+
 </resources>
