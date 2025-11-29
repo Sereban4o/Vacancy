@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import ru.practicum.android.diploma.presentation.favorites.FavoritesViewModel
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel
 import ru.practicum.android.diploma.ui.main.MainScreen
 import ru.practicum.android.diploma.ui.team.TeamScreen
@@ -32,25 +33,24 @@ fun NavGraph(
             MainScreen(
                 onFilterClick = { /* откроем фильтры позже */ },
                 onVacancyClick = { id ->
-                    // ⚠️ ВАЖНО:
-                    // здесь fromApi не передаём — сработает defaultValue = true
-                    // т.е. из поиска данные будут грузиться из API
-                    navHostController.navigate("$VACANCY_DETAILS_ROUTE/$id")
-                    // Можно и явно:
-                    // navHostController.navigate("$VACANCY_DETAILS_ROUTE/$id?$ARG_FROM_API=true")
+                    navHostController.navigate("$VACANCY_DETAILS_ROUTE/$id?$ARG_FROM_API=true")
                 }
             )
         }
 
         // ⭐ Избранное
         composable(Routes.Favorites.name) {
-            // Сейчас просто экран без навигации по клику
-            // Когда Андрей доделает FavouritesScreen, он сможет вызвать:
-            //
-            // navHostController.navigate("$VACANCY_DETAILS_ROUTE/$id?$ARG_FROM_API=false")
-            //
-            // и это будет означать "загружать данные из БД"
-            FavouritesScreen(Modifier)
+            val vm: FavoritesViewModel = koinViewModel()
+
+            FavouritesScreen(
+                modifier = Modifier,
+                viewModel = vm,
+                onVacancyClick = { id ->
+                    navHostController.navigate(
+                        "$VACANCY_DETAILS_ROUTE/$id?$ARG_FROM_API=false"
+                    )
+                }
+            )
         }
 
         // 👥 Команда

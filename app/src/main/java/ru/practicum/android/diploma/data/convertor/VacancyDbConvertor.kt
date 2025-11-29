@@ -48,8 +48,20 @@ class VacancyDbConvertor {
             vacancy.schedule,
             vacancy.employment,
             gson.fromJson(vacancy.skills, object : TypeToken<MutableList<String>>() {}.type),
-            gson.fromJson(vacancy.contacts, object : TypeToken<MutableList<VacancyContacts>>() {}.type),
+            parseContacts(vacancy.contacts),
             vacancy.vacancyUrl
         )
+    }
+
+    private fun parseContacts(json: String?): VacancyContacts? {
+        if (json.isNullOrBlank() || json == "null") {
+            return null
+        }
+
+        return try {
+            gson.fromJson(json, VacancyContacts::class.java)
+        } catch (e: Exception) {
+            null
+        }
     }
 }

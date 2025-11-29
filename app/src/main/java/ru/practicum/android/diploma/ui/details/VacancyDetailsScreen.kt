@@ -31,7 +31,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -122,7 +121,7 @@ fun VacancyDetailsScreen(
                     val favoritePainter = if (isFavorite) {
                         painterResource(R.drawable.ic_is_favorites)
                     } else {
-                        painterResource(R.drawable.ic_favorites)
+                        painterResource(R.drawable.ic_favorites_vacancy_24)
                     }
 
                     val favoriteTint = if (isFavorite) {
