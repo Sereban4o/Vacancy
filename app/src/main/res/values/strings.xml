@@ -1,11 +1,19 @@
 <resources>
     <string name="app_name">Practicum-Android-Diploma</string>
 
+    <!-- Bottom Navigation -->
     <string name="main">Главная</string>
-    <string name="mainHeading">Поиск вакансий</string>
     <string name="favorites">Избранное</string>
     <string name="team">Команда</string>
-    <string name="vacancy">Вакансия</string>
+
+    <!-- MainScreen -->
+    <string name="mainHeading">Поиск вакансий</string>
+
+    <!-- SearchScreen -->
+    <string name="vacancy_search_empty">Таких вакансий нет</string>
+    <string name="vacancy_search_found_format">Найдено %d вакансий</string>
+
+    <!-- Errors & Empty States -->
     <string name="error_network">Проверьте подключение к интернету</string>
     <string name="error_general">Произошла ошибка</string>
 
@@ -17,7 +25,7 @@
     <string name="server_error">Ошибка сервера</string>
     <string name="empty_list">Список пуст</string>
 
-    // Teamscreen
+    <!-- TeamScreen -->
     <string name="team_title">Над приложением работали</string>
     <string-array name="team_members">
         <item>Виталий Ярош</item>
@@ -32,4 +40,7 @@
     // SearchScreen
     <string name="no_vacancies">Таких вакансий нет</string>
     <string name="vacancies_found">Найдено %1$d вакансий</string>
+    <!-- VacancyScreen -->
+    <string name="vacancy">Вакансия</string>
+
 </resources>

@@ -4,72 +4,89 @@ package ru.practicum.android.diploma.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// -----------------------------
-// БАЗОВАЯ ПАЛИТРА ДЛЯ COMPOSE
-// -----------------------------
-// Это "источник правды" для MaterialTheme в Compose.
-// Значения синхронизированы с res/values/colors.xml и values-night/colors.xml.
-
 // ------- Light theme -------
-val PrimaryLight: Color = Color(0xFF6200EE) // color_primary (light)
-val OnPrimaryLight: Color = Color(0xFFFFFFFF) // color_on_primary (light)
+val PrimaryLight: Color = Color(0xFF3772E7)
+// основной синий Practicum
 
-val SecondaryLight: Color = Color(0xFF03DAC5) // color_secondary (light)
-val OnSecondaryLight: Color = Color(0xFF000000) // color_on_secondary (light)
+val OnPrimaryLight: Color = Color(0xFFFFFFFF)
 
-val BackgroundLight: Color = Color(0xFFFDFDFD) // = white / bottom_nav_background (light)
-val OnBackgroundLight: Color = Color(0xFF1A1B22)
+val SecondaryLight: Color = Color(0xFFE6E8EB)
+// светло-серый (чипы, бордеры, фон)
+
+val OnSecondaryLight: Color = Color(0xFF000000)
+
+val BackgroundLight: Color = Color(0xFFFFFFFF)
+// фон экрана
+
+val OnBackgroundLight: Color = Color(0xFF000000)
 
 val SurfaceLight: Color = Color(0xFFFFFFFF)
+// карточки, панели
+
 val OnSurfaceLight: Color = Color(0xFF000000)
 
-val OnSurfaceVariantLight: Color = Color(0xFFAEAEB4)
+val SurfaceVariantLight: Color = Color(0xFFF3F3F7)
+// доп. поверхности если нужно
+
+val OnSurfaceVariantLight: Color = Color(0xFF7A7A7A)
+// вторичный текст
+
+// Бордеры и разделители
+val OutlineLight: Color = Color(0xFFE6E8EB)
+// именно твой цвет обводки
 
 // ------- Dark theme -------
-val PrimaryDark: Color = Color(0xFFBB86FC) // color_primary (night)
-val OnPrimaryDark: Color = Color(0xFF000000) // color_on_primary (night)
+val PrimaryDark: Color = Color(0xFF3772E7)
+// тот же синий в тёмной теме
 
-val SecondaryDark: Color = Color(0xFF03DAC5) // color_secondary (night)
-val OnSecondaryDark: Color = Color(0xFFFFFFFF) // color_on_secondary (night)
+val OnPrimaryDark: Color = Color(0xFFFFFFFF)
 
-val BackgroundDark: Color = Color(0xFF1A1B22) // = bottom_nav_background (night)
+val SecondaryDark: Color = Color(0xFF2F3336)
+// тёмно-серый вторичный
+
+val OnSecondaryDark: Color = Color(0xFFFFFFFF)
+
+val BackgroundDark: Color = Color(0xFF1A1B22)
 val OnBackgroundDark: Color = Color(0xFFFFFFFF)
 
-val SurfaceDark: Color = Color(0xFF1E1E1E)
+val SurfaceDark: Color = Color(0xFF222327)
 val OnSurfaceDark: Color = Color(0xFFFFFFFF)
 
-val OnSurfaceVariantDark: Color = Color(0xFFFDFDFD)
+val SurfaceVariantDark: Color = Color(0xFF2F3336)
+val OnSurfaceVariantDark: Color = Color(0xFFCCCCCC)
+
+// Бордеры в тёмной теме
+val OutlineDark: Color = Color(0xFF2F3336)
 
 // ------- Error -------
 val ErrorColor: Color = Color(0xFFB00020)
 val OnErrorColor: Color = Color(0xFFFFFFFF)
 
 // ------- Custom component colors -------
+
 // Цвет фона карточки компании в Vacancy Details Screen
 val CompanyCardBackgroundColor: Color = Color(0xFFF3F3F7)
 val BoxBackground: Color = Color(0xFF3772E7)
 
-// -----------------------------
-// АЛИАСЫ ДЛЯ СОВМЕСТИМОСТИ (старый код)
-// -----------------------------
-// Если где-то ещё живут старые имена (LightPrimary / DarkPrimary / PurplePrimary и т.д.),
-// они продолжают работать, но теперь завязаны на новую палитру.
+// Синий чип "Найдено N вакансий"
+val ResultsChipBlue: Color = Color(0xFF3772E7)
+val OnResultsChipBlue: Color = Color(0xFFFFFFFF)
 
-// Issue 3 style names
-val LightPrimary: Color = PrimaryLight
-val LightOnPrimary: Color = OnPrimaryLight
-val LightSecondary: Color = SecondaryLight
-val LightOnSecondary: Color = OnSecondaryLight
-val LightBackground: Color = BackgroundLight
-val LightOnBackground: Color = OnBackgroundLight
+// ------- Search field -------
 
-val DarkPrimary: Color = PrimaryDark
-val DarkOnPrimary: Color = OnPrimaryDark
-val DarkSecondary: Color = SecondaryDark
-val DarkOnSecondary: Color = OnSecondaryDark
-val DarkBackground: Color = BackgroundDark
-val DarkOnBackground: Color = OnBackgroundDark
+// цвет текста в поле ввода (одинаковый для светлой и тёмной тем)
+val SearchFieldTextColor: Color = Color(0xFF1A1B22)
 
-// Issue 7: PurplePrimary / PurpleSecondary как алиасы к основной палитре
-val PurplePrimary: Color = PrimaryLight
-val PurpleSecondary: Color = SecondaryLight
+// фон поля ввода — день
+val SearchFieldBackgroundLight: Color = Color(0xFFE6E8EB)
+
+// фон поля ввода — ночь
+val SearchFieldBackgroundDark: Color = Color(0xFFAEAFB4)
+
+// ------- Common text color -------
+
+// текст ДНЁМ (чёрный)
+val TextColorLight: Color = Color(0xFF1A1B22)
+
+// текст НОЧЬЮ (белый)
+val TextColorDark: Color = Color(0xFFFDFDFD)
