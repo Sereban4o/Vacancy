@@ -65,7 +65,7 @@ class VacanciesPagingSource(
         }
     }
 
-    companion object{
+    companion object {
         const val ITEMS_PER_PAGE = 20
     }
 }

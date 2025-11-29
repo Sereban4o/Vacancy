@@ -1,7 +1,6 @@
 package ru.practicum.android.diploma.ui.components
 
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -16,14 +15,21 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.ui.theme.PaddingScreenTitleVertical
 import ru.practicum.android.diploma.ui.theme.PaddingSmall
 import ru.practicum.android.diploma.ui.theme.TextSizeLarge
 
 /**
  * Базовый компонент для всех заголовков.
  *
- * Используется для Heading(), DisplayTitle() и других заголовков.
+ * Через него проходят:
+ *  - Heading()      — основной заголовок экрана
+ *  - DisplayTitle() — крупный заголовок (hero title)
+ *
+ * Здесь настраиваются:
+ *  - цвет текста          — colorScheme.onBackground
+ *  - базовые отступы по вертикали
+ *  - остальное (размер, жирность, шрифт) задаётся через style
  */
 @Composable
 private fun BaseTitleText(
@@ -35,6 +41,7 @@ private fun BaseTitleText(
     Text(
         text = text,
         style = style,
+        // единый источник цвета — тема
         color = MaterialTheme.colorScheme.onBackground,
         modifier = modifier
             .padding(vertical = verticalPadding)
@@ -44,37 +51,57 @@ private fun BaseTitleText(
 /**
  * Основной заголовок экрана.
  *
- * Это то, что Виталий делал — titleLarge + вертикальный padding.
- * Совпадает поэтому ничего не изменил
+ * Соответствует макету:
+ *  - Medium / 22px (YS Display 500) — настроено в MaterialTheme.typography.titleMedium
+ *
+ * Особенности:
+ *  - leftBlock — слот слева (стрелка "Назад", иконка, аватар и т.п.)
+ *  - rightBlock — слот справа (share, избранное, меню и т.п.)
+ *
+ * Применяется на экранах:
+ *   — "Поиск"
+ *   — "Избранное"
+ *   — "Команда"
+ *   — "Настройки"
+ *   — "Фильтры"
+ *   — "Детали вакансии" (в роли заголовка "Вакансия")
  */
 @Composable
 fun Heading(
     text: String,
-    leftBlock: @Composable (() -> Unit)? = null,
-    rightBlock: @Composable (() -> Unit)? = null
+    modifier: Modifier = Modifier,
+    leftBlock: (@Composable () -> Unit)? = null,
+    rightBlock: (@Composable () -> Unit)? = null,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // Иконка/контент слева (может быть null)
         leftBlock?.invoke()
+
+        // Сам заголовок занимает "центральное" место
         BaseTitleText(
             text = text,
-            verticalPadding = 10.dp,
-            style = TextStyle(
-                color = colorResource(R.color.text_color),
-                fontFamily = FontFamily(Font(R.font.ys_display_medium)),
-                fontSize = TextSizeLarge,
-                fontWeight = FontWeight.Medium
-            )
+            modifier = Modifier
+                .weight(1f), // тянем текст между левым и правым блоками
+            style = MaterialTheme.typography.titleMedium, // Medium/22 (YS Display 500 в теме)
+            verticalPadding = PaddingScreenTitleVertical,
         )
-        Spacer(Modifier.weight(1f))
+
+        // Иконки/контент справа (может быть null)
         rightBlock?.invoke()
     }
 }
 /**
- * Более крупный заголовок (используется реже).
- * идет от Сергея
+ * Крупный заголовок.
+ *
+ * Соответствует макету:
+ *  - Bold / 32px (YS Display 700) — настроено в MaterialTheme.typography.displayLarge
+ *
+ * Используется:
+ *   1) Экран "Команда" — большой подзаголовок под основным.
+ *   2) Экран "Детали вакансии" — заголовок самой вакансии.
  */
 @Composable
 fun DisplayTitle(
@@ -83,8 +110,8 @@ fun DisplayTitle(
 ) {
     BaseTitleText(
         text = text,
-        modifier = modifier,
-        style = MaterialTheme.typography.displayLarge,
+        modifier = modifier.fillMaxWidth(),
+        style = MaterialTheme.typography.displayLarge, // Bold/32
         verticalPadding = PaddingSmall,
     )
 }

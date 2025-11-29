@@ -16,9 +16,9 @@ fun <T> debounce(
     var debounceJob: Job? = null
 
     return { param: T ->
-        debounceJob?.cancel()
+        debounceJob?.cancel() // 🔹 Повторные вызовы отменяются
         debounceJob = coroutineScope.launch {
-            delay(delayMs)
+            delay(delayMs) // 🔹 2 секунды ожидания
             onDebounced(param)
         }
     }

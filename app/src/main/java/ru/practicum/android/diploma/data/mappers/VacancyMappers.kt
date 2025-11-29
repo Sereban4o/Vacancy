@@ -19,7 +19,8 @@ fun VacancyDetailDto.toDomain(): Vacancy {
         logoUrl = employer.logo,
         salaryFrom = salary?.from,
         salaryTo = salary?.to,
-        currency = salary?.currency
+        currency = salary?.currency,
+        city = area.name
     )
 }
 

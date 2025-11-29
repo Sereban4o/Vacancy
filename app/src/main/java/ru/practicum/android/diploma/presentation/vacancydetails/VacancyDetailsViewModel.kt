@@ -7,12 +7,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import ru.practicum.android.diploma.domain.interactors.FavoritesInteractor
 import ru.practicum.android.diploma.domain.interactors.VacancyDetailsInteractor
+import ru.practicum.android.diploma.domain.models.VacancyDetails
 import java.io.IOException
 
 class VacancyDetailsViewModel(
     private val vacancyId: String,
-    private val interactor: VacancyDetailsInteractor
+    private val interactor: VacancyDetailsInteractor,
+    private val favoritesInteractor: FavoritesInteractor
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<VacancyDetailsUiState>(VacancyDetailsUiState.Loading)
@@ -33,7 +36,11 @@ class VacancyDetailsViewModel(
 
                 Log.d(TAG, "УСПЕХ: получили VacancyDetails: $vacancy")
 
-                _uiState.value = VacancyDetailsUiState.Content(vacancy)
+                _uiState.value = VacancyDetailsUiState.Content(
+                    vacancy,
+                    vacancyId.let {
+                        favoritesInteractor.checkFavorite(it)
+                    })
 
             } catch (e: IOException) {
                 // сетевые ошибки
@@ -45,6 +52,20 @@ class VacancyDetailsViewModel(
                 Log.e(TAG, "ОШИБКА HTTP ${e.code()}: ${e.message()}", e)
                 _uiState.value = VacancyDetailsUiState.Error(isNetworkError = false)
             }
+        }
+    }
+
+    fun editFavorite(vacancy: VacancyDetails, isFavorite: Boolean) {
+        viewModelScope.launch {
+            if (isFavorite) {
+                favoritesInteractor.deleteFavorite(vacancy.id)
+            } else {
+                favoritesInteractor.addFavorite(vacancy)
+            }
+            _uiState.value = VacancyDetailsUiState.Content(
+                vacancy, !isFavorite
+            )
+
         }
     }
 

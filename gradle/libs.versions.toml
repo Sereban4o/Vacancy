@@ -102,4 +102,3 @@ paging-compose = { group = "androidx.paging", name = "paging-compose", version.r
 [bundles]
 
 paging = ["paging-runtime", "paging-compose"]
-

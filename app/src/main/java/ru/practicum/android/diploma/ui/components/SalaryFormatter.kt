@@ -30,7 +30,8 @@ fun formatSalary(
     salaryTo: Int?,
     currencyCode: String?
 ): String {
-    val currency = currencyCode ?: "RUR"
+    val currency = currencyCode ?: ""
+    // по ТЗ валюта "должна отображаться всегда", но если в API null — выводим пустую строку
 
     val fromStr = salaryFrom?.let { formatNumber(it) }
     val toStr = salaryTo?.let { formatNumber(it) }
@@ -39,7 +40,7 @@ fun formatSalary(
         fromStr != null && toStr != null -> "от $fromStr до $toStr $currency"
         fromStr != null -> "от $fromStr $currency"
         toStr != null -> "до $toStr $currency"
-        else -> "Уровень зарплаты не указан"
+        else -> "зарплаты не указана"
     }
 }
 

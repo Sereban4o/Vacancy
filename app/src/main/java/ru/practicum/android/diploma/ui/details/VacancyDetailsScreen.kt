@@ -29,12 +29,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -43,15 +41,15 @@ import ru.practicum.android.diploma.domain.models.VacancyContacts
 import ru.practicum.android.diploma.domain.models.VacancyDetails
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsUiState
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel
-import ru.practicum.android.diploma.ui.components.InfoState
 import ru.practicum.android.diploma.ui.components.Heading
+import ru.practicum.android.diploma.ui.components.InfoState
 import ru.practicum.android.diploma.ui.components.formatSalary
 import ru.practicum.android.diploma.ui.theme.CompanyCardBackgroundColor
+import ru.practicum.android.diploma.ui.theme.TextColorLight
 import ru.practicum.android.diploma.util.TypeState
 
 @Composable
 fun VacancyDetailsScreen(
-//    vacancyId: String,
     modifier: Modifier = Modifier,
     onBack: () -> Unit,
     viewModel: VacancyDetailsViewModel
@@ -67,21 +65,27 @@ fun VacancyDetailsScreen(
         }
 
         is VacancyDetailsUiState.Error -> {
-            InfoState(TypeState.NoVacancy)
-//            VacancyDetailsErrorPlaceholder(
-//                isNetworkError = (uiState as VacancyDetailsUiState.Error).isNetworkError,
-//                onRetryClick = { viewModel.loadDetails() }
-//            )
+            val error = uiState as VacancyDetailsUiState.Error
+
+            if (error.isNetworkError) {
+                InfoState(TypeState.NoInternet)
+            } else {
+                InfoState(TypeState.ServerErrorVacancy)
+            }
         }
 
         is VacancyDetailsUiState.Content -> {
             val vacancy = (uiState as VacancyDetailsUiState.Content).vacancy
+            val isFavorite = (uiState as VacancyDetailsUiState.Content).isFavorite
             VacancyDetailsContent(
                 vacancy = vacancy,
                 onBack = onBack,
                 onShareClick = { shareVacancy(context, vacancy.vacancyUrl) },
                 onEmailClick = { email -> openEmail(context, email) },
-                onPhoneClick = { phone -> openPhone(context, phone) }
+                onPhoneClick = { phone -> openPhone(context, phone) },
+                modifier = modifier,
+                viewModel,
+                isFavorite
             )
         }
     }
@@ -93,95 +97,125 @@ fun VacancyDetailsContent(
     onBack: () -> Unit,
     onShareClick: () -> Unit,
     onEmailClick: (String) -> Unit,
-    onPhoneClick: (String) -> Unit
+    onPhoneClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: VacancyDetailsViewModel,
+    isFavorite: Boolean
 ) {
     val scrollState = rememberScrollState()
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
-        // .padding(horizontal = 16.dp)
     ) {
-        // Spacer(Modifier.height(16.dp))
-
-//        Row(
-//            Modifier.fillMaxWidth(),
-//            horizontalArrangement = Arrangement.SpaceBetween,
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            IconButton(onClick = onBack) {
-//                Icon(
-//                    painterResource(R.drawable.ic_arrow_back_24),
-//                    contentDescription = "Назад"
-//                )
-//            }
-//            Row {
-//                IconButton(onClick = onShareClick) {
-//                    Icon(painterResource(R.drawable.ic_share_24), contentDescription = "Поделиться")
-//                }
-//                IconButton(onClick = { /* NOTE Избранное: будет реализовано позже */ }) {
-//                    Icon(painterResource(R.drawable.ic_favorites_24), contentDescription = "Избранное")
-//                }
-//            }
-//        }
+        // 🧩 Шапка: Heading с кастомной стрелкой и кнопками справа
         Heading(
             text = stringResource(R.string.vacancy),
+            leftBlock = {
+                // Кнопка "назад" с иконкой, прижатой к левому краю паддинга
+                Box(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .padding(end = 4.dp) // область как у IconButton
+                        .clickable(onClick = onBack),
+                    contentAlignment = Alignment.CenterStart // ИКОНКА У ЛЕВОГО КРАЯ бокса
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_arrow_back_24),
+                        contentDescription = "Назад",
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+
+                Spacer(Modifier.width(4.dp))
+            },
             rightBlock = {
                 Row {
                     IconButton(onClick = onShareClick) {
-                        Icon(painterResource(R.drawable.ic_share_24), contentDescription = "Поделиться")
+                        Icon(
+                            painterResource(R.drawable.ic_share_18_20),
+                            contentDescription = stringResource(R.string.share),
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
                     }
-                    IconButton(onClick = { /* NOTE Избранное: будет реализовано позже */ }) {
-                        Icon(painterResource(R.drawable.ic_favorites), contentDescription = "Избранное")
+
+                    var painter = painterResource(R.drawable.ic_favorites)
+                    var tint = colorResource(R.color.favorite_color)
+                    if (isFavorite) {
+                        painter = painterResource(R.drawable.ic_is_favorites)
+                        tint = colorResource(R.color.is_favorite_color)
+                    }
+
+                    IconButton(onClick = { viewModel.editFavorite(vacancy, isFavorite) }) {
+                        Icon(
+                            painter,
+                            contentDescription = stringResource(R.string.favorites),
+                            tint = tint
+                        )
                     }
                 }
-            },
-            leftBlock = {
-                Icon(
-                    painterResource(R.drawable.ic_arrow),
-                    contentDescription = "Назад",
-                    tint = colorResource(R.color.text_color),
-                    modifier = Modifier
-                        .clickable(onClick = onBack)
-                        .padding(end = 20.dp),
-                )
             }
-        )
-        Spacer(Modifier.height(16.dp))
-
-        Text(
-            text = vacancy.title,
-            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold)
         )
 
         Spacer(Modifier.height(8.dp))
 
-        // 💰 Зарплата
+        // 🔹 Главный заголовок вакансии — Bold/32
+        Text(
+            text = vacancy.title,
+            style = MaterialTheme.typography.displayLarge,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        // 💰 Зарплата — Medium/22
         Text(
             text = formatSalary(vacancy.salaryFrom, vacancy.salaryTo, vacancy.currency),
             style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         Spacer(Modifier.height(16.dp))
 
-        // 🏢 Компания
+        // 🏢 Компания + город
         CompanyCard(vacancy)
 
         Spacer(Modifier.height(24.dp))
 
         // 📌 Требуемый опыт
-        Text("Требуемый опыт", fontWeight = FontWeight.Bold)
+        Text(
+            text = "Требуемый опыт",
+            style = MaterialTheme.typography.labelMedium, // Medium/16
+            color = MaterialTheme.colorScheme.onBackground
+        )
         Spacer(Modifier.height(4.dp))
-        vacancy.experience?.let { Text(it) }
+
+        vacancy.experience?.let {
+            Text(
+                text = it,
+                style = MaterialTheme.typography.labelMedium, // Medium/16
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }
+
         Spacer(Modifier.height(8.dp))
-        Text("${vacancy.employment}, ${vacancy.schedule}")
+
+        Text(
+            text = "${vacancy.employment}, ${vacancy.schedule}",
+            style = MaterialTheme.typography.bodyMedium, // Regular/16
+            color = MaterialTheme.colorScheme.onBackground
+        )
 
         Spacer(Modifier.height(24.dp))
 
-        // 📝 Описание
-        Text("Описание вакансии", fontWeight = FontWeight.Bold)
+        // 📝 Описание вакансии
+        Text(
+            text = "Описание вакансии",
+            style = MaterialTheme.typography.titleMedium, // Medium/22
+            color = MaterialTheme.colorScheme.onBackground
+        )
         Spacer(Modifier.height(8.dp))
         DescriptionBlock(vacancy.description)
 
@@ -189,10 +223,18 @@ fun VacancyDetailsContent(
 
         // ⭐ Навыки
         if (vacancy.skills.isNotEmpty()) {
-            Text("Ключевые навыки", fontWeight = FontWeight.Bold)
+            Text(
+                text = "Ключевые навыки",
+                style = MaterialTheme.typography.titleMedium, // Medium/22
+                color = MaterialTheme.colorScheme.onBackground
+            )
             Spacer(Modifier.height(8.dp))
             vacancy.skills.forEach {
-                Text("• $it")
+                Text(
+                    text = "• $it",
+                    style = MaterialTheme.typography.bodyMedium, // Regular/16
+                    color = MaterialTheme.colorScheme.onBackground
+                )
                 Spacer(Modifier.height(4.dp))
             }
             Spacer(Modifier.height(24.dp))
@@ -201,10 +243,14 @@ fun VacancyDetailsContent(
         // 📞 Контакты
         vacancy.contacts?.let { contacts ->
             if (contacts.email != null || contacts.phones.isNotEmpty()) {
-                Text("Контакты", fontWeight = FontWeight.Bold)
+                Text(
+                    text = "Контакты",
+                    style = MaterialTheme.typography.titleMedium, // Medium/22
+                    color = MaterialTheme.colorScheme.onBackground
+                )
                 Spacer(Modifier.height(8.dp))
                 ContactsBlock(
-                    contacts,
+                    contacts = contacts,
                     onEmailClick = onEmailClick,
                     onPhoneClick = onPhoneClick
                 )
@@ -238,24 +284,47 @@ fun CompanyCard(vacancy: VacancyDetails) {
         Spacer(Modifier.width(12.dp))
 
         Column {
-            Text(vacancy.companyName, fontWeight = FontWeight.SemiBold)
-            (vacancy.address ?: vacancy.region)?.let { Text(it, color = Color.Gray) }
+            Text(
+                text = vacancy.companyName,
+                style = MaterialTheme.typography.titleMedium, // Medium/22
+                color = TextColorLight
+            )
+            (vacancy.address ?: vacancy.region)?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodyMedium, // Regular/16
+                    color = TextColorLight
+                )
+            }
         }
     }
 }
 
 @Composable
 fun DescriptionBlock(text: String) {
-    text.split("\n").forEach { line ->
-        if (line.startsWith("-") || line.startsWith("•")) {
-            Row {
-                Text("• ")
-                Text(line.removePrefix("-").trim())
-            }
+    text.split("\n").forEach { rawLine ->
+        val line = rawLine.trim()
+        if (line.isEmpty()) {
+            Spacer(Modifier.height(4.dp))
         } else {
-            Text(line)
+            Row {
+                Text(
+                    text = "• ",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Text(
+                    text = line
+                        .removePrefix("•")
+                        .removePrefix("-")
+                        .trimStart(),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
+
+            Spacer(Modifier.height(4.dp))
         }
-        Spacer(Modifier.height(4.dp))
     }
 }
 
@@ -267,7 +336,8 @@ fun ContactsBlock(
 ) {
     contacts.email?.let {
         Text(
-            it,
+            text = it,
+            style = MaterialTheme.typography.bodyMedium, // Regular/16
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable { onEmailClick(it) }
         )
@@ -276,7 +346,8 @@ fun ContactsBlock(
 
     contacts.phones.forEach { phone ->
         Text(
-            phone,
+            text = phone,
+            style = MaterialTheme.typography.bodyMedium, // Regular/16
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable { onPhoneClick(phone) }
         )
@@ -285,7 +356,11 @@ fun ContactsBlock(
 
     contacts.comment?.let {
         Spacer(Modifier.height(8.dp))
-        Text(it, color = Color.Gray)
+        Text(
+            text = it,
+            style = MaterialTheme.typography.bodyMedium, // Regular/16
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 

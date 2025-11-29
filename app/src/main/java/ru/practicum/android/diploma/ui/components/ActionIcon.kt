@@ -2,17 +2,18 @@ package ru.practicum.android.diploma.ui.components
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import ru.practicum.android.diploma.R
 
 @Composable
 fun ActionIcon(
     modifier: Modifier = Modifier,
     iconRes: Int,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    tint: Color = MaterialTheme.colorScheme.onBackground
 ) {
     IconButton(
         modifier = modifier,
@@ -21,7 +22,7 @@ fun ActionIcon(
         Icon(
             painter = painterResource(iconRes),
             contentDescription = null,
-            tint = colorResource(R.color.black_universal)
+            tint = tint
         )
     }
 }

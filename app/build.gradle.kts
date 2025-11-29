@@ -108,6 +108,5 @@ dependencies {
 
     // paging
     implementation(libs.bundles.paging)
-
     // endregion
 }
