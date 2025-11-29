@@ -11,6 +11,8 @@
     <color name="color_secondary">#FF03DAC5</color>
     <color name="color_on_secondary">#FF000000</color>
     <color name="text_color">#1A1B22</color>
+    <color name="favorite_color">#1A1B22</color>
+    <color name="is_favorite_color">#F56B6C</color>
 
     <!-- BottomNavigationView (light) -->
     <color name="bottom_nav_background">#FFFFFFFF</color>

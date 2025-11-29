@@ -42,5 +42,6 @@
     <string name="vacancies_found">Найдено %1$d вакансий</string>
     <!-- VacancyScreen -->
     <string name="vacancy">Вакансия</string>
+    <string name="share">Поделиться</string>
 
 </resources>

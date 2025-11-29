@@ -30,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -75,13 +76,16 @@ fun VacancyDetailsScreen(
 
         is VacancyDetailsUiState.Content -> {
             val vacancy = (uiState as VacancyDetailsUiState.Content).vacancy
+            val isFavorite = (uiState as VacancyDetailsUiState.Content).isFavorite
             VacancyDetailsContent(
                 vacancy = vacancy,
                 onBack = onBack,
                 onShareClick = { shareVacancy(context, vacancy.vacancyUrl) },
                 onEmailClick = { email -> openEmail(context, email) },
                 onPhoneClick = { phone -> openPhone(context, phone) },
-                modifier = modifier
+                modifier = modifier,
+                viewModel,
+                isFavorite
             )
         }
     }
@@ -94,7 +98,9 @@ fun VacancyDetailsContent(
     onShareClick: () -> Unit,
     onEmailClick: (String) -> Unit,
     onPhoneClick: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: VacancyDetailsViewModel,
+    isFavorite: Boolean
 ) {
     val scrollState = rememberScrollState()
 
@@ -130,15 +136,23 @@ fun VacancyDetailsContent(
                     IconButton(onClick = onShareClick) {
                         Icon(
                             painterResource(R.drawable.ic_share_18_20),
-                            contentDescription = "Поделиться",
+                            contentDescription = stringResource(R.string.share),
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
-                    IconButton(onClick = { /* Избранное: позже */ }) {
+
+                    var painter = painterResource(R.drawable.ic_favorites)
+                    var tint = colorResource(R.color.favorite_color)
+                    if (isFavorite) {
+                        painter = painterResource(R.drawable.ic_is_favorites)
+                        tint = colorResource(R.color.is_favorite_color)
+                    }
+
+                    IconButton(onClick = { viewModel.editFavorite(vacancy, isFavorite) }) {
                         Icon(
-                            painterResource(R.drawable.ic_favorites_22_20),
-                            contentDescription = "Избранное",
-                            tint = MaterialTheme.colorScheme.onBackground
+                            painter,
+                            contentDescription = stringResource(R.string.favorites),
+                            tint = tint
                         )
                     }
                 }
