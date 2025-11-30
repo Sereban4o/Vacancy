@@ -51,6 +51,10 @@ import ru.practicum.android.diploma.ui.theme.FavoriteActive
 import ru.practicum.android.diploma.ui.theme.TextColorLight
 import ru.practicum.android.diploma.util.TypeState
 
+// 🔢 Константы оформления
+private const val HEADER_MAX_CHARS = 25
+private val BulletSpace = 8.dp // один «слот» отступа для буллетов
+
 @Composable
 fun VacancyDetailsScreen(
     modifier: Modifier = Modifier,
@@ -281,14 +285,29 @@ fun VacancyDetailsContent(
                 color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(Modifier.height(8.dp))
-            vacancy.skills.forEach {
-                Text(
-                    text = "• $it",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
+
+            vacancy.skills.forEach { skill ->
+                Row(Modifier.fillMaxWidth()) {
+                    Spacer(Modifier.width(BulletSpace * 2)) // "два пробела" до точки
+
+                    Text(
+                        text = "•",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+
+                    Spacer(Modifier.width(BulletSpace * 2)) // "два пробела" после точки
+
+                    Text(
+                        text = skill.trim(),
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
                 Spacer(Modifier.height(4.dp))
             }
+
             Spacer(Modifier.height(24.dp))
         }
 
@@ -354,28 +373,76 @@ fun CompanyCard(vacancy: VacancyDetails) {
 
 @Composable
 fun DescriptionBlock(text: String) {
-    text.split("\n").forEach { rawLine ->
+    val lines = text.split("\n")
+
+    lines.forEachIndexed { index, rawLine ->
         val line = rawLine.trim()
+
         if (line.isEmpty()) {
             Spacer(Modifier.height(4.dp))
         } else {
-            Row {
-                Text(
-                    text = "• ",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Text(
-                    text = line
-                        .removePrefix("•")
-                        .removePrefix("-")
-                        .trimStart(),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
+            // следующая "сырая" строка (для проверки \n\n)
+            val nextRawLine = lines.getOrNull(index + 1)
 
-            Spacer(Modifier.height(4.dp))
+            // 1) заканчивается на ":"
+            val endsWithColon = line.endsWith(":")
+
+            // 2) короче 25, без "-" / "•" в начале, и после неё в тексте идёт пустая строка
+            val isShortWithEmptyAfter =
+                line.length < HEADER_MAX_CHARS &&
+                    !line.startsWith("•") &&
+                    !line.startsWith("-") &&
+                    (nextRawLine != null && nextRawLine.isBlank())
+
+            val isHeader = endsWithColon || isShortWithEmptyAfter
+
+            if (isHeader) {
+                // 🔹 Подзаголовок
+                val headerText = line
+                    .removeSuffix(":")
+                    .trimEnd()
+
+                Text(
+                    text = headerText,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+
+                Spacer(Modifier.height(4.dp))
+            } else {
+                // 🔹 Пункт списка
+                val cleanedText = line
+                    .removePrefix("•")
+                    .removePrefix("-")
+                    .trimStart()
+
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    // 2 "слота" пробела до точки
+                    Spacer(Modifier.width(BulletSpace * 2))
+
+                    // сама точка
+                    Text(
+                        text = "•",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+
+                    // 2 "слота" пробела после точки
+                    Spacer(Modifier.width(BulletSpace * 2))
+
+                    // текст, который переносится ПОД СЕБЯ
+                    Text(
+                        text = cleanedText,
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+
+                Spacer(Modifier.height(4.dp))
+            }
         }
     }
 }

@@ -16,6 +16,7 @@ import ru.practicum.android.diploma.ui.theme.CornerRadiusLarge
 import ru.practicum.android.diploma.ui.theme.SearchFieldBackgroundDark
 import ru.practicum.android.diploma.ui.theme.SearchFieldBackgroundLight
 import ru.practicum.android.diploma.ui.theme.SearchFieldTextColor
+import ru.practicum.android.diploma.ui.theme.TextColorDark
 
 @Composable
 fun SearchInputField(
@@ -25,12 +26,23 @@ fun SearchInputField(
 ) {
     val isDark = isSystemInDarkTheme()
 
-    // фон поля по ТЗ
+    // фон по ТЗ
     val fieldBackground = if (isDark) {
-        SearchFieldBackgroundDark // #AEAFB4
+        SearchFieldBackgroundDark // ночь: #AEAFB4
     } else {
-        SearchFieldBackgroundLight // #E6E8EB
+        SearchFieldBackgroundLight // день: #E6E8EB
     }
+
+    // цвет плейсхолдера по ТЗ
+    val placeholderColor = if (isDark) {
+        TextColorDark // ночь: #FDFDFD
+    } else {
+        SearchFieldBackgroundDark // день: #AEAFB4
+    }
+
+    // 🎯 Цвет иконок (поиск / очистка) — ВСЕГДА #1A1B22
+    val iconTint = SearchFieldTextColor
+
     TextField(
         modifier = Modifier.fillMaxWidth(),
         value = query,
@@ -40,7 +52,7 @@ fun SearchInputField(
             Text(
                 text = stringResource(R.string.vacancy_text_placeholder),
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = placeholderColor
             )
         },
 
@@ -48,16 +60,20 @@ fun SearchInputField(
             if (query.isNotEmpty()) {
                 ActionIcon(
                     iconRes = R.drawable.ic_clear_24,
-                    onClick = onClearClick
+                    onClick = onClearClick,
+                    tint = iconTint // #1A1B22
                 )
             } else {
-                ActionIcon(iconRes = R.drawable.ic_search_24)
+                ActionIcon(
+                    iconRes = R.drawable.ic_search_24,
+                    tint = iconTint // #1A1B22
+                )
             }
         },
 
         colors = TextFieldDefaults.colors(
             focusedTextColor = SearchFieldTextColor, // #1A1B22
-            unfocusedTextColor = SearchFieldTextColor, // #1A1B22
+            unfocusedTextColor = SearchFieldTextColor,
 
             // 🔵 КУРСОР — твой #3772E7 из темы
             cursorColor = MaterialTheme.colorScheme.tertiary,
@@ -66,11 +82,9 @@ fun SearchInputField(
             focusedContainerColor = fieldBackground, // день/ночь разные фоны
             unfocusedContainerColor = fieldBackground,
 
-            // плейсхолдер
-            focusedPlaceholderColor = SearchFieldTextColor.copy(alpha = 0.6f),
-            unfocusedPlaceholderColor = SearchFieldTextColor.copy(alpha = 0.6f),
+            focusedPlaceholderColor = placeholderColor,
+            unfocusedPlaceholderColor = placeholderColor,
 
-            // скрываем линию
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent
