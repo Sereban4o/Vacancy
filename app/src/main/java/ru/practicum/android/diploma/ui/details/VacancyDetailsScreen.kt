@@ -392,7 +392,7 @@ fun DescriptionBlock(text: String) {
                 line.length < HEADER_MAX_CHARS &&
                     !line.startsWith("•") &&
                     !line.startsWith("-") &&
-                    (nextRawLine != null && nextRawLine.isBlank())
+                    (nextRawLine?.isBlank() == true)
 
             val isHeader = endsWithColon || isShortWithEmptyAfter
 
