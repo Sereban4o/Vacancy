@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,6 +30,8 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.presentation.search.SearchViewModel
+import ru.practicum.android.diploma.ui.components.CenteredProgress
+import ru.practicum.android.diploma.ui.components.FullscreenProgress
 import ru.practicum.android.diploma.ui.components.InfoState
 import ru.practicum.android.diploma.ui.components.SearchCountChip
 import ru.practicum.android.diploma.ui.components.SearchInputField
@@ -111,12 +112,7 @@ fun SearchScreen(
 
                 // 4️⃣ Загрузка первой страницы — пока список пустой
                 uiState.isLoading && pagedData.itemCount == 0 -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
+                    FullscreenProgress()
                 }
 
                 // 5️⃣ Вакансий нет
@@ -203,14 +199,11 @@ private fun PagedVacanciesList(
         // (как советовал наставник и сделал Андрей)
         if (pagedData.loadState.append is LoadState.Loading) {
             item {
-                Box(
+                CenteredProgress(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+                        .padding(16.dp)
+                )
             }
         }
     }
