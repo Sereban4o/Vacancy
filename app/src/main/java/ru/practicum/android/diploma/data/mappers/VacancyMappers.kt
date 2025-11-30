@@ -63,3 +63,16 @@ fun ContactsDto.toDomain(): VacancyContacts =
         phones = phones?.map { it.formatted } ?: emptyList(),
         comment = name
     )
+
+// Краткое представление деталей вакансии для списков (из VacancyDetails в Vacancy) 🔁
+fun VacancyDetails.toShortVacancy(): Vacancy =
+    Vacancy(
+        id = id,
+        title = title,
+        company = companyName,
+        logoUrl = logoUrl,
+        salaryFrom = salaryFrom,
+        salaryTo = salaryTo,
+        currency = currency,
+        city = region
+    )

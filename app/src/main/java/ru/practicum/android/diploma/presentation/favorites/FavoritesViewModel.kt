@@ -2,9 +2,10 @@ package ru.practicum.android.diploma.presentation.favorites
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.interactors.FavoritesInteractor
 import ru.practicum.android.diploma.domain.models.VacancyDetails
@@ -15,33 +16,38 @@ class FavoritesViewModel(
     private val favoritesInteractor: FavoritesInteractor
 ) : AndroidViewModel(application) {
 
-    private val stateLiveData = MutableLiveData<FavoritesState>()
+    private val _state = MutableStateFlow<FavoritesState>(FavoritesState.Loading)
+    val state: StateFlow<FavoritesState> = _state
 
     init {
         fillData()
     }
 
-    fun observeState(): LiveData<FavoritesState> = stateLiveData
-
-    fun fillData() {
-        renderState(FavoritesState.Loading)
+    private fun fillData() {
         viewModelScope.launch {
-            favoritesInteractor.getFavorites().collect { vacancy ->
-                processResult(vacancy)
-            }
+            // Можно не ставить Loading тут, он уже стартовый,
+            renderState(FavoritesState.Loading)
+
+            favoritesInteractor.getFavorites()
+                .catch { e ->
+                    e.printStackTrace()
+                    renderState(FavoritesState.Error)
+                }
+                .collect { vacancies ->
+                    processResult(vacancies)
+                }
         }
     }
 
-    private fun processResult(vacancy: List<VacancyDetails>) {
-        if (vacancy.isEmpty()) {
-            renderState(FavoritesState.Empty(true))
+    private fun processResult(vacancies: List<VacancyDetails>) {
+        if (vacancies.isEmpty()) {
+            renderState(FavoritesState.Empty)
         } else {
-            renderState(FavoritesState.Content(vacancy))
+            renderState(FavoritesState.Content(vacancies))
         }
     }
 
     private fun renderState(state: FavoritesState) {
-        stateLiveData.postValue(state)
+        _state.value = state
     }
-
 }

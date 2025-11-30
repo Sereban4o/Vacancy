@@ -1,6 +1,6 @@
 package ru.practicum.android.diploma.presentation.vacancydetails
 
-import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,11 +16,17 @@ import java.io.IOException
 import java.net.HttpURLConnection.HTTP_NOT_FOUND
 
 class VacancyDetailsViewModel(
-    private val vacancyId: String,
+    private val savedStateHandle: SavedStateHandle,
     private val interactor: VacancyDetailsInteractor,
     private val favoritesInteractor: FavoritesInteractor,
-    private val fromApi: Boolean, // 👈 новый флаг
 ) : ViewModel() {
+
+    // достаём аргументы из SavedStateHandle
+    private val vacancyId: String =
+        checkNotNull(savedStateHandle[ARG_VACANCY_ID])
+
+    private val fromApi: Boolean =
+        savedStateHandle[ARG_FROM_API] ?: true
 
     private val _uiState = MutableStateFlow<VacancyDetailsUiState>(VacancyDetailsUiState.Loading)
     val uiState: StateFlow<VacancyDetailsUiState> = _uiState
@@ -32,7 +38,7 @@ class VacancyDetailsViewModel(
         loadDetails()
     }
 
-    fun loadDetails() {
+    private fun loadDetails() {
         _uiState.value = VacancyDetailsUiState.Loading
 
         viewModelScope.launch {
@@ -106,5 +112,10 @@ class VacancyDetailsViewModel(
         viewModelScope.launch {
             _events.emit(VacancyDetailsEvent.Call(phone))
         }
+    }
+
+    companion object {
+        const val ARG_VACANCY_ID = "vacancyId"
+        const val ARG_FROM_API = "fromApi"
     }
 }

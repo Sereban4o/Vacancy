@@ -12,6 +12,9 @@
     <!-- SearchScreen -->
     <string name="vacancy_search_empty">Таких вакансий нет</string>
     <string name="vacancy_search_found_format">Найдено %d вакансий</string>
+    <string name="vacancy_text_placeholder">Введите запрос</string>
+    <string name="no_vacancies">Таких вакансий нет</string>
+    <string name="vacancies_found">Найдено %1$d вакансий</string>
 
     <!-- Errors & Empty States -->
     <string name="error_network">Проверьте подключение к интернету</string>
@@ -33,13 +36,6 @@
         <item>Андрей Хлоповских</item>
         <item>Аманжол Аимов</item>
     </string-array>
-
-    <!-- MainScreen -->
-    <string name="vacancy_text_placeholder">Введите запрос</string>
-
-    <!-- SearchScreen -->
-    <string name="no_vacancies">Таких вакансий нет</string>
-    <string name="vacancies_found">Найдено %1$d вакансий</string>
 
     <!-- DetailScreen -->
     <string name="vacancy">Вакансия</string>

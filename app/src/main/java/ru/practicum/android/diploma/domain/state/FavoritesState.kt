@@ -10,7 +10,7 @@ sealed interface FavoritesState {
         val vacancy: List<VacancyDetails>
     ) : FavoritesState
 
-    data class Empty(
-        val empty: Boolean
-    ) : FavoritesState
+    object Empty : FavoritesState
+
+    object Error : FavoritesState
 }

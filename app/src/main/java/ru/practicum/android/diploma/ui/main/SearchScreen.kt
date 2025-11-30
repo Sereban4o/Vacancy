@@ -1,15 +1,12 @@
 package ru.practicum.android.diploma.ui.main
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,7 +28,10 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.Vacancy
 import ru.practicum.android.diploma.presentation.search.SearchViewModel
+import ru.practicum.android.diploma.ui.components.CenteredProgress
+import ru.practicum.android.diploma.ui.components.FullscreenProgress
 import ru.practicum.android.diploma.ui.components.InfoState
+import ru.practicum.android.diploma.ui.components.ScreenScaffold
 import ru.practicum.android.diploma.ui.components.SearchCountChip
 import ru.practicum.android.diploma.ui.components.SearchInputField
 import ru.practicum.android.diploma.ui.components.VacancyItem
@@ -54,7 +54,7 @@ fun SearchScreen(
         viewModel.onLoadStateChanged(pagedData.loadState)
     }
 
-    // Логика чипа (как была)
+    // Логика чипа
     val density = LocalDensity.current
     val chipExtraOffset = 5.dp
     val chipTopOffsetState = remember { mutableStateOf(0.dp) }
@@ -67,16 +67,10 @@ fun SearchScreen(
         pagedData.itemCount == 0 &&
         pagedData.loadState.refresh is LoadState.NotLoading
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            // 🔹 Поле поиска
-            Box(
+    ScreenScaffold(
+        modifier = modifier,
+        topBar = {
+            Box( // 🔹 Поле поиска
                 modifier = Modifier
                     .fillMaxWidth()
                     .onGloballyPositioned { coordinates ->
@@ -91,41 +85,30 @@ fun SearchScreen(
                     onClearClick = { viewModel.onQueryChanged("") }
                 )
             }
-
-            // 🔥 БЛОК СОСТОЯНИЙ ЭКРАНА
-            when {
-                // 1️⃣ Первый запуск
-                uiState.isInitial -> {
+        },
+        content = {
+            when { // 🔥 БЛОК СОСТОЯНИЙ ЭКРАНА
+                uiState.isInitial -> { // 1️⃣ Первый запуск
                     InfoState(TypeState.SearchVacancy)
                 }
 
-                // 2️⃣ Ошибка — нет интернета
                 uiState.errorType == SearchErrorType.NETWORK -> {
                     InfoState(TypeState.NoInternet)
-                }
+                } // 2️⃣ Ошибка — нет интернета
 
-                // 3️⃣ Ошибка — сервер
                 uiState.errorType == SearchErrorType.GENERAL -> {
                     InfoState(TypeState.ServerError)
-                }
+                } // 3️⃣ Ошибка — сервер
 
-                // 4️⃣ Загрузка первой страницы — пока список пустой
                 uiState.isLoading && pagedData.itemCount == 0 -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
+                    FullscreenProgress()
+                } // 4️⃣ Загрузка первой страницы — пока список пустой
 
-                // 5️⃣ Вакансий нет
-                noResults -> {
+                noResults -> { // 5️⃣ Вакансий нет
                     InfoState(TypeState.NoDataVacancy)
                 }
 
-                // 6️⃣ Список вакансий (Paging 3)
-                else -> {
+                else -> { // 6️⃣ Список вакансий (Paging 3)
                     PagedVacanciesList(
                         pagedData = pagedData,
                         topPadding = chipHeightState.value + 8.dp,
@@ -133,41 +116,39 @@ fun SearchScreen(
                     )
                 }
             }
-        }
+        },
+        overlay = { // 🔹 Чип поверх списка
+            if (!uiState.isInitial && (uiState.totalFound > 0 || noResults)) {
+                val baseModifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = chipTopOffsetState.value)
+                    .onGloballyPositioned { coordinates ->
+                        val hPx = coordinates.size.height.toFloat()
+                        chipHeightState.value = with(density) { hPx.toDp() }
+                    }
 
-        // 🔹 Чип поверх списка — как раньше
-        if (!uiState.isInitial && (uiState.totalFound > 0 || noResults)) {
-            val baseModifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = chipTopOffsetState.value)
-                .onGloballyPositioned { coordinates ->
-                    val hPx = coordinates.size.height.toFloat()
-                    chipHeightState.value = with(density) { hPx.toDp() }
-                }
-
-            if (uiState.totalFound > 0) {
-                // ✔ нашли вакансии
-                SearchCountChip(
-                    total = uiState.totalFound,
-                    modifier = baseModifier
-                )
-            } else {
-                // ✔ вакансий нет — чип с текстом
-                Surface(
-                    modifier = baseModifier,
-                    shape = RoundedCornerShape(16.dp),
-                    color = MaterialTheme.colorScheme.tertiary,
-                ) {
-                    Text(
-                        text = stringResource(R.string.vacancy_search_empty),
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onTertiary
+                if (uiState.totalFound > 0) { // ✔ нашли вакансии
+                    SearchCountChip(
+                        total = uiState.totalFound,
+                        modifier = baseModifier
                     )
+                } else { // ✔ вакансий нет — чип с текстом
+                    Surface(
+                        modifier = baseModifier,
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.tertiary,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.vacancy_search_empty),
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onTertiary
+                        )
+                    }
                 }
             }
         }
-    }
+    )
 }
 
 /**
@@ -203,14 +184,11 @@ private fun PagedVacanciesList(
         // (как советовал наставник и сделал Андрей)
         if (pagedData.loadState.append is LoadState.Loading) {
             item {
-                Box(
+                CenteredProgress(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+                        .padding(16.dp)
+                )
             }
         }
     }
