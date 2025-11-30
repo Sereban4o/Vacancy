@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import ru.practicum.android.diploma.ui.navigation.NavGraph
-import ru.practicum.android.diploma.ui.navigation.VACANCY_DETAILS_ROUTE
 import ru.practicum.android.diploma.ui.theme.AppTheme
 import ru.practicum.android.diploma.ui.theme.PaddingScreenHorizontal
 import ru.practicum.android.diploma.util.Routes
@@ -41,7 +40,7 @@ fun Root() {
 
     // определяем, показывать ли нижнюю навигацию
     val showBottomBar = when {
-        currentRoute?.startsWith(VACANCY_DETAILS_ROUTE) == true -> false
+        currentRoute?.startsWith(Routes.VacancyDetails.name) == true -> false
         currentRoute == Routes.Main.name -> true
         currentRoute == Routes.Favorites.name -> true
         currentRoute == Routes.Team.name -> true

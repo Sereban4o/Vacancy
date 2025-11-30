@@ -8,9 +8,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
 import ru.practicum.android.diploma.presentation.favorites.FavoritesViewModel
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel
+import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel.Companion.ARG_FROM_API
+import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel.Companion.ARG_VACANCY_ID
 import ru.practicum.android.diploma.ui.main.MainScreen
 import ru.practicum.android.diploma.ui.team.TeamScreen
 import ru.practicum.android.diploma.ui.favorites.FavouritesScreen
@@ -33,12 +34,11 @@ fun NavGraph(
             MainScreen(
                 onFilterClick = { /* откроем фильтры позже */ },
                 onVacancyClick = { id ->
-                    // ⚠️ ВАЖНО:
-                    // здесь fromApi не передаём — сработает defaultValue = true
-                    // т.е. из поиска данные будут грузиться из API
-                    navHostController.navigate("$VACANCY_DETAILS_ROUTE/$id")
-                    // Можно и явно:
-                    // navHostController.navigate("$VACANCY_DETAILS_ROUTE/$id?$ARG_FROM_API=true")
+                    // из поиска → fromApi = true (по умолчанию в VM)
+                    navHostController.navigateToVacancyDetails(
+                        vacancyId = id,
+                        fromApi = true
+                    )
                 }
             )
         }
@@ -51,8 +51,11 @@ fun NavGraph(
                 modifier = Modifier,
                 viewModel = vm,
                 onVacancyClick = { id ->
-                    // Из избранного - грузим из БД
-                    navHostController.navigate("$VACANCY_DETAILS_ROUTE/$id?$ARG_FROM_API=false")
+                    // из избранного → явно fromApi=false
+                    navHostController.navigateToVacancyDetails(
+                        vacancyId = id,
+                        fromApi = false
+                    )
                 }
             )
         }
@@ -64,7 +67,8 @@ fun NavGraph(
 
         // 📄 Детали вакансии
         composable(
-            route = "$VACANCY_DETAILS_ROUTE/{$ARG_VACANCY_ID}",
+            // добавили query-параметр в route
+            route = "${Routes.VacancyDetails.name}/{$ARG_VACANCY_ID}?$ARG_FROM_API={$ARG_FROM_API}",
             arguments = listOf(
                 navArgument(ARG_VACANCY_ID) {
                     type = NavType.StringType
@@ -74,15 +78,9 @@ fun NavGraph(
                     defaultValue = true // по умолчанию считаем, что грузим из API
                 }
             )
-        ) { backStackEntry ->
+        ) { _ ->
 
-            val vacancyId = backStackEntry.arguments!!.getString(ARG_VACANCY_ID)!!
-            val fromApi = backStackEntry.arguments?.getBoolean(ARG_FROM_API) ?: true
-
-            // parametersOf(vacancyId, fromApi)
-            val vm: VacancyDetailsViewModel = koinViewModel(
-                parameters = { parametersOf(vacancyId, fromApi) }
-            )
+            val vm: VacancyDetailsViewModel = koinViewModel()
 
             VacancyDetailsScreen(
                 modifier = Modifier,

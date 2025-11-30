@@ -14,13 +14,12 @@ val viewModelModule = module {
         )
     }
 
-    // ViewModel с параметром vacancyId
-    viewModel { (vacancyId: String, fromApi: Boolean) ->
+    // ViewModel БЕЗ параметров, Koin сам даст SavedStateHandle
+    viewModel {
         VacancyDetailsViewModel(
-            vacancyId = vacancyId,
+            savedStateHandle = get(),
             interactor = get(),
-            favoritesInteractor = get(),
-            fromApi = fromApi
+            favoritesInteractor = get()
         )
     }
 

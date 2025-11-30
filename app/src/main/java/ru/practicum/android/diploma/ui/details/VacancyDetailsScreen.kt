@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,7 +30,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -43,8 +41,10 @@ import ru.practicum.android.diploma.domain.models.VacancyDetails
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsEvent
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsUiState
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel
+import ru.practicum.android.diploma.ui.components.FullscreenProgress
 import ru.practicum.android.diploma.ui.components.Heading
 import ru.practicum.android.diploma.ui.components.InfoState
+import ru.practicum.android.diploma.ui.components.ScreenScaffold
 import ru.practicum.android.diploma.ui.components.formatSalary
 import ru.practicum.android.diploma.ui.theme.CompanyCardBackgroundColor
 import ru.practicum.android.diploma.ui.theme.FavoriteActive
@@ -71,136 +71,132 @@ fun VacancyDetailsScreen(
         }
     }
 
-    // 🧩 Шапка экрана
-    Column(
-        modifier = modifier.fillMaxSize()
-    ) {
-        Heading(
-            text = stringResource(R.string.vacancy),
-            leftBlock = {
-                Box(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .padding(end = 4.dp)
-                        .clickable(onClick = onBack),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_arrow_back_24),
-                        contentDescription = stringResource(R.string.back),
-                        modifier = Modifier.size(24.dp),
-                        tint = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-                Spacer(Modifier.width(4.dp))
-            },
-            rightBlock = {
-                Row {
-                    // состояние контента
-                    val contentState = uiState as? VacancyDetailsUiState.Content
-                    val vacancy = contentState?.vacancy
-                    val isFavorite = contentState?.isFavorite == true
-
-                    // Кнопка "Поделиться"
-                    IconButton(
-                        onClick = {
-                            vacancy?.let {
-                                // ❗️ вместо прямого вызова shareVacancy(...)
-                                viewModel.onShareClick(it.vacancyUrl)
-                            }
-                        },
-                        enabled = vacancy != null
+    ScreenScaffold(
+        modifier = modifier,
+        // 🧩 Шапка экрана
+        topBar = {
+            Heading(
+                text = stringResource(R.string.vacancy),
+                leftBlock = {
+                    Box(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .padding(end = 4.dp)
+                            .clickable(onClick = onBack),
+                        contentAlignment = Alignment.CenterStart
                     ) {
                         Icon(
-                            painterResource(R.drawable.ic_share_18_20),
-                            contentDescription = stringResource(R.string.share),
+                            painter = painterResource(R.drawable.ic_arrow_back_24),
+                            contentDescription = stringResource(R.string.back),
+                            modifier = Modifier.size(24.dp),
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
+                    Spacer(Modifier.width(4.dp))
+                },
+                rightBlock = {
+                    Row {
+                        // состояние контента
+                        val contentState = uiState as? VacancyDetailsUiState.Content
+                        val vacancy = contentState?.vacancy
+                        val isFavorite = contentState?.isFavorite == true
 
-                    // Кнопка "Избранное"
-                    val favoritePainter = if (isFavorite) {
-                        painterResource(R.drawable.ic_is_favorites)
-                    } else {
-                        painterResource(R.drawable.ic_favorites)
+                        // Кнопка "Поделиться"
+                        IconButton(
+                            onClick = {
+                                vacancy?.let {
+                                    // ❗️ вместо прямого вызова shareVacancy(...)
+                                    viewModel.onShareClick(it.vacancyUrl)
+                                }
+                            },
+                            enabled = vacancy != null
+                        ) {
+                            Icon(
+                                painterResource(R.drawable.ic_share_18_20),
+                                contentDescription = stringResource(R.string.share),
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+
+                        // Кнопка "Избранное"
+                        val favoritePainter = if (isFavorite) {
+                            painterResource(R.drawable.ic_is_favorites)
+                        } else {
+                            painterResource(R.drawable.ic_favorites_vacancy_24)
+                        }
+
+                        val favoriteTint = if (isFavorite) {
+                            FavoriteActive // розовый
+                        } else {
+                            MaterialTheme.colorScheme.onBackground
+                            // было favorite_color: чёрный/белый
+                        }
+
+                        IconButton(
+                            onClick = {
+                                if (vacancy != null) {
+                                    viewModel.editFavorite(vacancy, isFavorite)
+                                }
+                            },
+                            enabled = vacancy != null
+                        ) {
+                            Icon(
+                                favoritePainter,
+                                contentDescription = stringResource(R.string.favorites),
+                                tint = favoriteTint
+                            )
+                        }
                     }
+                }
+            )
+        },
+        content = {
+            Spacer(Modifier.height(8.dp))
 
-                    val favoriteTint = if (isFavorite) {
-                        FavoriteActive // розовый
-                    } else {
-                        MaterialTheme.colorScheme.onBackground
-                        // было favorite_color: чёрный/белый
-                    }
+            // 🔻 — содержимое экрана в зависимости от состояния
+            when (uiState) {
+                is VacancyDetailsUiState.Loading -> {
+                    FullscreenProgress()
+                }
 
-                    IconButton(
-                        onClick = {
-                            if (vacancy != null) {
-                                viewModel.editFavorite(vacancy, isFavorite)
-                            }
-                        },
-                        enabled = vacancy != null
+                is VacancyDetailsUiState.Error -> {
+                    val error = uiState as VacancyDetailsUiState.Error
+                    Box(
+                        Modifier
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            favoritePainter,
-                            contentDescription = stringResource(R.string.favorites),
-                            tint = favoriteTint
-                        )
+                        if (error.isNetworkError) {
+                            InfoState(TypeState.NoInternet)
+                        } else {
+                            InfoState(TypeState.ServerErrorVacancy)
+                        }
                     }
                 }
-            }
-        )
 
-        Spacer(Modifier.height(8.dp))
-
-        // 🔻 — содержимое экрана в зависимости от состояния
-        when (uiState) {
-            is VacancyDetailsUiState.Loading -> {
-                Box(
-                    Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-
-            is VacancyDetailsUiState.Error -> {
-                val error = uiState as VacancyDetailsUiState.Error
-                Box(
-                    Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (error.isNetworkError) {
-                        InfoState(TypeState.NoInternet)
-                    } else {
-                        InfoState(TypeState.ServerErrorVacancy)
+                is VacancyDetailsUiState.NoVacancy -> {
+                    Box(
+                        Modifier
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        InfoState(TypeState.NoVacancy)
                     }
                 }
-            }
 
-            is VacancyDetailsUiState.NoVacancy -> {
-                Box(
-                    Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    InfoState(TypeState.NoVacancy)
+                is VacancyDetailsUiState.Content -> {
+                    val vacancy = (uiState as VacancyDetailsUiState.Content).vacancy
+                    VacancyDetailsContent(
+                        vacancy = vacancy,
+                        // ❗️Передаём не прямые openEmail/openPhone, а вызовы ViewModel
+                        onEmailClick = { email -> viewModel.onEmailClick(email) },
+                        onPhoneClick = { phone -> viewModel.onPhoneClick(phone) }
+                    )
                 }
-            }
-
-            is VacancyDetailsUiState.Content -> {
-                val vacancy = (uiState as VacancyDetailsUiState.Content).vacancy
-                VacancyDetailsContent(
-                    vacancy = vacancy,
-                    // ❗️Передаём не прямые openEmail/openPhone, а вызовы ViewModel
-                    onEmailClick = { email -> viewModel.onEmailClick(email) },
-                    onPhoneClick = { phone -> viewModel.onPhoneClick(phone) },
-                    modifier = modifier
-                )
             }
         }
-    }
+        // overlay оставляем по умолчанию: {}
+    )
 }
 
 @Composable
