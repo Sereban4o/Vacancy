@@ -100,7 +100,7 @@ fun SearchScreen(
                     InfoState(TypeState.ServerError)
                 } // 3️⃣ Ошибка — сервер
 
-                uiState.isLoading && pagedData.itemCount == 0 -> {
+                uiState.isLoading && uiState.query.isNotEmpty() -> {
                     FullscreenProgress()
                 } // 4️⃣ Загрузка первой страницы — пока список пустой
 

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
@@ -42,10 +43,40 @@ class SearchViewModel(
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     val pagingResultDataFlow: Flow<PagingData<Vacancy>> =
         searchQueryFlow
-            .debounce(SEARCH_DELAY_MS)
             .flatMapLatest { query ->
-                if (query.isBlank()) {
-                    // Пустой запрос: просто очищаем список
+                if (query.isNotBlank()) {
+                    // Очищаем ui перед новым запросом(ещё до отправки запроса)
+                    _uiState.update { current ->
+                        current.copy(
+                            isLoading = true,
+                            errorType = SearchErrorType.NONE,
+                            isInitial = false,
+                            totalFound = 0
+                        )
+                    }
+
+                    // Эмитим пустые данные чтобы они из-за кэширования не просачивались через flatMap
+                    val clearFlow = flow<PagingData<Vacancy>> {
+                        emit(PagingData.empty())
+                    }
+
+                    val searchFlow = flow { emit(query) }
+                        .debounce(SEARCH_DELAY_MS)
+                        .distinctUntilChanged()
+                        .flatMapLatest { searchQuery ->
+                            searchVacanciesInteractor.searchPaged(
+                                query = searchQuery,
+                                filters = null,
+                                onTotalFound = { total ->
+                                    _uiState.update { it.copy(totalFound = total) }
+                                }
+                            )
+                        }
+
+                    // Очистка + поиск
+                    clearFlow.flatMapLatest { searchFlow }
+                } else {
+                    // Пустой запрос
                     _uiState.update { current ->
                         current.copy(
                             isLoading = false,
@@ -55,24 +86,6 @@ class SearchViewModel(
                         )
                     }
                     flow { emit(PagingData.empty()) }
-                } else {
-                    // Новый поиск: показываем загрузку первой страницы
-                    _uiState.update { current ->
-                        current.copy(
-                            isLoading = true,
-                            errorType = SearchErrorType.NONE,
-                            isInitial = false
-                        )
-                    }
-
-                    // Пагинированный поиск через интерактор
-                    searchVacanciesInteractor.searchPaged(
-                        query = query,
-                        filters = null,
-                        onTotalFound = { total ->
-                            _uiState.update { it.copy(totalFound = total) }
-                        }
-                    )
                 }
             }
             .cachedIn(viewModelScope)
