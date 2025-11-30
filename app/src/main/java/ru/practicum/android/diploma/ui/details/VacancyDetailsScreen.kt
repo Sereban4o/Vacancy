@@ -38,6 +38,8 @@ import coil.request.ImageRequest
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.VacancyContacts
 import ru.practicum.android.diploma.domain.models.VacancyDetails
+import ru.practicum.android.diploma.presentation.vacancydetails.DescriptionItem
+import ru.practicum.android.diploma.presentation.vacancydetails.DescriptionItemType
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsEvent
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsUiState
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel
@@ -51,8 +53,7 @@ import ru.practicum.android.diploma.ui.theme.FavoriteActive
 import ru.practicum.android.diploma.ui.theme.TextColorLight
 import ru.practicum.android.diploma.util.TypeState
 
-// 🔢 Константы оформления
-private const val HEADER_MAX_CHARS = 25
+// 🔢 Константы оформления (UI)
 private val BulletSpace = 8.dp // один «слот» отступа для буллетов
 
 @Composable
@@ -189,9 +190,10 @@ fun VacancyDetailsScreen(
                 }
 
                 is VacancyDetailsUiState.Content -> {
-                    val vacancy = (uiState as VacancyDetailsUiState.Content).vacancy
+                    val content = uiState as VacancyDetailsUiState.Content
                     VacancyDetailsContent(
-                        vacancy = vacancy,
+                        vacancy = content.vacancy,
+                        descriptionItems = content.descriptionItems,
                         // ❗️Передаём не прямые openEmail/openPhone, а вызовы ViewModel
                         onEmailClick = { email -> viewModel.onEmailClick(email) },
                         onPhoneClick = { phone -> viewModel.onPhoneClick(phone) }
@@ -206,6 +208,7 @@ fun VacancyDetailsScreen(
 @Composable
 fun VacancyDetailsContent(
     vacancy: VacancyDetails,
+    descriptionItems: List<DescriptionItem>,
     onEmailClick: (String) -> Unit,
     onPhoneClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -273,7 +276,7 @@ fun VacancyDetailsContent(
             color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(Modifier.height(8.dp))
-        DescriptionBlock(vacancy.description)
+        DescriptionBlock(descriptionItems)
 
         Spacer(Modifier.height(24.dp))
 
@@ -372,69 +375,38 @@ fun CompanyCard(vacancy: VacancyDetails) {
 }
 
 @Composable
-fun DescriptionBlock(text: String) {
-    val lines = text.split("\n")
+fun DescriptionBlock(items: List<DescriptionItem>) {
+    items.forEach { item ->
+        when (item.type) {
+            DescriptionItemType.SPACER -> {
+                Spacer(Modifier.height(4.dp))
+            }
 
-    lines.forEachIndexed { index, rawLine ->
-        val line = rawLine.trim()
-
-        if (line.isEmpty()) {
-            Spacer(Modifier.height(4.dp))
-        } else {
-            // следующая "сырая" строка (для проверки \n\n)
-            val nextRawLine = lines.getOrNull(index + 1)
-
-            // 1) заканчивается на ":"
-            val endsWithColon = line.endsWith(":")
-
-            // 2) короче 25, без "-" / "•" в начале, и после неё в тексте идёт пустая строка
-            val isShortWithEmptyAfter =
-                line.length < HEADER_MAX_CHARS &&
-                    !line.startsWith("•") &&
-                    !line.startsWith("-") &&
-                    nextRawLine.isNullOrBlank()
-
-            val isHeader = endsWithColon || isShortWithEmptyAfter
-
-            if (isHeader) {
-                // 🔹 Подзаголовок
-                val headerText = line
-                    .removeSuffix(":")
-                    .trimEnd()
-
+            DescriptionItemType.HEADER -> {
                 Text(
-                    text = headerText,
+                    text = item.text,
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onBackground
                 )
-
                 Spacer(Modifier.height(4.dp))
-            } else {
-                // 🔹 Пункт списка
-                val cleanedText = line
-                    .removePrefix("•")
-                    .removePrefix("-")
-                    .trimStart()
+            }
 
+            DescriptionItemType.BULLET -> {
                 Row(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    // 2 "слота" пробела до точки
                     Spacer(Modifier.width(BulletSpace * 2))
 
-                    // сама точка
                     Text(
                         text = "•",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onBackground
                     )
 
-                    // 2 "слота" пробела после точки
                     Spacer(Modifier.width(BulletSpace * 2))
 
-                    // текст, который переносится ПОД СЕБЯ
                     Text(
-                        text = cleanedText,
+                        text = item.text,
                         modifier = Modifier.weight(1f),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onBackground

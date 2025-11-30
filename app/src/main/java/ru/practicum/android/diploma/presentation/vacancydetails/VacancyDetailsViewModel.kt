@@ -59,9 +59,13 @@ class VacancyDetailsViewModel(
                     // 3️⃣ Иначе — обычный успешный сценарий
                     val isFavorite = favoritesInteractor.checkFavorite(vacancyId)
 
+                    // 🆕 парсим описание ОДИН РАЗ
+                    val descriptionItems = parseVacancyDescription(vacancy.description)
+
                     _uiState.value = VacancyDetailsUiState.Content(
                         vacancy = vacancy,
-                        isFavorite = isFavorite
+                        isFavorite = isFavorite,
+                        descriptionItems = descriptionItems
                     )
                 }
 
@@ -89,8 +93,11 @@ class VacancyDetailsViewModel(
             } else {
                 favoritesInteractor.addFavorite(vacancy)
             }
+            val descriptionItems = parseVacancyDescription(vacancy.description)
+
             _uiState.value = VacancyDetailsUiState.Content(
-                vacancy, !isFavorite
+                vacancy, !isFavorite,
+                descriptionItems = descriptionItems
             )
 
         }

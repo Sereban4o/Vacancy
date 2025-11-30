@@ -6,7 +6,8 @@ sealed interface VacancyDetailsUiState {
     object Loading : VacancyDetailsUiState
     data class Content(
         val vacancy: VacancyDetails,
-        val isFavorite: Boolean
+        val isFavorite: Boolean,
+        val descriptionItems: List<DescriptionItem>
     ) : VacancyDetailsUiState
     data class Error(val isNetworkError: Boolean) : VacancyDetailsUiState
     data object NoVacancy : VacancyDetailsUiState
