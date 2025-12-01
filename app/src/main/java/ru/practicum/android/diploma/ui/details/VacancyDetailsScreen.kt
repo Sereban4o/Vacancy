@@ -100,114 +100,125 @@ fun VacancyDetailsScreen(
                     Spacer(Modifier.width(4.dp))
                 },
                 rightBlock = {
-                    Row {
-                        // состояние контента
-                        val contentState = uiState as? VacancyDetailsUiState.Content
-                        val vacancy = contentState?.vacancy
-                        val isFavorite = contentState?.isFavorite == true
-
-                        // Кнопка "Поделиться"
-                        IconButton(
-                            onClick = {
-                                vacancy?.let {
-                                    // ❗️ вместо прямого вызова shareVacancy(...)
-                                    viewModel.onShareClick(it.vacancyUrl)
-                                }
-                            },
-                            enabled = vacancy != null
-                        ) {
-                            Icon(
-                                painterResource(R.drawable.ic_share_18_20),
-                                contentDescription = stringResource(R.string.share),
-                                tint = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
-
-                        // Кнопка "Избранное"
-                        val favoritePainter = if (isFavorite) {
-                            painterResource(R.drawable.ic_is_favorites)
-                        } else {
-                            painterResource(R.drawable.ic_favorites_vacancy_24)
-                        }
-
-                        val favoriteTint = if (isFavorite) {
-                            FavoriteActive // розовый
-                        } else {
-                            MaterialTheme.colorScheme.onBackground
-                            // было favorite_color: чёрный/белый
-                        }
-
-                        IconButton(
-                            onClick = {
-                                if (vacancy != null) {
-                                    viewModel.editFavorite(vacancy, isFavorite)
-                                }
-                            },
-                            enabled = vacancy != null
-                        ) {
-                            Icon(
-                                favoritePainter,
-                                contentDescription = stringResource(R.string.favorites),
-                                tint = favoriteTint
-                            )
-                        }
-                    }
+                    GetRightBlock(uiState, viewModel)
                 }
             )
         },
         content = {
             Spacer(Modifier.height(8.dp))
-
-            // 🔻 — содержимое экрана в зависимости от состояния
-            when (uiState) {
-                is VacancyDetailsUiState.Loading -> {
-                    FullscreenProgress()
-                }
-
-                is VacancyDetailsUiState.Error -> {
-                    val error = uiState as VacancyDetailsUiState.Error
-                    Box(
-                        Modifier
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        GetErrorState(error)
-                    }
-                }
-
-                is VacancyDetailsUiState.NoVacancy -> {
-                    Box(
-                        Modifier
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        InfoState(TypeState.NoVacancy)
-                    }
-                }
-
-                is VacancyDetailsUiState.Content -> {
-                    val content = uiState as VacancyDetailsUiState.Content
-                    VacancyDetailsContent(
-                        vacancy = content.vacancy,
-                        descriptionItems = content.descriptionItems,
-                        // ❗️Передаём не прямые openEmail/openPhone, а вызовы ViewModel
-                        onEmailClick = { email -> viewModel.onEmailClick(email) },
-                        onPhoneClick = { phone -> viewModel.onPhoneClick(phone) }
-                    )
-                }
-            }
+            GetContent(uiState, viewModel)
         }
-        // overlay оставляем по умолчанию: {}
     )
 }
 
 @Composable
 private fun GetErrorState(error: VacancyDetailsUiState.Error) {
-
     return if (error.isNetworkError) {
         InfoState(TypeState.NoInternet)
     } else {
         InfoState(TypeState.ServerErrorVacancy)
+    }
+}
+
+@Composable
+private fun GetRightBlock(
+    uiState: VacancyDetailsUiState,
+    viewModel: VacancyDetailsViewModel
+) {
+    Row {
+        // состояние контента
+        val contentState = uiState as? VacancyDetailsUiState.Content
+        val vacancy = contentState?.vacancy
+        val isFavorite = contentState?.isFavorite == true
+
+        // Кнопка "Поделиться"
+        IconButton(
+            onClick = {
+                vacancy?.let {
+                    // ❗️ вместо прямого вызова shareVacancy(...)
+                    viewModel.onShareClick(it.vacancyUrl)
+                }
+            },
+            enabled = vacancy != null
+        ) {
+            Icon(
+                painterResource(R.drawable.ic_share_18_20),
+                contentDescription = stringResource(R.string.share),
+                tint = MaterialTheme.colorScheme.onBackground
+            )
+        }
+
+        // Кнопка "Избранное"
+        val favoritePainter = if (isFavorite) {
+            painterResource(R.drawable.ic_is_favorites)
+        } else {
+            painterResource(R.drawable.ic_favorites_vacancy_24)
+        }
+
+        val favoriteTint = if (isFavorite) {
+            FavoriteActive // розовый
+        } else {
+            MaterialTheme.colorScheme.onBackground
+            // было favorite_color: чёрный/белый
+        }
+
+        IconButton(
+            onClick = {
+                if (vacancy != null) {
+                    viewModel.editFavorite(vacancy, isFavorite)
+                }
+            },
+            enabled = vacancy != null
+        ) {
+            Icon(
+                favoritePainter,
+                contentDescription = stringResource(R.string.favorites),
+                tint = favoriteTint
+            )
+        }
+    }
+}
+
+@Composable
+private fun GetContent(
+    uiState: VacancyDetailsUiState,
+    viewModel: VacancyDetailsViewModel
+) {
+    // 🔻 — содержимое экрана в зависимости от состояния
+    when (uiState) {
+        is VacancyDetailsUiState.Loading -> {
+            FullscreenProgress()
+        }
+
+        is VacancyDetailsUiState.Error -> {
+            Box(
+                Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                GetErrorState(uiState)
+            }
+        }
+
+        is VacancyDetailsUiState.NoVacancy -> {
+            Box(
+                Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                InfoState(TypeState.NoVacancy)
+            }
+        }
+
+        is VacancyDetailsUiState.Content -> {
+            VacancyDetailsContent(
+                vacancy = uiState.vacancy,
+                descriptionItems = uiState.descriptionItems,
+                // ❗️Передаём не прямые openEmail/openPhone, а вызовы ViewModel
+                onEmailClick = { email -> viewModel.onEmailClick(email) },
+                onPhoneClick = { phone -> viewModel.onPhoneClick(phone) }
+            )
+        }
     }
 }
 
