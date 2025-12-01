@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.presentation.vacancydetails
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -71,6 +72,7 @@ class VacancyDetailsViewModel(
 
             } catch (e: IOException) {
                 // 🔌 Нет интернета / проблемы с сетью (актуально при fromApi = true)
+                Log.e("VacancyDetailsViewModel", "Internet error: $e", e)
                 _uiState.value = VacancyDetailsUiState.Error(isNetworkError = true)
 
             } catch (e: HttpException) {

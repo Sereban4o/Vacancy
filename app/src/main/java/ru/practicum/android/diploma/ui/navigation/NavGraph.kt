@@ -12,11 +12,11 @@ import ru.practicum.android.diploma.presentation.favorites.FavoritesViewModel
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel.Companion.ARG_FROM_API
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel.Companion.ARG_VACANCY_ID
+import ru.practicum.android.diploma.ui.details.VacancyDetailsScreen
+import ru.practicum.android.diploma.ui.favorites.FavouritesScreen
 import ru.practicum.android.diploma.ui.main.MainScreen
 import ru.practicum.android.diploma.ui.team.TeamScreen
-import ru.practicum.android.diploma.ui.favorites.FavouritesScreen
 import ru.practicum.android.diploma.util.Routes
-import ru.practicum.android.diploma.ui.details.VacancyDetailsScreen
 
 @Composable
 fun NavGraph(

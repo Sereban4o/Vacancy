@@ -8,16 +8,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ru.practicum.android.diploma.ui.theme.PaddingScreenTitleVertical
 import ru.practicum.android.diploma.ui.theme.PaddingSmall
-import ru.practicum.android.diploma.ui.theme.TextSizeLarge
 
 /**
  * Базовый компонент для всех заголовков.
@@ -93,6 +88,7 @@ fun Heading(
         rightBlock?.invoke()
     }
 }
+
 /**
  * Крупный заголовок.
  *
