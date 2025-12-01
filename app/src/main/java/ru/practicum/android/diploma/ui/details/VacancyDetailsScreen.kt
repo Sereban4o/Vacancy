@@ -171,11 +171,7 @@ fun VacancyDetailsScreen(
                             .fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        if (error.isNetworkError) {
-                            InfoState(TypeState.NoInternet)
-                        } else {
-                            InfoState(TypeState.ServerErrorVacancy)
-                        }
+                        GetErrorState(error)
                     }
                 }
 
@@ -203,6 +199,16 @@ fun VacancyDetailsScreen(
         }
         // overlay оставляем по умолчанию: {}
     )
+}
+
+@Composable
+private fun GetErrorState(error: VacancyDetailsUiState.Error) {
+
+    return if (error.isNetworkError) {
+        InfoState(TypeState.NoInternet)
+    } else {
+        InfoState(TypeState.ServerErrorVacancy)
+    }
 }
 
 @Composable
