@@ -126,29 +126,36 @@ fun SearchScreen(
                         val hPx = coordinates.size.height.toFloat()
                         chipHeightState.value = with(density) { hPx.toDp() }
                     }
-
-                if (uiState.totalFound > 0) { // ✔ нашли вакансии
-                    SearchCountChip(
-                        total = uiState.totalFound,
-                        modifier = baseModifier
-                    )
-                } else { // ✔ вакансий нет — чип с текстом
-                    Surface(
-                        modifier = baseModifier,
-                        shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.tertiary,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.vacancy_search_empty),
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onTertiary
-                        )
-                    }
-                }
+                ShowChip(uiState.totalFound, baseModifier)
             }
         }
     )
+}
+
+@Composable
+private fun ShowChip(
+    totalFound: Int,
+    modifier: Modifier
+) {
+    if (totalFound > 0) { // ✔ нашли вакансии
+        SearchCountChip(
+            total = totalFound,
+            modifier = modifier
+        )
+    } else { // ✔ вакансий нет — чип с текстом
+        Surface(
+            modifier = modifier,
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.tertiary,
+        ) {
+            Text(
+                text = stringResource(R.string.vacancy_search_empty),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onTertiary
+            )
+        }
+    }
 }
 
 /**
