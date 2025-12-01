@@ -61,11 +61,7 @@ fun SearchScreen(
     val chipHeightState = remember { mutableStateOf(0.dp) }
 
     // флаг «вакансий нет»
-    val noResults = !uiState.isInitial &&
-        !uiState.isLoading &&
-        uiState.errorType == SearchErrorType.NONE &&
-        pagedData.itemCount == 0 &&
-        pagedData.loadState.refresh is LoadState.NotLoading
+    val noResults = getNoResult(uiState, pagedData)
 
     ScreenScaffold(
         modifier = modifier,
@@ -199,4 +195,12 @@ private fun PagedVacanciesList(
             }
         }
     }
+}
+
+private fun getNoResult(uiState: SearchUiState, pagedData: LazyPagingItems<Vacancy>): Boolean {
+    return !uiState.isInitial &&
+        !uiState.isLoading &&
+        uiState.errorType == SearchErrorType.NONE &&
+        pagedData.itemCount == 0 &&
+        pagedData.loadState.refresh is LoadState.NotLoading
 }
