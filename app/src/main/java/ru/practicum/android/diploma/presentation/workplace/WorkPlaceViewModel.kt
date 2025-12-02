@@ -26,7 +26,7 @@ class WorkPlaceViewModel(
             val settings: FilterSettings = filterSettingsInteractor.getFilterSettings()
             _uiState.value = WorkPlaceUiState(
                 country = settings.country,
-                region  = settings.region
+                region = settings.region
             )
         }
     }
@@ -57,6 +57,7 @@ class WorkPlaceViewModel(
      * лежат в FilterSettings (или очищены крестиком).
      * Просто говорим экрану "можно уходить назад".
      */
+    @Suppress("FunctionOnlyReturningConstant")
     suspend fun applySelection(): Boolean = true
 
     /**

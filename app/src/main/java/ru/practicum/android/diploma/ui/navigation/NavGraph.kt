@@ -41,9 +41,9 @@ fun NavGraph(
 //                    navHostController.navigate("industry")
 //                },
                 onFilterClick = {
-                    // ⬇️ ВРЕМЕННО тест на экран место работы
-                    navHostController.navigate("work_place")
-                  },
+                    // ⬇️ ВРЕМЕННО тест на экран место работыgt
+                    navHostController.navigate(Routes.WorkPlace.name)
+                },
                 onVacancyClick = { id ->
                     // из поиска → fromApi = true (по умолчанию в VM)
                     navHostController.navigateToVacancyDetails(
