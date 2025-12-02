@@ -32,6 +32,11 @@ fun WorkPlaceScreen(
     val uiState by viewModel.uiState.collectAsState()
     val coroutineScope = rememberCoroutineScope()
 
+    // 🔹 при каждом заходе на экран загружаем актуальные страна/регион
+    LaunchedEffect(Unit) {
+        viewModel.refresh()
+    }
+
     ScreenScaffold(
         modifier = modifier,
         topBar = {

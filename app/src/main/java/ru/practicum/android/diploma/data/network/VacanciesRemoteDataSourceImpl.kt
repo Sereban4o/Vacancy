@@ -3,6 +3,7 @@ package ru.practicum.android.diploma.data.network
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import ru.practicum.android.diploma.data.dto.FilterAreaDto
 import ru.practicum.android.diploma.data.dto.FilterIndustryDto
 import ru.practicum.android.diploma.data.dto.VacancyDetailDto
 import ru.practicum.android.diploma.data.dto.VacancySearchRequestDto
@@ -55,6 +56,13 @@ class VacanciesRemoteDataSourceImpl(
         withContext(ioDispatcher) {
             networkClient.execute {
                 getVacancyDetails(id)
+            }
+        }
+
+    override suspend fun getAreas(): List<FilterAreaDto> =
+        withContext(ioDispatcher) {
+            networkClient.execute {
+                getAreas()
             }
         }
 

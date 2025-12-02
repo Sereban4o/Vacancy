@@ -5,4 +5,7 @@ enum class Routes {
     Favorites,
     Team,
     VacancyDetails,
+    Industry,
+    WorkPlace,
+    Country,
 }

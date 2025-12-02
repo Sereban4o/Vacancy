@@ -58,4 +58,7 @@
     <string name="country">Страна</string>
     <string name="region">Регион</string>
 
+    <!-- CountryScreen -->
+    <string name="country_title">Выбор страны</string>
+
 </resources>

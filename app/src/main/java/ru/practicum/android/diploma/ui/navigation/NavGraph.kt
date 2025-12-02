@@ -12,6 +12,7 @@ import ru.practicum.android.diploma.presentation.favorites.FavoritesViewModel
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel.Companion.ARG_FROM_API
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel.Companion.ARG_VACANCY_ID
+import ru.practicum.android.diploma.ui.country.CountryScreen
 import ru.practicum.android.diploma.ui.main.MainScreen
 import ru.practicum.android.diploma.ui.team.TeamScreen
 import ru.practicum.android.diploma.ui.favorites.FavouritesScreen
@@ -53,6 +54,18 @@ fun NavGraph(
             )
         }
 
+        // 🔹 ЭКРАН ВЫБОРА страны
+        composable(Routes.Country.name) {
+            CountryScreen(
+                onBack = { navHostController.popBackStack() },
+                onCountryChosen = {
+                    // страна внутри CountryViewModel уже сохранена в FilterSettings
+                    // после этого показываем экран "Место работы", чтобы протестировать связку
+                    navHostController.navigate(Routes.WorkPlace.name)
+                }
+            )
+        }
+
         // 🔹 ЭКРАН ВЫБОРА ОТРАСЛИ
         composable("industry") {
             IndustryScreen(
@@ -65,8 +78,7 @@ fun NavGraph(
             WorkPlaceScreen(
                 onBack = { navHostController.popBackStack() },
                 onCountryClick = {
-                    // NOTE: открыть экран выбора страны
-                    // navHostController.navigate("country")
+                    navHostController.navigate(Routes.Country.name)
                 },
                 onRegionClick = {
                     // NOTE: открыть экран выбора региона
@@ -74,7 +86,6 @@ fun NavGraph(
                 }
             )
         }
-
 
         // ⭐ Избранное
         composable(Routes.Favorites.name) {
