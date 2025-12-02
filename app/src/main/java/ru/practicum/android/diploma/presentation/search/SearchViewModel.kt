@@ -17,14 +17,19 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.domain.interactors.FilterSettingsInteractor
 import ru.practicum.android.diploma.domain.interactors.SearchVacanciesInteractor
 import ru.practicum.android.diploma.domain.models.Vacancy
+import ru.practicum.android.diploma.domain.models.isActiveForSearch
+import ru.practicum.android.diploma.domain.models.toSearchFilters
 import ru.practicum.android.diploma.ui.main.SearchErrorType
 import ru.practicum.android.diploma.ui.main.SearchUiState
 import java.io.IOException
 
 class SearchViewModel(
-    private val searchVacanciesInteractor: SearchVacanciesInteractor
+    private val searchVacanciesInteractor: SearchVacanciesInteractor,
+    private val filterSettingsInteractor: FilterSettingsInteractor,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchUiState())
@@ -32,6 +37,32 @@ class SearchViewModel(
 
     // сырой текст запроса
     private val searchQueryFlow = MutableStateFlow("")
+
+    init {
+        // при создании VM сразу посмотрим, есть ли активный фильтр
+        viewModelScope.launch {
+            // это очистка после текста
+            // filterSettingsInteractor.clearFilterSettings()   // 🔥 очистить всё
+            val filterSettings = filterSettingsInteractor.getFilterSettings()
+            _uiState.update { current ->
+                current.copy(
+                    hasActiveFilter = filterSettings.isActiveForSearch()
+                )
+            }
+        }
+    }
+
+    // когда будет экран фильтра -> вызывать её при возврате с экрана фильтра
+    fun refreshFilterState() {
+        viewModelScope.launch {
+            val filterSettings = filterSettingsInteractor.getFilterSettings()
+            _uiState.update { current ->
+                current.copy(
+                    hasActiveFilter = filterSettings.isActiveForSearch()
+                )
+            }
+        }
+    }
 
     /**
      * Основной поток PagingData<Vacancy>.
@@ -45,7 +76,6 @@ class SearchViewModel(
         searchQueryFlow
             .flatMapLatest { query ->
                 if (query.isNotBlank()) {
-                    // Очищаем ui перед новым запросом(ещё до отправки запроса)
                     _uiState.update { current ->
                         current.copy(
                             isLoading = true,
@@ -55,7 +85,6 @@ class SearchViewModel(
                         )
                     }
 
-                    // Эмитим пустые данные чтобы они из-за кэширования не просачивались через flatMap
                     val clearFlow = flow<PagingData<Vacancy>> {
                         emit(PagingData.empty())
                     }
@@ -64,19 +93,25 @@ class SearchViewModel(
                         .debounce(SEARCH_DELAY_MS)
                         .distinctUntilChanged()
                         .flatMapLatest { searchQuery ->
-                            searchVacanciesInteractor.searchPaged(
-                                query = searchQuery,
-                                filters = null,
-                                onTotalFound = { total ->
-                                    _uiState.update { it.copy(totalFound = total) }
-                                }
-                            )
+                            // 🔹 ВСТАВЛЯЕМ ЗДЕСЬ РАБОТУ С ФИЛЬТРОМ
+                            flow {
+                                // suspend-функция → вызываем внутри flow { }
+                                val filterSettings = filterSettingsInteractor.getFilterSettings()
+                                val searchFilters = filterSettings.toSearchFilters()
+                                emit(searchFilters)
+                            }.flatMapLatest { filters ->
+                                searchVacanciesInteractor.searchPaged(
+                                    query = searchQuery,
+                                    filters = filters, // 🔹 больше не null
+                                    onTotalFound = { total ->
+                                        _uiState.update { it.copy(totalFound = total) }
+                                    }
+                                )
+                            }
                         }
 
-                    // Очистка + поиск
                     clearFlow.flatMapLatest { searchFlow }
                 } else {
-                    // Пустой запрос
                     _uiState.update { current ->
                         current.copy(
                             isLoading = false,

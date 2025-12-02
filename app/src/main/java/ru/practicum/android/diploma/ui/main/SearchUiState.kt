@@ -15,5 +15,6 @@ data class SearchUiState(
     val isLoading: Boolean = false,
     val errorType: SearchErrorType = SearchErrorType.NONE,
     val totalFound: Int = 0,
-    val isInitial: Boolean = true
+    val isInitial: Boolean = true,
+    val hasActiveFilter: Boolean = false,
 )

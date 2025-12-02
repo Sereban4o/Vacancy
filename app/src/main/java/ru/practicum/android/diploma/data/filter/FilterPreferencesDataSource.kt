@@ -8,7 +8,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import ru.practicum.android.diploma.domain.models.FilterSettings
 
-
 /**
  * SharedPreferences-слой, но используем kotlinx.serialization вместо Gson.
  */

@@ -3,7 +3,7 @@ package ru.practicum.android.diploma.data.filter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.practicum.android.diploma.domain.models.FilterSettings
-import ru.practicum.android.diploma.domain.repositories.FilterSettingsRepository
+import ru.practicum.android.diploma.domain.repository.FilterSettingsRepository
 
 class FilterSettingsRepositoryImpl(
     private val dataSource: FilterPreferencesDataSource

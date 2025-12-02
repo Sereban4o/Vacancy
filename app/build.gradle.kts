@@ -4,7 +4,7 @@ plugins {
     id("org.jetbrains.kotlin.kapt")
     id("org.jetbrains.kotlin.plugin.compose")
     id("ru.practicum.android.diploma.plugins.developproperties")
-    kotlin("plugin.serialization") version "1.9.22"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
 }
 
 android {

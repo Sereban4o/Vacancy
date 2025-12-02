@@ -10,7 +10,8 @@ val viewModelModule = module {
 
     viewModel {
         SearchViewModel(
-            searchVacanciesInteractor = get()
+            searchVacanciesInteractor = get(),
+            filterSettingsInteractor = get()
         )
     }
 
