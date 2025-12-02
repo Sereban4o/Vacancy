@@ -61,11 +61,7 @@ fun SearchScreen(
     val chipHeightState = remember { mutableStateOf(0.dp) }
 
     // флаг «вакансий нет»
-    val noResults = !uiState.isInitial &&
-        !uiState.isLoading &&
-        uiState.errorType == SearchErrorType.NONE &&
-        pagedData.itemCount == 0 &&
-        pagedData.loadState.refresh is LoadState.NotLoading
+    val noResults = getNoResult(uiState, pagedData)
 
     ScreenScaffold(
         modifier = modifier,
@@ -87,38 +83,20 @@ fun SearchScreen(
             }
         },
         content = {
-            when { // 🔥 БЛОК СОСТОЯНИЙ ЭКРАНА
-                uiState.isInitial -> { // 1️⃣ Первый запуск
-                    InfoState(TypeState.SearchVacancy)
-                }
-
-                uiState.errorType == SearchErrorType.NETWORK -> {
-                    InfoState(TypeState.NoInternet)
-                } // 2️⃣ Ошибка — нет интернета
-
-                uiState.errorType == SearchErrorType.GENERAL -> {
-                    InfoState(TypeState.ServerError)
-                } // 3️⃣ Ошибка — сервер
-
-                uiState.isLoading && uiState.query.isNotEmpty() -> {
-                    FullscreenProgress()
-                } // 4️⃣ Загрузка первой страницы — пока список пустой
-
-                noResults -> { // 5️⃣ Вакансий нет
-                    InfoState(TypeState.NoDataVacancy)
-                }
-
-                else -> { // 6️⃣ Список вакансий (Paging 3)
+            GetContent(
+                uiState,
+                noResults,
+                {
                     PagedVacanciesList(
                         pagedData = pagedData,
                         topPadding = chipHeightState.value + 8.dp,
                         onVacancyClick = onVacancyClick
                     )
                 }
-            }
+            )
         },
         overlay = { // 🔹 Чип поверх списка
-            if (!uiState.isInitial && (uiState.totalFound > 0 || noResults)) {
+            if (getEmptyResult(uiState, noResults)) {
                 val baseModifier = Modifier
                     .align(Alignment.TopCenter)
                     .padding(top = chipTopOffsetState.value)
@@ -126,29 +104,36 @@ fun SearchScreen(
                         val hPx = coordinates.size.height.toFloat()
                         chipHeightState.value = with(density) { hPx.toDp() }
                     }
-
-                if (uiState.totalFound > 0) { // ✔ нашли вакансии
-                    SearchCountChip(
-                        total = uiState.totalFound,
-                        modifier = baseModifier
-                    )
-                } else { // ✔ вакансий нет — чип с текстом
-                    Surface(
-                        modifier = baseModifier,
-                        shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.tertiary,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.vacancy_search_empty),
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onTertiary
-                        )
-                    }
-                }
+                ShowChip(uiState.totalFound, baseModifier)
             }
         }
     )
+}
+
+@Composable
+private fun ShowChip(
+    totalFound: Int,
+    modifier: Modifier
+) {
+    if (totalFound > 0) { // ✔ нашли вакансии
+        SearchCountChip(
+            total = totalFound,
+            modifier = modifier
+        )
+    } else { // ✔ вакансий нет — чип с текстом
+        Surface(
+            modifier = modifier,
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.tertiary,
+        ) {
+            Text(
+                text = stringResource(R.string.vacancy_search_empty),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onTertiary
+            )
+        }
+    }
 }
 
 /**
@@ -190,6 +175,57 @@ private fun PagedVacanciesList(
                         .padding(16.dp)
                 )
             }
+        }
+    }
+}
+
+private fun getNoResult(
+    uiState: SearchUiState,
+    pagedData: LazyPagingItems<Vacancy>
+): Boolean {
+    return !uiState.isInitial &&
+        !uiState.isLoading &&
+        uiState.errorType == SearchErrorType.NONE &&
+        pagedData.itemCount == 0 &&
+        pagedData.loadState.refresh is LoadState.NotLoading
+}
+
+private fun getEmptyResult(
+    uiState: SearchUiState,
+    noResults: Boolean
+): Boolean {
+    return !uiState.isInitial && (uiState.totalFound > 0 || noResults)
+}
+
+@Composable
+private fun GetContent(
+    uiState: SearchUiState,
+    noResults: Boolean,
+    pageVacancyList: (@Composable () -> Unit)
+) {
+    when { // 🔥 БЛОК СОСТОЯНИЙ ЭКРАНА
+        uiState.isInitial -> { // 1️⃣ Первый запуск
+            InfoState(TypeState.SearchVacancy)
+        }
+
+        uiState.errorType == SearchErrorType.NETWORK -> {
+            InfoState(TypeState.NoInternet)
+        } // 2️⃣ Ошибка — нет интернета
+
+        uiState.errorType == SearchErrorType.GENERAL -> {
+            InfoState(TypeState.ServerError)
+        } // 3️⃣ Ошибка — сервер
+
+        uiState.isLoading && uiState.query.isNotEmpty() -> {
+            FullscreenProgress()
+        } // 4️⃣ Загрузка первой страницы — пока список пустой
+
+        noResults -> { // 5️⃣ Вакансий нет
+            InfoState(TypeState.NoDataVacancy)
+        }
+
+        else -> { // 6️⃣ Список вакансий (Paging 3)
+            pageVacancyList.invoke()
         }
     }
 }
