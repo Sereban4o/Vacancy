@@ -52,4 +52,10 @@
     <string name="industry_search_hint">Введите отрасль</string>
     <string name="choose">Выбрать</string>
     <string name="industry_error">По вашему запросу отраслей не найдено</string>
+
+    <!-- WorkPlaceScreen -->
+    <string name="work_place_title">Выбор места работы</string>
+    <string name="country">Страна</string>
+    <string name="region">Регион</string>
+
 </resources>

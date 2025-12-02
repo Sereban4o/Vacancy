@@ -18,6 +18,7 @@ import ru.practicum.android.diploma.ui.favorites.FavouritesScreen
 import ru.practicum.android.diploma.util.Routes
 import ru.practicum.android.diploma.ui.details.VacancyDetailsScreen
 import ru.practicum.android.diploma.ui.industry.IndustryScreen
+import ru.practicum.android.diploma.ui.workplace.WorkPlaceScreen
 
 @Composable
 fun NavGraph(
@@ -34,10 +35,14 @@ fun NavGraph(
         composable(Routes.Main.name) {
             MainScreen(
 //                onFilterClick = { /* откроем фильтры позже */ },
+//                onFilterClick = {
+//                    // ⬇️ ВРЕМЕННО тест на экран отраслей
+//                    navHostController.navigate("industry")
+//                },
                 onFilterClick = {
-                    // ⬇️ ВРЕМЕННО прямо отсюда идём на экран отраслей
-                    navHostController.navigate("industry")
-                },
+                    // ⬇️ ВРЕМЕННО тест на экран место работы
+                    navHostController.navigate("work_place")
+                  },
                 onVacancyClick = { id ->
                     // из поиска → fromApi = true (по умолчанию в VM)
                     navHostController.navigateToVacancyDetails(
@@ -54,6 +59,22 @@ fun NavGraph(
                 onBack = { navHostController.popBackStack() }
             )
         }
+
+        // 🔹 ЭКРАН Выбор места работы
+        composable("work_place") {
+            WorkPlaceScreen(
+                onBack = { navHostController.popBackStack() },
+                onCountryClick = {
+                    // NOTE: открыть экран выбора страны
+                    // navHostController.navigate("country")
+                },
+                onRegionClick = {
+                    // NOTE: открыть экран выбора региона
+                    // navHostController.navigate("region")
+                }
+            )
+        }
+
 
         // ⭐ Избранное
         composable(Routes.Favorites.name) {

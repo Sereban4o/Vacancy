@@ -41,8 +41,8 @@ class SearchViewModel(
     init {
         // при создании VM сразу посмотрим, есть ли активный фильтр
         viewModelScope.launch {
-            // это очистка после текста
-            filterSettingsInteractor.clearFilterSettings() // 🔥 очистить всё
+            // это очистка после текста (закрыл для теста экрана Место работы)
+            //filterSettingsInteractor.clearFilterSettings() // 🔥 очистить всё
             val filterSettings = filterSettingsInteractor.getFilterSettings()
             _uiState.update { current ->
                 current.copy(
