@@ -11,5 +11,5 @@ interface NetworkClient {
      * - проверка интернета
      * - обработка ошибок (добавим позже)
      */
-    suspend fun <T> execute(block: suspend ApiService.() -> T): T
+    suspend fun <T> execute(block: suspend VacanciesApiService.() -> T): T
 }

@@ -6,21 +6,26 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
-// -----------------------------
-// LIGHT / DARK COLOR SCHEMES
-// -----------------------------
-// Используем новые имена из Color.kt (PrimaryLight и т.д.),
-// но значения там — из твоей старой зелёно-синей палитры.
-
 private val LightColorScheme = lightColorScheme(
     primary = PrimaryLight,
     onPrimary = OnPrimaryLight,
     secondary = SecondaryLight,
     onSecondary = OnSecondaryLight,
+
+    // чип и прочее, если используешь tertiary
+    tertiary = ResultsChipBlue,
+    onTertiary = OnResultsChipBlue,
+
     background = BackgroundLight,
-    onBackground = OnBackgroundLight,
+    onBackground = TextColorLight,
     surface = SurfaceLight,
-    onSurface = OnSurfaceLight,
+    onSurface = TextColorLight,
+
+    surfaceVariant = SurfaceVariantLight,
+    onSurfaceVariant = OnSurfaceVariantLight,
+
+    outline = OutlineLight,
+
     error = ErrorColor,
     onError = OnErrorColor,
 )
@@ -30,18 +35,23 @@ private val DarkColorScheme = darkColorScheme(
     onPrimary = OnPrimaryDark,
     secondary = SecondaryDark,
     onSecondary = OnSecondaryDark,
+
+    tertiary = ResultsChipBlue,
+    onTertiary = OnResultsChipBlue,
+
     background = BackgroundDark,
-    onBackground = OnBackgroundDark,
+    onBackground = TextColorDark,
     surface = SurfaceDark,
-    onSurface = OnSurfaceDark,
+    onSurface = TextColorDark,
+
+    surfaceVariant = SurfaceVariantDark,
+    onSurfaceVariant = OnSurfaceVariantDark,
+
+    outline = OutlineDark,
+
     error = ErrorColor,
     onError = OnErrorColor,
 )
-
-// -----------------------------
-// ОСНОВНАЯ COMPOSE-ТЕМА
-// -----------------------------
-// Новый "канонический" вход: VacancyTheme (из Issue 7).
 
 @Composable
 fun VacancyTheme(
@@ -57,24 +67,14 @@ fun VacancyTheme(
     )
 }
 
-// -----------------------------
-// АЛИАСЫ ДЛЯ СОВМЕСТИМОСТИ
-// -----------------------------
-// 1) AppTheme — как в Issue 7.3
-// 2) PracticumAndroidDiplomaTheme — как в Issue 3
-
 @Composable
 fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
-) {
-    VacancyTheme(darkTheme = darkTheme, content = content)
-}
+) = VacancyTheme(darkTheme, content)
 
 @Composable
 fun PracticumAndroidDiplomaTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
-) {
-    VacancyTheme(darkTheme = darkTheme, content = content)
-}
+) = VacancyTheme(darkTheme, content)

@@ -17,6 +17,9 @@ retrofit = "2.9.0"
 converterGson = "2.9.0"
 coil = "2.6.0"
 
+paging-runtime = "3.2.1"
+paging-compose = "3.3.0-alpha03"
+
 detekt = "1.23.3"
 detektTwitterComposeRules ="0.0.26"
 
@@ -92,4 +95,10 @@ unitTests-junit = "junit:junit:4.13.2"
 uiTests-junitExt = "androidx.test.ext:junit:1.1.5"
 uiTests-espressoCore = "androidx.test.espresso:espresso-core:3.5.1"
 
+# Paging
+paging-runtime = { group = "androidx.paging", name = "paging-runtime-ktx", version.ref = "paging-runtime" }
+paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging-compose" }
+
 [bundles]
+
+paging = ["paging-runtime", "paging-compose"]

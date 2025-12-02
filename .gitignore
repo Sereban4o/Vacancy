@@ -1,15 +1,6 @@
-# IntelliJ
+# IntelliJ / Android Studio
+.idea/
 *.iml
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-/.idea/kotlinc.xml
-/.idea/gradle.xml
-/.idea/compiler.xml
-/.idea/misc.xml
 
 # Gradle files
 .gradle/

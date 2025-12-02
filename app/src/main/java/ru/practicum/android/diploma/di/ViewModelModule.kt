@@ -1,14 +1,32 @@
 package ru.practicum.android.diploma.di
 
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
-// import ru.practicum.android.diploma.presentation.search.SearchViewModel
+import ru.practicum.android.diploma.presentation.favorites.FavoritesViewModel
+import ru.practicum.android.diploma.presentation.search.SearchViewModel
+import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel
 
 val viewModelModule = module {
 
-    // как только появится ViewModel — раскомментируем и добавим
-    // viewModel {
-    //     SearchViewModel(
-    //         interactor = get()
-    //     )
-    // }
+    viewModel {
+        SearchViewModel(
+            searchVacanciesInteractor = get()
+        )
+    }
+
+    // ViewModel БЕЗ параметров, Koin сам даст SavedStateHandle
+    viewModel {
+        VacancyDetailsViewModel(
+            savedStateHandle = get(),
+            interactor = get(),
+            favoritesInteractor = get()
+        )
+    }
+
+    viewModel {
+        FavoritesViewModel(
+            get(),
+            get()
+        )
+    }
 }
