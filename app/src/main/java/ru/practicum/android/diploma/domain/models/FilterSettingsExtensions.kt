@@ -10,7 +10,7 @@ fun FilterSettings.isActiveForSearch(): Boolean {
 
     // Чекбокс активен только если true.
     // false по ТЗ = как будто фильтра нет.
-    val hasWithSalaryOnly = withSalaryOnly   // true → учитываем, false → нет
+    val hasWithSalaryOnly = withSalaryOnly // true → учитываем, false → нет
 
     // Отрасль активна, если есть объект и у него непустой id
     val hasIndustry = industry?.id?.isNotBlank() == true

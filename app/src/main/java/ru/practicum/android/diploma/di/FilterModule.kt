@@ -1,9 +1,11 @@
-import org.koin.dsl.module
+package ru.practicum.android.diploma.di
+
 import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.module
 import ru.practicum.android.diploma.data.filter.FilterPreferencesDataSource
 import ru.practicum.android.diploma.data.filter.FilterSettingsRepositoryImpl
-import ru.practicum.android.diploma.domain.repository.FilterSettingsRepository
 import ru.practicum.android.diploma.domain.interactors.FilterSettingsInteractor
+import ru.practicum.android.diploma.domain.repository.FilterSettingsRepository
 
 val filterModule = module {
 
@@ -25,7 +27,7 @@ val filterModule = module {
     // Repository
     single<FilterSettingsRepository> {
         FilterSettingsRepositoryImpl(
-            dataSource  = get()
+            dataSource = get()
         )
     }
 

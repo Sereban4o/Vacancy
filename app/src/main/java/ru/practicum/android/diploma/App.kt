@@ -4,12 +4,12 @@ import android.app.Application
 import android.util.Log
 import coil.ImageLoader
 import coil.ImageLoaderFactory
-import filterModule
 import okhttp3.OkHttpClient
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import ru.practicum.android.diploma.di.convertersModule
 import ru.practicum.android.diploma.di.databaseModule
+import ru.practicum.android.diploma.di.filterModule
 import ru.practicum.android.diploma.di.interactorModule
 import ru.practicum.android.diploma.di.networkModule
 import ru.practicum.android.diploma.di.repositoryModule
