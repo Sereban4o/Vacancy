@@ -9,7 +9,7 @@ import ru.practicum.android.diploma.domain.models.VacancyContacts
 import ru.practicum.android.diploma.domain.models.VacancyDetails
 
 class VacancyDbConvertor(
-    private val gson: Gson   // <-- ВОТ ТАК
+    private val gson: Gson // убран gson
 ) {
 
     fun map(vacancy: VacancyDetails): VacancyEntity {
