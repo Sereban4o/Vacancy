@@ -26,29 +26,30 @@ class VacanciesRemoteDataSourceImpl(
         Log.d("FILTER_CHAIN", "Remote → sending request = $request")
 
         // обязательные
-        params["text"] = request.text
-        params["page"] = request.page.toString()
+        params[PARAM_TEXT] = request.text
+        params[PARAM_PAGE] = request.page.toString()
 
         // опциональные — добавляем только если заданы
+
         request.regionId?.let { regionId ->
             // area в Practicum API
-            params["area"] = regionId
+            params[PARAM_AREA] = regionId
         }
 
         request.industryId?.let { industryId ->
-            params["industry"] = industryId
+            params[PARAM_INDUSTRY] = industryId
         }
 
         request.salaryFrom?.let { salary ->
             // Practicum: параметр называется просто "salary"
-            params["salary"] = salary.toString()
+            params[PARAM_SALARY] = salary.toString()
         }
 
         if (request.onlyWithSalary) {
-            params["only_with_salary"] = "true"
+            params[PARAM_ONLY_WITH_SALARY] = VALUE_TRUE
         }
 
-        // НИКАКОГО per_page, salary_from, salary_to, schedule тут больше нет
+        // Никакого per_page, salary_from, salary_to, schedule тут нет
 
         networkClient.execute {
             searchVacancies(params)
@@ -75,4 +76,15 @@ class VacanciesRemoteDataSourceImpl(
                 getIndustries()
             }
         }
+
+    companion object {
+        private const val PARAM_TEXT = "text"
+        private const val PARAM_PAGE = "page"
+        private const val PARAM_AREA = "area"
+        private const val PARAM_INDUSTRY = "industry"
+        private const val PARAM_SALARY = "salary"
+        private const val PARAM_ONLY_WITH_SALARY = "only_with_salary"
+
+        private const val VALUE_TRUE = "true"
+    }
 }

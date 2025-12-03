@@ -188,6 +188,25 @@ class SearchViewModel(
         }
     }
 
+    fun onFiltersApplied() {
+        viewModelScope.launch {
+            // 1. обновляем флаг hasActiveFilter (для подсветки иконки фильтра)
+            val filterSettings = filterSettingsInteractor.getFilterSettings()
+            _uiState.update { current ->
+                current.copy(
+                    hasActiveFilter = filterSettings.isActiveForSearch()
+                )
+            }
+
+            // 2. если строка поиска не пустая — переисполняем запрос
+            val currentQuery = _uiState.value.query
+            if (currentQuery.isNotBlank()) {
+                // триггерим заново цепочку pagingResultDataFlow
+                searchQueryFlow.value = currentQuery
+            }
+        }
+    }
+
     companion object {
         private const val SEARCH_DELAY_MS: Long = 2_000L
     }

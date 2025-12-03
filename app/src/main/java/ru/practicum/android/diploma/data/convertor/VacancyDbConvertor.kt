@@ -8,9 +8,9 @@ import ru.practicum.android.diploma.data.db.VacancyEntity
 import ru.practicum.android.diploma.domain.models.VacancyContacts
 import ru.practicum.android.diploma.domain.models.VacancyDetails
 
-class VacancyDbConvertor {
-
-    private val gson = Gson()
+class VacancyDbConvertor(
+    private val gson: Gson   // <-- ВОТ ТАК
+) {
 
     fun map(vacancy: VacancyDetails): VacancyEntity {
         return VacancyEntity(
@@ -30,7 +30,6 @@ class VacancyDbConvertor {
             gson.toJson(vacancy.skills),
             gson.toJson(vacancy.contacts),
             vacancy.vacancyUrl
-
         )
     }
 

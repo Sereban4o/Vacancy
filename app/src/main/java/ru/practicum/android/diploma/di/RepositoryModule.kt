@@ -2,6 +2,7 @@ package ru.practicum.android.diploma.di
 
 import org.koin.dsl.module
 import ru.practicum.android.diploma.data.convertor.VacancyDbConvertor
+import ru.practicum.android.diploma.data.db.AppDatabase
 import ru.practicum.android.diploma.data.network.VacanciesRemoteDataSource
 import ru.practicum.android.diploma.data.network.VacanciesRemoteDataSourceImpl
 import ru.practicum.android.diploma.data.repository.VacanciesRepositoryImpl
@@ -18,9 +19,13 @@ val repositoryModule = module {
     single<VacanciesRemoteDataSource> {
         VacanciesRemoteDataSourceImpl(get()) // get() = NetworkClient
     }
+
     single<FavoritesRepository> {
-        FavoritesRepositoryImpl(get(), get())
+        FavoritesRepositoryImpl(
+            vacancyDao = get(),
+            vacancyDbConvertor = get()
+        )
     }
 
-    factory { VacancyDbConvertor() }
+    factory { VacancyDbConvertor(get()) }
 }

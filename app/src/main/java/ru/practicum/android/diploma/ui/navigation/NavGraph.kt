@@ -9,6 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import org.koin.androidx.compose.koinViewModel
 import ru.practicum.android.diploma.presentation.favorites.FavoritesViewModel
+import ru.practicum.android.diploma.presentation.filter.FilterViewModel
+import ru.practicum.android.diploma.presentation.search.SearchViewModel
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel.Companion.ARG_FROM_API
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel.Companion.ARG_VACANCY_ID
@@ -37,7 +39,7 @@ fun NavGraph(
         // 🟦 Главный экран
         composable(Screen.Main.route) {
             MainScreen(
-                onFilterClick = { navHostController.navigate(Screen.Filter.route) },
+                onFilterClick = { navHostController.navigate(Screen.FilterSettings.route) },
 //                onFilterClick = {
 //                    // ⬇️ ВРЕМЕННО тест на экран место работы
 //                    navHostController.navigate(Screen.WorkPlace.route)
@@ -49,15 +51,26 @@ fun NavGraph(
         }
 
         // Фильтр 🔹
-        composable(Screen.Filter.route) {
+        composable(Screen.FilterSettings.route) {
+            // Тот же SearchViewModel, что и на главном экране
+            val searchViewModel: SearchViewModel = koinViewModel()
+            val filterViewModel: FilterViewModel = koinViewModel()
+
             FilterSettingsScreen(
-                onBack = { navHostController.popBackStack() },
+                onBack = { navHostController.popBackStack() }, // для стрелки "Назад"
                 onWorkPlaceClick = {
                     navHostController.navigate(Screen.WorkPlace.route)
                 },
                 onIndustryClick = {
                     navHostController.navigate(Screen.Industry.route)
-                }
+                },
+                onApply = {
+                    // 1️⃣ применяем фильтры (обновляем флаг и, при необходимости, перезапускаем поиск)
+                    searchViewModel.onFiltersApplied()
+                    // 2️⃣ возвращаемся на экран поиска
+                    navHostController.popBackStack()
+                },
+                viewModel = filterViewModel
             )
         }
 

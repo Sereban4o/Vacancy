@@ -75,8 +75,6 @@ class IndustryViewModel(
         viewModelScope.launch {
             val trimmed = newQuery.trim()
 
-            // ТЗ: перед поиском рекомендовано очищать выбранную отрасль
-            // 1. Фильтруем список
             val filtered = if (trimmed.isEmpty()) {
                 fullList
             } else {
@@ -85,34 +83,21 @@ class IndustryViewModel(
                 }
             }
 
-            // 2. Автовыбор, если осталась ровно ОДНА отрасль
-            val autoSelectedId = if (trimmed.isNotEmpty() && filtered.size == 1) {
-                filtered.first().id
-            } else {
-                null
-            }
-
-            _uiState.update {
-                it.copy(
+            _uiState.update { state ->
+                state.copy(
                     query = trimmed,
                     industries = filtered,
-                    selectedIndustryId = autoSelectedId
+                    // сохраняем выбор, только если выбранная отрасль всё ещё в фильтрованном списке
+                    selectedIndustryId = state.selectedIndustryId
+                        ?.takeIf { id -> filtered.any { it.id == id } }
                 )
             }
         }
     }
 
     fun onIndustryClick(industryId: String) {
-        // находим выбранную отрасль в полном списке
-        val selected = fullList.firstOrNull { it.id == industryId } ?: return
-
         _uiState.update {
             it.copy(
-                // кладём название выбранной отрасли в поле ввода
-                // query = selected.name, // опция показа клика в поле ввода
-                // сужаем список до одной выбранной отрасли
-                industries = listOf(selected),
-                // помечаем её как выбранную
                 selectedIndustryId = industryId
             )
         }

@@ -30,6 +30,7 @@ fun FilterSettingsScreen(
     onBack: () -> Unit,
     onWorkPlaceClick: () -> Unit,
     onIndustryClick: () -> Unit,
+    onApply: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: FilterViewModel = koinViewModel()
 ) {
@@ -105,7 +106,7 @@ fun FilterSettingsScreen(
                         textRes = R.string.apply, // "Применить"
                         onClick = {
                             viewModel.apply()
-                            onBack()
+                            onApply()
                         },
                         modifier = Modifier.fillMaxWidth()
                     )

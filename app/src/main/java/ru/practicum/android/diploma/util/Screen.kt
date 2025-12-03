@@ -10,6 +10,6 @@ sealed class Screen(val route: String) {
     data object Country : Screen("country")
     data object Region : Screen("region")
     data object Industry : Screen("industry")
-    data object Filter : Screen("filter")
     data object VacancyDetails : Screen("vacancy_details")
+    data object FilterSettings : Screen("filter_settings")
 }
