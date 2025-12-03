@@ -23,77 +23,93 @@ class CountryViewModel(
     private val _uiState = MutableStateFlow(CountryUiState(isLoading = true))
     val uiState: StateFlow<CountryUiState> = _uiState.asStateFlow()
 
-    // весь список, если потом понадобится фильтрация
     private var fullList: List<FilterParameter> = emptyList()
 
     init {
         loadCountries()
     }
 
+    // ---------------------------
+    // 1. Основная функция
+    // ---------------------------
     private fun loadCountries() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, isError = false) }
+            startLoading()
+
             try {
-                fullList = countriesInteractor.getCountries()
+                val list = countriesInteractor.getCountries()
+                fullList = sortSpecialCountriesToBottom(list)
+                showContent(fullList)
 
-                // 🔥 Добавляем Андрей список спец-названий
-                val specialNames = setOf(
-                    "Другие регионы",
-                    "Другие страны",
-                    "Другая страна",
-                    "Прочее"
-                )
-
-                // 🔥 Переносим такие элементы в самый низ
-                fullList = fullList.sortedWith(
-                    compareBy { it.name in specialNames }
-                )
-
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        isError = false,
-                        isNetworkError = false,
-                        countries = fullList
-                    )
-                }
             } catch (e: IOException) {
-                // нет интернета
-                Log.w(TAG, "Network error while loading countries", e)
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        isError = true,
-                        isNetworkError = true
-                    )
-                }
+                handleNetworkError(e)
+
             } catch (e: HttpException) {
-                // ошибка HTTP (4xx / 5xx)
-                Log.e(TAG, "HTTP error while loading countries: ${e.code()}", e)
-                _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        isError = true,
-                        isNetworkError = false
-                    )
-                }
+                handleHttpError(e)
             }
         }
     }
 
-    /**
-     * Пользователь выбрал страну: сохраняем её в FilterSettings
-     * и сбрасываем регион (по логике — старый регион может не подходить).
-     */
+    // ---------------------------
+    // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+    // ---------------------------
+
+    private fun startLoading() {
+        _uiState.update { it.copy(isLoading = true, isError = false) }
+    }
+
+    private fun sortSpecialCountriesToBottom(list: List<FilterParameter>): List<FilterParameter> {
+        val special = setOf(
+            "Другие регионы",
+            "Другие страны",
+            "Другая страна",
+            "Прочее"
+        )
+        return list.sortedWith(compareBy { it.name in special })
+    }
+
+    private fun showContent(list: List<FilterParameter>) {
+        _uiState.update {
+            it.copy(
+                isLoading = false,
+                isError = false,
+                isNetworkError = false,
+                countries = list
+            )
+        }
+    }
+
+    private fun handleNetworkError(e: IOException) {
+        Log.w(TAG, "Network error while loading countries", e)
+        _uiState.update {
+            it.copy(
+                isLoading = false,
+                isError = true,
+                isNetworkError = true
+            )
+        }
+    }
+
+    private fun handleHttpError(e: HttpException) {
+        Log.e(TAG, "HTTP error while loading countries: ${e.code()}", e)
+        _uiState.update {
+            it.copy(
+                isLoading = false,
+                isError = true,
+                isNetworkError = false
+            )
+        }
+    }
+
+    // ---------------------------
+    // Выбор страны
+    // ---------------------------
     suspend fun selectCountry(countryId: String): Boolean {
         val selected = fullList.firstOrNull { it.id == countryId } ?: return false
 
         val current: FilterSettings = filterSettingsInteractor.getFilterSettings()
         val updated = current.copy(
-            country = FilterParameter(
-                id = selected.id,
-                name = selected.name
-            ),
+            country = FilterParameter(selected.id, selected.name),
             region = null // 🔹 при смене страны регион сбрасываем
         )
         filterSettingsInteractor.saveFilterSettings(updated)

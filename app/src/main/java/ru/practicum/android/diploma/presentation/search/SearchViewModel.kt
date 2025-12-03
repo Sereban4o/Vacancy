@@ -30,7 +30,6 @@ import ru.practicum.android.diploma.ui.main.SearchErrorType
 import ru.practicum.android.diploma.ui.main.SearchUiState
 import java.io.IOException
 
-
 class SearchViewModel(
     private val searchVacanciesInteractor: SearchVacanciesInteractor,
     private val filterSettingsInteractor: FilterSettingsInteractor,
@@ -43,7 +42,8 @@ class SearchViewModel(
     private val searchQueryFlow = MutableStateFlow("")
 
     // 🔹 отдельный flow с ТЕКУЩИМИ фильтрами (то, чего нам не хватало)
-    private val filtersFlow = MutableStateFlow(SearchFilters(
+    private val filtersFlow = MutableStateFlow(
+        SearchFilters(
         regionId = null,
         industryId = null,
         salaryFrom = null,
@@ -56,9 +56,6 @@ class SearchViewModel(
         viewModelScope.launch {
             val filterSettings = filterSettingsInteractor.getFilterSettings()
             val searchFilters = filterSettings.toSearchFilters()
-
-            Log.d("FILTER_DEBUG", "INIT → FilterSettings = $filterSettings")
-            Log.d("FILTER_DEBUG", "INIT → toSearchFilters() → $searchFilters")
 
             filtersFlow.value = searchFilters
 
