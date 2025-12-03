@@ -2,7 +2,6 @@ package ru.practicum.android.diploma.data.filter
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
 import ru.practicum.android.diploma.domain.models.FilterSettings
 import ru.practicum.android.diploma.domain.repository.FilterSettingsRepository

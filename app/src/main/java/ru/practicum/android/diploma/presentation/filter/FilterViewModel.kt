@@ -90,9 +90,8 @@ class FilterViewModel(
         }
     }
 
-    suspend fun apply(): Boolean {
-        // всё уже сохранено на каждом шаге, просто возвращаем true
-        return true
+    fun apply() {
+        // no-op: настройки уже сохранены через save()
     }
 
     private fun save() = viewModelScope.launch {

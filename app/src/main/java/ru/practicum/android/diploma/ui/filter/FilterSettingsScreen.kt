@@ -22,9 +22,9 @@ import ru.practicum.android.diploma.presentation.filter.FilterViewModel
 import ru.practicum.android.diploma.ui.components.BackButton
 import ru.practicum.android.diploma.ui.components.Heading
 import ru.practicum.android.diploma.ui.components.PrimaryBottomButton
+import ru.practicum.android.diploma.ui.components.SalaryOnlyCheckbox
 import ru.practicum.android.diploma.ui.components.ScreenScaffold
 import ru.practicum.android.diploma.ui.components.SecondaryTextButton
-import ru.practicum.android.diploma.ui.components.SalaryOnlyCheckbox
 import ru.practicum.android.diploma.ui.filter.workplace.WorkPlaceRow
 
 @Composable
@@ -107,10 +107,8 @@ fun FilterSettingsScreen(
                     PrimaryBottomButton(
                         textRes = R.string.apply, // "Применить"
                         onClick = {
-                            scope.launch {
-                                viewModel.apply()
-                                onBack()
-                            }
+                            viewModel.apply()
+                            onBack()
                         },
                         modifier = Modifier.fillMaxWidth()
                     )

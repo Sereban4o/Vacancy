@@ -26,11 +26,11 @@ import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.presentation.filter.region.RegionUiState
 import ru.practicum.android.diploma.presentation.filter.region.RegionViewModel
 import ru.practicum.android.diploma.ui.components.BackButton
+import ru.practicum.android.diploma.ui.components.FullscreenProgress
 import ru.practicum.android.diploma.ui.components.Heading
 import ru.practicum.android.diploma.ui.components.InfoState
 import ru.practicum.android.diploma.ui.components.ScreenScaffold
 import ru.practicum.android.diploma.ui.components.SearchInputField
-import ru.practicum.android.diploma.ui.components.FullscreenProgress
 import ru.practicum.android.diploma.ui.theme.SearchFieldTextColor
 import ru.practicum.android.diploma.util.TypeState
 
@@ -84,7 +84,7 @@ fun RegionScreen(
                         onRegionClick = { id ->
                             coroutineScope.launch {
                                 val ok = viewModel.selectRegion(id)
-                                if (ok) onBack()   // возвращаемся на WorkPlaceScreen
+                                if (ok) onBack() // возвращаемся на WorkPlaceScreen
                             }
                         }
                     )
