@@ -20,31 +20,55 @@ private fun formatNumber(value: Int): String {
 }
 
 // Все валюты из стандартной библиотеки: код -> Currency
-// Без try/catch, чисто программно.
 private val availableCurrencies: Map<String, Currency> =
     Currency.getAvailableCurrencies().associateBy { it.currencyCode.uppercase(Locale.ROOT) }
+
+// Оверрайды для валют, которые мы хотим показывать не как код.
+private val currencySymbolOverrides: Map<String, String> = mapOf(
+    "RUR" to "₽",
+    "RUB" to "₽",
+    "USD" to "$",
+    "EUR" to "€",
+    "GBP" to "£",
+    "HKD" to "HK$",
+    "SEK" to "kr",
+    "SGD" to "S$"
+)
 
 /**
  * Маппинг кода валюты из API в человекочитаемое отображение для UI.
  *
- * - Для "RUR" делаем спец-кейс → "₽"
- * - Для остальных кодов:
- *      * если это валидный ISO-код, берём Currency и его symbol
- *      * если нет — показываем код как есть
+ * Укладываемся в ограничения detekt:
+ *  - без try/catch
+ *  - не больше 2 return (здесь всего 1).
  */
 private fun mapCurrencyCodeToDisplay(code: String?): String {
-    if (code.isNullOrBlank()) return ""
+    val upperCode = code?.uppercase(Locale.ROOT).orEmpty()
 
-    val upperCode = code.uppercase(Locale.ROOT)
-
-    // Спец-кейс для рублей из ТЗ/бэка
-    if (upperCode == "RUR" || upperCode == "RUB") {
-        return "₽"
+    val result = if (upperCode.isEmpty()) {
+        ""
+    } else {
+        val override = currencySymbolOverrides[upperCode]
+        if (override != null) {
+            override
+        } else {
+            val currency = availableCurrencies[upperCode]
+            if (currency != null) {
+                val symbol = currency.symbol
+                if (symbol.equals(upperCode, ignoreCase = true)) {
+                    // Если символ совпадает с кодом — показываем код
+                    // (или можно добавить в currencySymbolOverrides при необходимости)
+                    upperCode
+                } else {
+                    symbol
+                }
+            } else {
+                upperCode
+            }
+        }
     }
 
-    val currency = availableCurrencies[upperCode] ?: return code
-    // символ по локали устройства (без устаревших конструкторов Locale)
-    return currency.symbol
+    return result
 }
 
 /**
