@@ -15,4 +15,3 @@ data class SearchFilters(
     val onlyWithSalary: Boolean
     // remoteOnly и т.п. можно вообще убрать, если не нужны
 )
-
