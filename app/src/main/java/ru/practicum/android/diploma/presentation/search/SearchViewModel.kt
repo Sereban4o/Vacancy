@@ -1,6 +1,5 @@
 package ru.practicum.android.diploma.presentation.search
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.CombinedLoadStates
@@ -44,11 +43,11 @@ class SearchViewModel(
     // 🔹 отдельный flow с ТЕКУЩИМИ фильтрами (то, чего нам не хватало)
     private val filtersFlow = MutableStateFlow(
         SearchFilters(
-        regionId = null,
-        industryId = null,
-        salaryFrom = null,
-        onlyWithSalary = false
-    )
+            regionId = null,
+            industryId = null,
+            salaryFrom = null,
+            onlyWithSalary = false
+        )
     )
 
     init {
@@ -76,11 +75,7 @@ class SearchViewModel(
             val filterSettings = filterSettingsInteractor.getFilterSettings()
             val searchFilters = filterSettings.toSearchFilters()
 
-            Log.d("FILTER_DEBUG", "refreshFilterState() → FilterSettings = $filterSettings")
-            Log.d("FILTER_DEBUG", "refreshFilterState() → toSearchFilters() → $searchFilters")
-
             filtersFlow.value = searchFilters
-
             _uiState.update { current ->
                 current.copy(
                     hasActiveFilter = filterSettings.isActiveForSearch()
@@ -92,7 +87,7 @@ class SearchViewModel(
     /**
      * Основной поток PagingData<Vacancy>.
      *
-     * 🔹 ВАЖНО: теперь мы комбинируем:
+     * 🔹 ВАЖНО: комбинируем:
      *   - текст запроса (searchQueryFlow)
      *   - фильтры (filtersFlow)
      *
@@ -119,7 +114,6 @@ class SearchViewModel(
                     }
                     flowOf(PagingData.empty())
                 } else {
-                    Log.d("FILTER_CHAIN", "VM → filters = $filters")
                     _uiState.update { current ->
                         current.copy(
                             isLoading = true,
@@ -210,9 +204,6 @@ class SearchViewModel(
         viewModelScope.launch {
             val filterSettings = filterSettingsInteractor.getFilterSettings()
             val searchFilters = filterSettings.toSearchFilters()
-
-            Log.d("FILTER_DEBUG", "onFiltersApplied() → FilterSettings = $filterSettings")
-            Log.d("FILTER_DEBUG", "onFiltersApplied() → toSearchFilters() → $searchFilters")
 
             // 1. подсветка иконки
             _uiState.update { current ->
