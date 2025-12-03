@@ -13,7 +13,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import org.koin.androidx.compose.koinViewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.presentation.search.SearchViewModel
 import ru.practicum.android.diploma.ui.components.ActionIcon
@@ -24,10 +23,10 @@ import ru.practicum.android.diploma.ui.theme.TextColorDark
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
+    searchViewModel: SearchViewModel,
     onFilterClick: () -> Unit,
     onVacancyClick: (String) -> Unit
 ) {
-    val searchViewModel: SearchViewModel = koinViewModel()
     val uiState = searchViewModel.uiState.collectAsState().value
 
     // 🔹 КАЖДЫЙ раз, когда MainScreen попадает в композицию (в т.ч. после popBackStack с фильтра),

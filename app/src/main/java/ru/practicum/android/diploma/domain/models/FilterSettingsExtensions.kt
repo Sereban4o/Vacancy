@@ -10,8 +10,13 @@ fun FilterSettings.isActiveForSearch(): Boolean {
     val hasWithSalaryOnly = withSalaryOnly
     val hasIndustry = industry?.id?.isNotBlank() == true
 
+    // 🔥 Сергей условия: фильтр активен, если выбрана страна или регион
+    val hasCountry = country != null
+    val hasRegion = region != null
+
     // 👉 сюда можно будет добавить страну/регион, если ревьюеры будут требовать
     return hasSalary || hasWithSalaryOnly || hasIndustry
+        || hasCountry || hasRegion // 🔵 ++(country & area)
 }
 
 /**

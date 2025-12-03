@@ -31,6 +31,9 @@ fun NavGraph(
     startDestination: String = Screen.Main.route,
     navHostController: NavHostController
 ) {
+    // 🔹 ОДИН общий экземпляр (Sergey note on SearchScreen refresh)
+    val searchViewModel: SearchViewModel = koinViewModel()
+
     NavHost(
         navController = navHostController,
         startDestination = startDestination,
@@ -39,11 +42,8 @@ fun NavGraph(
         // 🟦 Главный экран
         composable(Screen.Main.route) {
             MainScreen(
+                searchViewModel = searchViewModel,
                 onFilterClick = { navHostController.navigate(Screen.FilterSettings.route) },
-//                onFilterClick = {
-//                    // ⬇️ ВРЕМЕННО тест на экран место работы
-//                    navHostController.navigate(Screen.WorkPlace.route)
-//                },
                 onVacancyClick = { id ->
                     navHostController.navigateToVacancyDetails(id, true)
                 }
@@ -52,8 +52,6 @@ fun NavGraph(
 
         // Фильтр 🔹
         composable(Screen.FilterSettings.route) {
-            // Тот же SearchViewModel, что и на главном экране
-            val searchViewModel: SearchViewModel = koinViewModel()
             val filterViewModel: FilterViewModel = koinViewModel()
 
             FilterSettingsScreen(

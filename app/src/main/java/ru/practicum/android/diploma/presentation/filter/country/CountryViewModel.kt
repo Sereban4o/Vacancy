@@ -36,6 +36,19 @@ class CountryViewModel(
             try {
                 fullList = countriesInteractor.getCountries()
 
+                // 🔥 Добавляем Андрей список спец-названий
+                val specialNames = setOf(
+                    "Другие регионы",
+                    "Другие страны",
+                    "Другая страна",
+                    "Прочее"
+                )
+
+                // 🔥 Переносим такие элементы в самый низ
+                fullList = fullList.sortedWith(
+                    compareBy { it.name in specialNames }
+                )
+
                 _uiState.update {
                     it.copy(
                         isLoading = false,
