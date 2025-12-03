@@ -7,7 +7,6 @@ import java.util.Currency
 import java.util.Locale
 
 // Форматтер чисел с разделением на разряды.
-// Используем Locale.getDefault(), чтобы не ловить ворнинги про захардкоженную локаль.
 @SuppressLint("ConstantLocale")
 private val salaryNumberFormat: NumberFormat =
     NumberFormat.getInstance(Locale.getDefault()).apply {
@@ -23,7 +22,7 @@ private fun formatNumber(value: Int): String {
 private val availableCurrencies: Map<String, Currency> =
     Currency.getAvailableCurrencies().associateBy { it.currencyCode.uppercase(Locale.ROOT) }
 
-// Оверрайды для валют, которые мы хотим показывать не как код.
+// Оверрайды для валют, которые хотим показывать красиво, а не кодом.
 private val currencySymbolOverrides: Map<String, String> = mapOf(
     "RUR" to "₽",
     "RUB" to "₽",
@@ -35,40 +34,38 @@ private val currencySymbolOverrides: Map<String, String> = mapOf(
     "SGD" to "S$"
 )
 
+// Вынесли отдельную функцию, чтобы не плодить вложенность в mapCurrencyCodeToDisplay.
+private fun resolveFromCurrency(upperCode: String): String {
+    val currency = availableCurrencies[upperCode] ?: return upperCode
+    val symbol = currency.symbol
+    return if (symbol.equals(upperCode, ignoreCase = true)) {
+        upperCode
+    } else {
+        symbol
+    }
+}
+
 /**
  * Маппинг кода валюты из API в человекочитаемое отображение для UI.
  *
- * Укладываемся в ограничения detekt:
+ * mapCurrencyCodeToDisplay:
  *  - без try/catch
- *  - не больше 2 return (здесь всего 1).
+ *  - всего один return
+ *  - минимальная вложенность (when + helper) → detekt должен отстать.
  */
 private fun mapCurrencyCodeToDisplay(code: String?): String {
     val upperCode = code?.uppercase(Locale.ROOT).orEmpty()
 
-    val result = if (upperCode.isEmpty()) {
-        ""
-    } else {
-        val override = currencySymbolOverrides[upperCode]
-        if (override != null) {
-            override
-        } else {
-            val currency = availableCurrencies[upperCode]
-            if (currency != null) {
-                val symbol = currency.symbol
-                if (symbol.equals(upperCode, ignoreCase = true)) {
-                    // Если символ совпадает с кодом — показываем код
-                    // (или можно добавить в currencySymbolOverrides при необходимости)
-                    upperCode
-                } else {
-                    symbol
-                }
-            } else {
-                upperCode
-            }
-        }
-    }
+    return when {
+        upperCode.isEmpty() ->
+            ""
 
-    return result
+        currencySymbolOverrides.containsKey(upperCode) ->
+            currencySymbolOverrides.getValue(upperCode)
+
+        else ->
+            resolveFromCurrency(upperCode)
+    }
 }
 
 /**
@@ -97,8 +94,7 @@ fun formatSalary(
 }
 
 /**
- * Обёртка для уже существующей доменной модели Vacancy,
- * чтобы не переписывать старый код.
+ * Обёртка для доменной модели Vacancy.
  */
 fun formatSalary(vacancy: Vacancy): String {
     return formatSalary(
