@@ -44,9 +44,9 @@ fun WorkPlaceRow(
             }
 
             val labelStyle = if (value == null) {
-                MaterialTheme.typography.bodyMedium  // 16sp
+                MaterialTheme.typography.bodyMedium // 16sp
             } else {
-                MaterialTheme.typography.labelSmall  // 12sp
+                MaterialTheme.typography.labelSmall // 12sp
             }
 
             Text(

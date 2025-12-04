@@ -120,7 +120,7 @@ fun IndustryScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
-            }else {
+            } else {
                 bottomPaddingDp = 0.dp
             }
         }
