@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +26,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.ui.components.ActionIcon
@@ -51,24 +54,26 @@ fun ExpectedSalaryField(
                 color = fieldBackground,
                 shape = RoundedCornerShape(12.dp)
             )
-            .padding(horizontal = 16.dp, vertical = 10.dp),
+            .padding(vertical = 10.dp),
         contentAlignment = Alignment.CenterStart
     ) {
         BasicTextField(
             value = value,
             onValueChange = { new ->
-                if (new.all { it.isDigit() }) {
-                    onValueChange(new)
-                }
+                if (new.all { it.isDigit() }) onValueChange(new)
             },
             singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number
+            ),
+            keyboardActions = KeyboardActions(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .onFocusChanged { state -> isFocused = state.isFocused },
             textStyle = MaterialTheme.typography.bodyMedium.copy(
                 color = SearchFieldTextColor
             ),
             cursorBrush = SolidColor(MaterialTheme.colorScheme.tertiary),
-            modifier = Modifier
-                .fillMaxWidth()
-                .onFocusChanged { state -> isFocused = state.isFocused },
             decorationBox = { innerTextField ->
                 SalaryFieldContent(
                     value = value,
@@ -110,7 +115,9 @@ private fun SalaryFieldContent(
     innerTextField: @Composable () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
