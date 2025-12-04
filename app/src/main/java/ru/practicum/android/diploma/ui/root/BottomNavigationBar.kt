@@ -27,19 +27,21 @@ import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.ui.theme.BottomNavActive
 import ru.practicum.android.diploma.ui.theme.BottomNavInactive
 import ru.practicum.android.diploma.ui.theme.DividerColor
-import ru.practicum.android.diploma.util.Routes
+import ru.practicum.android.diploma.util.Screen
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
     val entry by navController.currentBackStackEntryAsState()
-    val currentRoute = entry?.destination?.route
+    val rawRoute = entry?.destination?.route
+    // нормализуем route, на случай android-app://.../main
+    val currentRoute = rawRoute?.substringAfterLast("/")
 
     Column {
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(1.dp)
-                .background(DividerColor) // вместо R.color.divider
+                .background(DividerColor)
         )
 
         BottomAppBar(
@@ -54,9 +56,9 @@ fun BottomNavigationBar(navController: NavHostController) {
                 BottomNavigationItem(
                     icon = painterResource(R.drawable.ic_main_24),
                     label = stringResource(R.string.main),
-                    selected = currentRoute == Routes.Main.name,
+                    selected = currentRoute == Screen.Main.route,
                     onClick = {
-                        navController.navigate(Routes.Main.name) {
+                        navController.navigate(Screen.Main.route) {
                             launchSingleTop = true
                             restoreState = true
                             popUpTo(navController.graph.startDestinationId) {
@@ -69,9 +71,9 @@ fun BottomNavigationBar(navController: NavHostController) {
                 BottomNavigationItem(
                     icon = painterResource(R.drawable.ic_favorites_24),
                     label = stringResource(R.string.favorites),
-                    selected = currentRoute == Routes.Favorites.name,
+                    selected = currentRoute == Screen.Favorites.route,
                     onClick = {
-                        navController.navigate(Routes.Favorites.name) {
+                        navController.navigate(Screen.Favorites.route) {
                             launchSingleTop = true
                             restoreState = true
                             popUpTo(navController.graph.startDestinationId) {
@@ -84,9 +86,9 @@ fun BottomNavigationBar(navController: NavHostController) {
                 BottomNavigationItem(
                     icon = painterResource(R.drawable.ic_team_24),
                     label = stringResource(R.string.team),
-                    selected = currentRoute == Routes.Team.name,
+                    selected = currentRoute == Screen.Team.route,
                     onClick = {
-                        navController.navigate(Routes.Team.name) {
+                        navController.navigate(Screen.Team.route) {
                             launchSingleTop = true
                             restoreState = true
                             popUpTo(navController.graph.startDestinationId) {

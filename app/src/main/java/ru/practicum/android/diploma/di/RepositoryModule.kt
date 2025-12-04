@@ -18,9 +18,13 @@ val repositoryModule = module {
     single<VacanciesRemoteDataSource> {
         VacanciesRemoteDataSourceImpl(get()) // get() = NetworkClient
     }
+
     single<FavoritesRepository> {
-        FavoritesRepositoryImpl(get(), get())
+        FavoritesRepositoryImpl(
+            vacancyDao = get(),
+            vacancyDbConvertor = get()
+        )
     }
 
-    factory { VacancyDbConvertor() }
+    factory { VacancyDbConvertor(get()) }
 }

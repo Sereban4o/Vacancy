@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.data.paging
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import retrofit2.HttpException
@@ -40,6 +41,8 @@ class VacanciesPagingSource(
                 regionId = filters?.regionId,
                 industryId = filters?.industryId
             )
+
+            Log.d("FILTER_CHAIN", "Repository → request = $requestDto")
 
             val response = remoteDataSource.searchVacancies(requestDto)
 

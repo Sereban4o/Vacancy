@@ -97,6 +97,15 @@ fun InfoState(state: TypeState) {
                 stringResource(R.string.empty_list)
             )
         }
+
+        TypeState.NoIndustry -> {
+            Info(
+                painterResource(
+                    R.drawable.empty_list
+                ),
+                stringResource(R.string.industry_error)
+            )
+        }
     }
 }
 

@@ -183,7 +183,8 @@ private fun getNoResult(
     uiState: SearchUiState,
     pagedData: LazyPagingItems<Vacancy>
 ): Boolean {
-    return !uiState.isInitial &&
+    return uiState.query.isNotEmpty() &&
+        !uiState.isInitial &&
         !uiState.isLoading &&
         uiState.errorType == SearchErrorType.NONE &&
         pagedData.itemCount == 0 &&

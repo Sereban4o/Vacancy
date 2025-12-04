@@ -4,6 +4,7 @@ plugins {
     id("org.jetbrains.kotlin.kapt")
     id("org.jetbrains.kotlin.plugin.compose")
     id("ru.practicum.android.diploma.plugins.developproperties")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
 }
 
 android {
@@ -108,5 +109,18 @@ dependencies {
 
     // paging
     implementation(libs.bundles.paging)
+
+    // ------------------ 🔥 ABOUT KOTLINX.SERIALIZATION ------------------
+    // JSON сериализация (альтернативный вариант EPIC 4.1)
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     // endregion
+}
+
+/**
+ * 🔥 Обязательно для генерации сериализаторов
+ */
+kotlin {
+    sourceSets.all {
+        languageSettings.optIn("kotlinx.serialization.ExperimentalSerializationApi")
+    }
 }

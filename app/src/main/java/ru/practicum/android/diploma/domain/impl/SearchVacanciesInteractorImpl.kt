@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.domain.impl
 
+import android.util.Log
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import ru.practicum.android.diploma.domain.interactors.SearchVacanciesInteractor
@@ -17,6 +18,7 @@ class SearchVacanciesInteractorImpl(
         filters: SearchFilters?,
         onTotalFound: (Int) -> Unit
     ): Flow<PagingData<Vacancy>> {
+        Log.d("FILTER_CHAIN", "Interactor → query=$query, filters=$filters")
         return vacanciesRepository.searchVacanciesPaged(
             query = query,
             filters = filters,

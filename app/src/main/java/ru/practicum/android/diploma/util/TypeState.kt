@@ -18,5 +18,6 @@ enum class TypeState {
     NoVacancy,
     ServerError,
     ServerErrorVacancy,
-    EmptyList
+    EmptyList,
+    NoIndustry,
 }

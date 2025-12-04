@@ -3,55 +3,58 @@ package ru.practicum.android.diploma.data.dto
 import com.google.gson.annotations.SerializedName
 
 /**
- * Полная модель вакансии (VacancyDetail) из Practicum Vacancies API.
+ * DTO полных данных вакансии из Practicum Vacancies API.
  *
  * Используется:
- * - в ответе поиска: GET /vacancies (как элемент массива vacancies в VacancyResponse)
- * - в деталях вакансии: GET /vacancies/{id}
- *
- * Соответствует описанию VacancyDetail в документации:
- * VacancyDetail {
- *   id: string
- *   name: string
- *   description: string
- *   salary: Salary?
- *   address: Address?
- *   experience: Experience?
- *   schedule: Schedule?
- *   employment: Employment?
- *   contacts: Contacts?
- *   employer: Employer
- *   area: FilterArea
- *   skills: Array[string]
- *   url: string
- *   industry: FilterIndustry
- * }
+ *  - в списке вакансий (GET /vacancies)
+ *  - в деталях вакансии (GET /vacancies/{id})
  */
 data class VacancyDetailDto(
-    @SerializedName("id") val id: String,
-    @SerializedName("name") val name: String,
-    @SerializedName("description") val description: String,
-    @SerializedName("salary") val salary: SalaryDto?,
-    @SerializedName("address") val address: AddressDto?,
-    @SerializedName("experience") val experience: ExperienceDto?,
-    @SerializedName("schedule") val schedule: ScheduleDto?,
-    @SerializedName("employment") val employment: EmploymentDto?,
-    @SerializedName("contacts") val contacts: ContactsDto?,
-    @SerializedName("employer") val employer: EmployerDto,
-    @SerializedName("area") val area: FilterAreaDto,
-    @SerializedName("skills") val skills: List<String>?,
-    @SerializedName("url") val url: String,
-    @SerializedName("industry") val industry: FilterIndustryDto
+    @SerializedName("id")
+    val id: String,
+
+    @SerializedName("name")
+    val name: String,
+
+    @SerializedName("description")
+    val description: String,
+
+    @SerializedName("salary")
+    val salary: SalaryDto?,
+
+    @SerializedName("address")
+    val address: AddressDto?,
+
+    @SerializedName("experience")
+    val experience: ExperienceDto?,
+
+    @SerializedName("schedule")
+    val schedule: ScheduleDto?,
+
+    @SerializedName("employment")
+    val employment: EmploymentDto?,
+
+    @SerializedName("contacts")
+    val contacts: ContactsDto?,
+
+    @SerializedName("employer")
+    val employer: EmployerDto,
+
+    @SerializedName("area")
+    val area: FilterAreaDto,
+
+    @SerializedName("skills")
+    val skills: List<String>?,
+
+    @SerializedName("url")
+    val url: String,
+
+    @SerializedName("industry")
+    val industry: FilterIndustryDto
 )
 
 /**
- * Уровень зарплаты в деталях вакансии.
- *
- * Salary {
- *   from: integer?
- *   to: integer?
- *   currency: string?
- * }
+ * Зарплата вакансии.
  */
 data class SalaryDto(
     @SerializedName("from")
@@ -66,13 +69,6 @@ data class SalaryDto(
 
 /**
  * Адрес компании / места работы.
- *
- * Address {
- *   city: string
- *   street: string
- *   building: string
- *   fullAddress: string
- * }
  */
 data class AddressDto(
     @SerializedName("city")
@@ -84,17 +80,13 @@ data class AddressDto(
     @SerializedName("building")
     val building: String?,
 
+    // Полный адрес приходит в поле "raw"
     @SerializedName("raw")
-    val fullAddress: String? // берём поле raw
+    val fullAddress: String?
 )
 
 /**
  * Опыт работы.
- *
- * Experience {
- *   id: string
- *   name: string
- * }
  */
 data class ExperienceDto(
     @SerializedName("id")
@@ -106,11 +98,6 @@ data class ExperienceDto(
 
 /**
  * График работы.
- *
- * Schedule {
- *   id: string
- *   name: string
- * }
  */
 data class ScheduleDto(
     @SerializedName("id")
@@ -122,11 +109,6 @@ data class ScheduleDto(
 
 /**
  * Тип занятости.
- *
- * Employment {
- *   id: string
- *   name: string
- * }
  */
 data class EmploymentDto(
     @SerializedName("id")
@@ -137,30 +119,27 @@ data class EmploymentDto(
 )
 
 /**
- * Контактные данные.
- *
- * Contacts {
- *   id: string
- *   name: string        // комментарий к контактам (например, "отдел кадров")
- *   email: string
- *   phone: Array[string]
- * }
+ * Контактная информация.
  */
 data class ContactsDto(
     @SerializedName("id")
     val id: String,
 
-    // комментарий, который по заданию надо показывать как "комментарий к номеру"
+    // Комментарий к контактам (например: "отдел кадров")
     @SerializedName("name")
     val name: String,
 
     @SerializedName("email")
     val email: String?,
 
+    // Список телефонов
     @SerializedName("phones")
-    val phones: List<PhoneDto>? // 🔴 phones, не phone
+    val phones: List<PhoneDto>?
 )
 
+/**
+ * Один телефонный номер.
+ */
 data class PhoneDto(
     @SerializedName("comment")
     val comment: String?,
@@ -170,13 +149,7 @@ data class PhoneDto(
 )
 
 /**
- * Работодатель.
- *
- * Employer {
- *   id: string
- *   name: string
- *   logo: string
- * }
+ * Информация о работодателе.
  */
 data class EmployerDto(
     @SerializedName("id")
@@ -185,20 +158,12 @@ data class EmployerDto(
     @SerializedName("name")
     val name: String,
 
-    // URL логотипа компании (может отсутствовать)
     @SerializedName("logo")
     val logo: String?
 )
 
 /**
- * Регион (FilterArea) для Practicum API.
- *
- * FilterArea {
- *   id: integer
- *   name: string
- *   parentId: integer
- *   areas: Array[FilterArea]
- * }
+ * Регион.
  */
 data class FilterAreaDto(
     @SerializedName("id")
@@ -215,16 +180,11 @@ data class FilterAreaDto(
 )
 
 /**
- * Отрасль (FilterIndustry) для Practicum API.
- *
- * FilterIndustry {
- *   id: integer
- *   name: string
- * }
+ * Отрасль компании.
  */
 data class FilterIndustryDto(
     @SerializedName("id")
-    val id: String, // 🔴 было Int
+    val id: String,
 
     @SerializedName("name")
     val name: String

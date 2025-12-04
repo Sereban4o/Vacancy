@@ -43,6 +43,7 @@ import ru.practicum.android.diploma.presentation.vacancydetails.DescriptionItemT
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsEvent
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsUiState
 import ru.practicum.android.diploma.presentation.vacancydetails.VacancyDetailsViewModel
+import ru.practicum.android.diploma.ui.components.BackButton
 import ru.practicum.android.diploma.ui.components.FullscreenProgress
 import ru.practicum.android.diploma.ui.components.Heading
 import ru.practicum.android.diploma.ui.components.InfoState
@@ -82,23 +83,7 @@ fun VacancyDetailsScreen(
         topBar = {
             Heading(
                 text = stringResource(R.string.vacancy),
-                leftBlock = {
-                    Box(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .padding(end = 4.dp)
-                            .clickable(onClick = onBack),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_arrow_back_24),
-                            contentDescription = stringResource(R.string.back),
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                    Spacer(Modifier.width(4.dp))
-                },
+                leftBlock = { BackButton(onBack) },
                 rightBlock = {
                     GetRightBlock(uiState, viewModel)
                 }

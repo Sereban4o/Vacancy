@@ -16,7 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import ru.practicum.android.diploma.ui.navigation.NavGraph
 import ru.practicum.android.diploma.ui.theme.AppTheme
 import ru.practicum.android.diploma.ui.theme.PaddingScreenHorizontal
-import ru.practicum.android.diploma.util.Routes
+import ru.practicum.android.diploma.util.Screen
 
 class RootActivity : AppCompatActivity() {
 
@@ -36,15 +36,20 @@ class RootActivity : AppCompatActivity() {
 fun Root() {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = backStackEntry?.destination?.route
 
-    // определяем, показывать ли нижнюю навигацию
-    val showBottomBar = when {
-        currentRoute?.startsWith(Routes.VacancyDetails.name) == true -> false
-        currentRoute == Routes.Main.name -> true
-        currentRoute == Routes.Favorites.name -> true
-        currentRoute == Routes.Team.name -> true
-        else -> false
+    // route может быть типа "VacancyDetails/{id}?fromApi={fromApi}"
+    // поэтому берём только последнюю "часть" до '?'
+    val rawRoute = backStackEntry?.destination?.route
+    val normalizedRoute = rawRoute
+        ?.substringBefore("?")
+        ?.substringAfterLast("/")
+
+    val showBottomBar = when (normalizedRoute) {
+        Screen.Main.route,
+        Screen.Favorites.route,
+        Screen.Team.route -> true
+
+        else -> false // VacancyDetails, Filter, WorkPlace и т.д. — без нижнего бара
     }
 
     Scaffold(
