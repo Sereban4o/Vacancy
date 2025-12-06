@@ -13,8 +13,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import ru.practicum.android.diploma.domain.models.Vacancy
 
@@ -29,12 +31,23 @@ fun VacancyItem(
     vacancy: Vacancy,
     onClick: () -> Unit
 ) {
+    val resources = LocalContext.current.resources
+
+    // 💰 готовим строку зарплаты один раз на текущие значения
+    val salaryText = remember(
+        vacancy.salaryFrom,
+        vacancy.salaryTo,
+        vacancy.currency
+    ) {
+        formatSalary(vacancy, resources)
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth(),
         shape = RectangleShape,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.background // 🔹 белый / тёмный по теме
+            containerColor = MaterialTheme.colorScheme.background // белый/тёмный по теме
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         onClick = onClick
@@ -74,7 +87,7 @@ fun VacancyItem(
 
                 // зарплата
                 Text(
-                    text = formatSalary(vacancy),
+                    text = salaryText,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onBackground
                 )

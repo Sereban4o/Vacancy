@@ -19,13 +19,10 @@ class FilterViewModel(
 
     private var currentSettings: FilterSettings = FilterSettings()
 
-    init {
-        viewModelScope.launch {
-            currentSettings = repository.getFilterSettings()
-            _uiState.value = currentSettings.toUiState()
-        }
-    }
-
+    /**
+     * Явная загрузка настроек фильтра из репозитория.
+     * Вызывается из FilterSettingsScreen через LaunchedEffect(Unit).
+     */
     fun refreshFromRepository() {
         viewModelScope.launch {
             currentSettings = repository.getFilterSettings()

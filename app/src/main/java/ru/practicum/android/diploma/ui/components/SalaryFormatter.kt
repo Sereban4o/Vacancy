@@ -1,6 +1,8 @@
 package ru.practicum.android.diploma.ui.components
 
 import android.annotation.SuppressLint
+import android.content.res.Resources
+import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.domain.models.Vacancy
 import java.text.NumberFormat
 import java.util.Currency
@@ -47,11 +49,6 @@ private fun resolveFromCurrency(upperCode: String): String {
 
 /**
  * Маппинг кода валюты из API в человекочитаемое отображение для UI.
- *
- * mapCurrencyCodeToDisplay:
- *  - без try/catch
- *  - всего один return
- *  - минимальная вложенность (when + helper) → detekt должен отстать.
  */
 private fun mapCurrencyCodeToDisplay(code: String?): String {
     val upperCode = code?.uppercase(Locale.ROOT).orEmpty()
@@ -74,32 +71,63 @@ private fun mapCurrencyCodeToDisplay(code: String?): String {
  * - "зарплата не указана", если нет значений
  * - валюта отображается всегда (если пришёл код)
  * - числа с разбиением на разряды
+ *
+ * Все текстовые части вынесены в strings.xml.
  */
 fun formatSalary(
     salaryFrom: Int?,
     salaryTo: Int?,
-    currencyCode: String?
+    currencyCode: String?,
+    resources: Resources
 ): String {
     val currency = mapCurrencyCodeToDisplay(currencyCode)
 
     val fromStr = salaryFrom?.let { formatNumber(it) }
     val toStr = salaryTo?.let { formatNumber(it) }
 
-    return when {
-        fromStr != null && toStr != null -> "от $fromStr до $toStr $currency"
-        fromStr != null -> "от $fromStr $currency"
-        toStr != null -> "до $toStr $currency"
-        else -> "зарплата не указана"
+    val raw = when {
+        fromStr != null && toStr != null -> {
+            resources.getString(
+                R.string.salary_from_to,
+                fromStr,
+                toStr,
+                currency
+            )
+        }
+
+        fromStr != null -> {
+            resources.getString(
+                R.string.salary_from,
+                fromStr,
+                currency
+            )
+        }
+
+        toStr != null -> {
+            resources.getString(
+                R.string.salary_to,
+                toStr,
+                currency
+            )
+        }
+
+        else -> {
+            resources.getString(R.string.salary_not_specified)
+        }
     }
+
+    // На случай, если валюта пустая и образуется лишний пробел в конце.
+    return raw.trimEnd()
 }
 
 /**
  * Обёртка для доменной модели Vacancy.
  */
-fun formatSalary(vacancy: Vacancy): String {
+fun formatSalary(vacancy: Vacancy, resources: Resources): String {
     return formatSalary(
         salaryFrom = vacancy.salaryFrom,
         salaryTo = vacancy.salaryTo,
-        currencyCode = vacancy.currency
+        currencyCode = vacancy.currency,
+        resources = resources
     )
 }

@@ -3,6 +3,7 @@ package ru.practicum.android.diploma.presentation.filter.country
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,14 +26,10 @@ class CountryViewModel(
 
     private var fullList: List<FilterParameter> = emptyList()
 
-    init {
-        loadCountries()
-    }
-
     // ---------------------------
-    // 1. Основная функция
+    // 1. Основная функция (публичная)
     // ---------------------------
-    private fun loadCountries() {
+    fun loadCountries() {
         viewModelScope.launch {
             startLoading()
 
@@ -74,7 +71,7 @@ class CountryViewModel(
                 isLoading = false,
                 isError = false,
                 isNetworkError = false,
-                countries = list
+                countries = list.toImmutableList()
             )
         }
     }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.runtime.remember
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -66,8 +67,11 @@ fun VacancyDetailsScreen(
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-    // 🔥 Слушаем события из ViewModel (одноразовые action'ы)
     LaunchedEffect(viewModel) {
+        // 1️⃣ один раз просим VM загрузить данные
+        viewModel.loadDetailsIfNeeded()
+
+        // 2️⃣ и начинаем слушать одноразовые события
         viewModel.events.collect { event ->
             when (event) {
                 is VacancyDetailsEvent.Share -> shareVacancy(context, event.url)
@@ -79,14 +83,11 @@ fun VacancyDetailsScreen(
 
     ScreenScaffold(
         modifier = modifier,
-        // 🧩 Шапка экрана
         topBar = {
             Heading(
                 text = stringResource(R.string.vacancy),
                 leftBlock = { BackButton(onBack) },
-                rightBlock = {
-                    GetRightBlock(uiState, viewModel)
-                }
+                rightBlock = { GetRightBlock(uiState, viewModel) }
             )
         },
         content = {
@@ -216,6 +217,23 @@ fun VacancyDetailsContent(
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
+    val resources = LocalContext.current.resources
+
+    // 💰 готовим текст зарплаты один раз
+    val salaryText = remember(
+        vacancy.salaryFrom,
+        vacancy.salaryTo,
+        vacancy.currency
+    ) {
+        formatSalary(
+            salaryFrom = vacancy.salaryFrom,
+            salaryTo = vacancy.salaryTo,
+            currencyCode = vacancy.currency,
+            resources = resources
+        )
+        // или короче, если используешь обёртку:
+        // formatSalary(vacancy, resources)
+    }
 
     Column(
         modifier = modifier
@@ -233,7 +251,7 @@ fun VacancyDetailsContent(
 
         // 💰 Зарплата — Medium/22
         Text(
-            text = formatSalary(vacancy.salaryFrom, vacancy.salaryTo, vacancy.currency),
+            text = salaryText,
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onBackground
         )

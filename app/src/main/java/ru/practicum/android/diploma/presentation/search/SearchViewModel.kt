@@ -40,7 +40,7 @@ class SearchViewModel(
     // сырой текст запроса
     private val searchQueryFlow = MutableStateFlow("")
 
-    // 🔹 отдельный flow с ТЕКУЩИМИ фильтрами (то, чего нам не хватало)
+    // отдельный flow с текущими фильтрами
     private val filtersFlow = MutableStateFlow(
         SearchFilters(
             regionId = null,
@@ -50,8 +50,11 @@ class SearchViewModel(
         )
     )
 
-    init {
-        // при создании VM грузим фильтры из репозитория
+    /**
+     * Явная инициализация фильтров.
+     * Вызывается из SearchScreen через LaunchedEffect(Unit).
+     */
+    fun initFilters() {
         viewModelScope.launch {
             val filterSettings = filterSettingsInteractor.getFilterSettings()
             val searchFilters = filterSettings.toSearchFilters()
@@ -68,7 +71,6 @@ class SearchViewModel(
 
     /**
      * Обновление состояния фильтра при возврате с экрана фильтров.
-     * (вызывается из MainScreen через searchViewModel.refreshFilterState())
      */
     fun refreshFilterState() {
         viewModelScope.launch {
@@ -86,12 +88,6 @@ class SearchViewModel(
 
     /**
      * Основной поток PagingData<Vacancy>.
-     *
-     * 🔹 ВАЖНО: комбинируем:
-     *   - текст запроса (searchQueryFlow)
-     *   - фильтры (filtersFlow)
-     *
-     * И при изменении ЛЮБОГО из них стартует новый поиск.
      */
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     val pagingResultDataFlow: Flow<PagingData<Vacancy>> =
@@ -103,7 +99,6 @@ class SearchViewModel(
             }
             .flatMapLatest { (query, filters) ->
                 if (query.isBlank()) {
-                    // пустой запрос → пустой список
                     _uiState.update { current ->
                         current.copy(
                             isLoading = false,
@@ -134,13 +129,9 @@ class SearchViewModel(
             }
             .cachedIn(viewModelScope)
 
-    /**
-     * Пользователь меняет текст в поиске.
-     */
     fun onQueryChanged(newQuery: String) {
         _uiState.update { current ->
             if (newQuery.isBlank()) {
-                // пользователь стёр запрос — показываем начальное "бинокль" состояние
                 current.copy(
                     query = newQuery,
                     isInitial = true,
@@ -149,7 +140,6 @@ class SearchViewModel(
                     totalFound = 0
                 )
             } else {
-                // пользователь вводит текст — сразу считаем, что идёт поиск
                 current.copy(
                     query = newQuery,
                     isInitial = false,
@@ -160,14 +150,9 @@ class SearchViewModel(
             }
         }
 
-        // запускаем debounce-цепочку
         searchQueryFlow.value = newQuery
     }
 
-    /**
-     * View сообщает сюда изменения loadState Paging'а.
-     * Здесь мы обновляем isLoading + errorType.
-     */
     fun onLoadStateChanged(loadState: CombinedLoadStates) {
         val refresh = loadState.refresh
         _uiState.update { current ->
@@ -200,9 +185,6 @@ class SearchViewModel(
         }
     }
 
-    /**
-     * Повторить поиск при ошибке (если понадобится).
-     */
     fun onRetry() {
         val currentQuery = _uiState.value.query
         if (currentQuery.isNotBlank()) {
@@ -210,26 +192,17 @@ class SearchViewModel(
         }
     }
 
-    /**
-     * Вызов с экрана фильтра при нажатии "Применить".
-     *
-     *   - НЕ трогаем searchQueryFlow напрямую,
-     *   - просто обновляем filtersFlow (через refreshFilterState),
-     *   - а pagingResultDataFlow сам это подхватит через combine().
-     */
     fun onFiltersApplied() {
         viewModelScope.launch {
             val filterSettings = filterSettingsInteractor.getFilterSettings()
             val searchFilters = filterSettings.toSearchFilters()
 
-            // 1. подсветка иконки
             _uiState.update { current ->
                 current.copy(
                     hasActiveFilter = filterSettings.isActiveForSearch()
                 )
             }
 
-            // 2. обновляем filtersFlow → это вызовет новый поиск, если query не пустой
             filtersFlow.value = searchFilters
         }
     }

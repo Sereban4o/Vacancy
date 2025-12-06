@@ -17,17 +17,19 @@ class WorkPlaceViewModel(
     private val _uiState = MutableStateFlow(WorkPlaceUiState())
     val uiState: StateFlow<WorkPlaceUiState> = _uiState.asStateFlow()
 
-    init {
-        loadFromFilterSettings()
-    }
-
-    private fun loadFromFilterSettings() {
+    /**
+     * Загрузка актуальных страны/региона из FilterSettings.
+     * Вызывается при заходе на экран (через refresh()).
+     */
+    fun loadFromFilterSettings() {
         viewModelScope.launch {
             val settings: FilterSettings = filterSettingsInteractor.getFilterSettings()
-            _uiState.value = WorkPlaceUiState(
-                country = settings.country,
-                region = settings.region
-            )
+            _uiState.update {
+                it.copy(
+                    country = settings.country,
+                    region = settings.region
+                )
+            }
         }
     }
 
@@ -55,14 +57,12 @@ class WorkPlaceViewModel(
      * Кнопка "Выбрать" на этом экране ничего
      * дополнительно не сохраняет — страна/регион уже
      * лежат в FilterSettings (или очищены крестиком).
-     * Просто говорим экрану "можно уходить назад".
      */
     @Suppress("FunctionOnlyReturningConstant")
     suspend fun applySelection(): Boolean = true
 
     /**
-     * Это пригодится позже, когда будут экраны выбора
-     * страны/региона: после возврата можно дернуть refresh().
+     * Можно дергать после возврата с экранов выбора страны/региона.
      */
     fun refresh() {
         loadFromFilterSettings()

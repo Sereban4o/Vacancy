@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +33,11 @@ fun FavouritesScreen(
 ) {
     val state = viewModel.state.collectAsState()
     val chipHeightState = remember { mutableStateOf(0.dp) } // будет использоваться для отступа под плавающий чип 🌊
+
+    // Явно запускаем загрузку избранного
+    LaunchedEffect(Unit) {
+        viewModel.loadFavorites()
+    }
 
     // 🧱 Общий каркас экрана
     ScreenScaffold(

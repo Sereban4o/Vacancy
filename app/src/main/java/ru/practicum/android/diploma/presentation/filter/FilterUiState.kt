@@ -1,9 +1,11 @@
 package ru.practicum.android.diploma.presentation.filter
 
+import androidx.compose.runtime.Immutable
 import ru.practicum.android.diploma.domain.models.FilterParameter
 import ru.practicum.android.diploma.domain.models.FilterSettings
 import ru.practicum.android.diploma.domain.models.isActiveForSearch
 
+@Immutable
 data class FilterUiState(
     val salaryText: String = "",
     val withSalaryOnly: Boolean = false,
