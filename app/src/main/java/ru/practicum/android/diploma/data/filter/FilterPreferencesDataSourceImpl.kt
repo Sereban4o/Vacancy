@@ -26,16 +26,19 @@ class FilterPreferencesDataSourceImpl(
     override suspend fun readFilterSettings(): FilterSettings? =
         withContext(Dispatchers.IO) {
             val stored = sharedPreferences.getString(KEY_FILTER_SETTINGS, null)
-                ?: return@withContext null
 
-            try {
-                json.decodeFromString<FilterSettings>(stored)
-            } catch (e: SerializationException) {
-                Log.w(TAG, "Failed to parse FilterSettings from JSON", e)
+            if (stored == null) {
                 null
-            } catch (e: IllegalArgumentException) {
-                Log.w(TAG, "Invalid JSON stored for FilterSettings", e)
-                null
+            } else {
+                try {
+                    json.decodeFromString<FilterSettings>(stored)
+                } catch (e: SerializationException) {
+                    Log.w(TAG, "Failed to parse FilterSettings from JSON", e)
+                    null
+                } catch (e: IllegalArgumentException) {
+                    Log.w(TAG, "Invalid JSON stored for FilterSettings", e)
+                    null
+                }
             }
         }
 
