@@ -30,12 +30,19 @@
 
     <!-- TeamScreen -->
     <string name="team_title">Над приложением работали</string>
-    <string-array name="team_members">
-        <item>Виталий Ярош</item>
-        <item>Сергей Васенин</item>
-        <item>Андрей Хлоповских</item>
-        <item>Аманжол Аимов</item>
-    </string-array>
+
+    <!-- Имена -->
+    <string name="team_member_vitaliy">Виталий Ярош</string>
+    <string name="team_member_sergey">Сергей Васенин</string>
+    <string name="team_member_andrey">Андрей Хлоповских</string>
+    <string name="team_member_amanzhol">Аманжол Аимов</string>
+
+    <!-- Роли -->
+    <string name="team_role_testing">Тестирование</string>
+    <string name="team_role_development">Разработка</string>
+    <string name="team_role_team_lead">Team Leader</string>
+    <string name="team_role_review">Оценка</string>
+    <string name="team_role_design">Дизайн</string>
 
     <!-- DetailScreen -->
     <string name="vacancy">Вакансия</string>
