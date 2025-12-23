@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.ui.theme.PaddingExtraLarge
 import ru.practicum.android.diploma.ui.theme.PaddingMedium
@@ -136,4 +137,20 @@ private fun Info(painter: Painter, text: String = "") {
         }
     }
 
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun InfoStateNoInternetPreview() {
+    MaterialTheme {
+        InfoState(TypeState.NoInternet)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun InfoStateEmptyListPreview() {
+    MaterialTheme {
+        InfoState(TypeState.EmptyList)
+    }
 }

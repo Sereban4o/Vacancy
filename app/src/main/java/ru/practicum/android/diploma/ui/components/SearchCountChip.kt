@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.practicum.android.diploma.R
 
@@ -38,5 +39,15 @@ fun SearchCountChip(
                 color = MaterialTheme.colorScheme.onTertiary // белый текст
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SearchCountChipPreview() {
+    MaterialTheme {
+        SearchCountChip(
+            total = 42
+        )
     }
 }

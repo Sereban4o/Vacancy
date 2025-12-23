@@ -1,7 +1,5 @@
 package ru.practicum.android.diploma.domain.models
 
-import android.util.Log
-
 /**
  * Является ли фильтр "непустым" с точки зрения ТЗ Epic 4.2.
  */
@@ -35,16 +33,6 @@ fun FilterSettings.toSearchFilters(): SearchFilters {
     val effectiveAreaId = areaSource
         ?.id
         ?.takeIf { it.isNotBlank() }
-
-    // 🔍 диагностический лог — НЕ вместо FILTER_CHAIN, а вдобавок
-    Log.d("FILTER_DEBUG", "FilterSettings = $this")
-    Log.d(
-        "FILTER_DEBUG",
-        "toSearchFilters() → regionId=$effectiveAreaId, " +
-            "industryId=$effectiveIndustryId, " +
-            "salary=$effectiveSalary, " +
-            "onlyWithSalary=$withSalaryOnly"
-    )
 
     return SearchFilters(
         regionId = effectiveAreaId,

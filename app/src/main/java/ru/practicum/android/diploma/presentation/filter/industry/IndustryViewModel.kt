@@ -3,6 +3,7 @@ package ru.practicum.android.diploma.presentation.filter.industry
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,11 +27,11 @@ class IndustryViewModel(
     // Полный список отраслей, без поиска
     private var fullList: List<FilterParameter> = emptyList()
 
-    init {
-        loadIndustries()
-    }
-
-    private fun loadIndustries() {
+    /**
+     * Явная инициализация загрузки отраслей.
+     * Вызывается из экрана (Fragment/Compose).
+     */
+    fun loadIndustries() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, isError = false) }
 
@@ -46,12 +47,11 @@ class IndustryViewModel(
                     it.copy(
                         isLoading = false,
                         isError = false,
-                        industries = fullList, // пока без поиска
+                        industries = fullList.toImmutableList(), // пока без поиска
                         selectedIndustryId = selectedId
                     )
                 }
             } catch (e: IOException) {
-                // по ТЗ: показать сообщение об ошибке
                 Log.w(TAG, "Failed to load industries (network error)", e)
                 _uiState.update {
                     it.copy(
@@ -86,7 +86,7 @@ class IndustryViewModel(
             _uiState.update { state ->
                 state.copy(
                     query = trimmed,
-                    industries = filtered,
+                    industries = filtered.toImmutableList(),
                     // сохраняем выбор, только если выбранная отрасль всё ещё в фильтрованном списке
                     selectedIndustryId = state.selectedIndustryId
                         ?.takeIf { id -> filtered.any { it.id == id } }
@@ -134,7 +134,7 @@ class IndustryViewModel(
         _uiState.update {
             it.copy(
                 query = "",
-                industries = fullList
+                industries = fullList.toImmutableList()
             )
         }
 

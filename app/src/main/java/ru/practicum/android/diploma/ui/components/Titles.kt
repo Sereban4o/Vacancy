@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ru.practicum.android.diploma.ui.theme.PaddingScreenTitleVertical
@@ -110,4 +111,24 @@ fun DisplayTitle(
         style = MaterialTheme.typography.displayLarge, // Bold/32
         verticalPadding = PaddingSmall,
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun HeadingPreview() {
+    MaterialTheme {
+        Heading(
+            text = "Настройки фильтрации",
+            leftBlock = {},
+            rightBlock = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun DisplayTitlePreview() {
+    MaterialTheme {
+        DisplayTitle(text = "Android-разработчик")
+    }
 }

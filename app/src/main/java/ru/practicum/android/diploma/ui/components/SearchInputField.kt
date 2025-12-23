@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.ui.theme.CornerRadiusLarge
 import ru.practicum.android.diploma.ui.theme.SearchFieldBackgroundDark
@@ -99,4 +100,28 @@ fun SearchInputField(
         textStyle = MaterialTheme.typography.bodyLarge,
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType)
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SearchInputFieldEmptyPreview() {
+    MaterialTheme {
+        SearchInputField(
+            query = "",
+            onTextChanged = {},
+            onClearClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SearchInputFieldFilledPreview() {
+    MaterialTheme {
+        SearchInputField(
+            query = "Android developer",
+            onTextChanged = {},
+            onClearClick = {}
+        )
+    }
 }

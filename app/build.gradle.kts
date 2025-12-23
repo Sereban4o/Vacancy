@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.kapt")
+    alias(libs.plugins.ksp)
     id("org.jetbrains.kotlin.plugin.compose")
     id("ru.practicum.android.diploma.plugins.developproperties")
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22"
@@ -90,7 +90,7 @@ dependencies {
     // Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
-    kapt(libs.room.compiler)
+    ksp(libs.room.compiler)
 
     // Koin
     implementation(libs.koin)
@@ -113,6 +113,9 @@ dependencies {
     // ------------------ 🔥 ABOUT KOTLINX.SERIALIZATION ------------------
     // JSON сериализация (альтернативный вариант EPIC 4.1)
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    // ------------------ 🔥 по ревью для RegionUiState ------------------
+    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.7")
     // endregion
 }
 

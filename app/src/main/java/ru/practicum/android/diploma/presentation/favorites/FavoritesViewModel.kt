@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.domain.interactors.FavoritesInteractor
-import ru.practicum.android.diploma.domain.models.VacancyDetails
 import ru.practicum.android.diploma.domain.state.FavoritesState
 
 class FavoritesViewModel(
@@ -17,11 +16,11 @@ class FavoritesViewModel(
     private val _state = MutableStateFlow<FavoritesState>(FavoritesState.Loading)
     val state: StateFlow<FavoritesState> = _state
 
-    init {
-        loadFavorites()
-    }
-
-    private fun loadFavorites() {
+    /**
+     * Явная загрузка избранных вакансий.
+     * Вызывается из FavouritesScreen через LaunchedEffect(Unit).
+     */
+    fun loadFavorites() {
         viewModelScope.launch {
             favoritesInteractor.getFavorites()
                 .catch { e ->
@@ -29,10 +28,10 @@ class FavoritesViewModel(
                     _state.value = FavoritesState.Error
                 }
                 .collect { vacancies ->
-                    if (vacancies.isEmpty()) {
-                        _state.value = FavoritesState.Empty
+                    _state.value = if (vacancies.isEmpty()) {
+                        FavoritesState.Empty
                     } else {
-                        _state.value = FavoritesState.Content(vacancies)
+                        FavoritesState.Content(vacancies)
                     }
                 }
         }

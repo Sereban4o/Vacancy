@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -43,13 +44,18 @@ fun SearchScreen(
     onVacancyClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val uiState = viewModel.uiState.collectAsState().value
+    val uiState by viewModel.uiState.collectAsState()
 
     // Paging-данные
     val pagedData: LazyPagingItems<Vacancy> =
         viewModel.pagingResultDataFlow.collectAsLazyPagingItems()
 
-    // Синхронизуем loadState Paging'а с uiState во ViewModel (ошибки/загрузка)
+    // 1️⃣ Явная инициализация фильтров (вместо init {} в VM)
+    LaunchedEffect(Unit) {
+        viewModel.initFilters()
+    }
+
+    // 2️⃣ Синхронизуем loadState Paging'а с uiState во ViewModel
     LaunchedEffect(pagedData.loadState) {
         viewModel.onLoadStateChanged(pagedData.loadState)
     }
@@ -66,7 +72,7 @@ fun SearchScreen(
     ScreenScaffold(
         modifier = modifier,
         topBar = {
-            Box( // 🔹 Поле поиска
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .onGloballyPositioned { coordinates ->
@@ -84,9 +90,10 @@ fun SearchScreen(
         },
         content = {
             GetContent(
-                uiState,
-                noResults,
-                {
+                uiState = uiState,
+                noResults = noResults,
+                pagedData = pagedData,
+                pageVacancyList = {
                     PagedVacanciesList(
                         pagedData = pagedData,
                         topPadding = chipHeightState.value + 8.dp,
@@ -95,7 +102,7 @@ fun SearchScreen(
                 }
             )
         },
-        overlay = { // 🔹 Чип поверх списка
+        overlay = {
             if (getEmptyResult(uiState, noResults)) {
                 val baseModifier = Modifier
                     .align(Alignment.TopCenter)
@@ -202,31 +209,40 @@ private fun getEmptyResult(
 private fun GetContent(
     uiState: SearchUiState,
     noResults: Boolean,
+    pagedData: LazyPagingItems<Vacancy>,
     pageVacancyList: (@Composable () -> Unit)
 ) {
-    when { // 🔥 БЛОК СОСТОЯНИЙ ЭКРАНА
-        uiState.isInitial -> { // 1️⃣ Первый запуск
+    // загружается ли сейчас ПЕРВАЯ страница
+    val isFirstPageLoading =
+        uiState.query.isNotEmpty() &&
+            uiState.isLoading &&
+            pagedData.loadState.refresh is LoadState.Loading &&
+            pagedData.itemCount == 0
+
+    when {
+        uiState.isInitial -> {
             InfoState(TypeState.SearchVacancy)
         }
 
         uiState.errorType == SearchErrorType.NETWORK -> {
             InfoState(TypeState.NoInternet)
-        } // 2️⃣ Ошибка — нет интернета
+        }
 
         uiState.errorType == SearchErrorType.GENERAL -> {
             InfoState(TypeState.ServerError)
-        } // 3️⃣ Ошибка — сервер
+        }
 
-        uiState.isLoading && uiState.query.isNotEmpty() -> {
+        isFirstPageLoading -> {
+            // показываем фуллскрин только при загрузке первой страницы
             FullscreenProgress()
-        } // 4️⃣ Загрузка первой страницы — пока список пустой
+        }
 
-        noResults -> { // 5️⃣ Вакансий нет
+        noResults -> {
             InfoState(TypeState.NoDataVacancy)
         }
 
-        else -> { // 6️⃣ Список вакансий (Paging 3)
-            pageVacancyList.invoke()
+        else -> {
+            pageVacancyList()
         }
     }
 }
