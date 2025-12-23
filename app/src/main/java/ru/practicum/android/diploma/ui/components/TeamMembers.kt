@@ -7,6 +7,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import ru.practicum.android.diploma.ui.theme.PaddingMedium
 
 /**
@@ -36,3 +37,18 @@ fun TeamMembers(
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun TeamMembersPreview() {
+    MaterialTheme {
+        TeamMembers(
+            listOfMembers = arrayOf(
+                "Андрей — Android-разработчик",
+                "Мария — UX/UI дизайнер",
+                "Иван — backend-разработчик"
+            )
+        )
+    }
+}
+

@@ -30,12 +30,19 @@
 
     <!-- TeamScreen -->
     <string name="team_title">Над приложением работали</string>
-    <string-array name="team_members">
-        <item>Виталий Ярош</item>
-        <item>Сергей Васенин</item>
-        <item>Андрей Хлоповских</item>
-        <item>Аманжол Аимов</item>
-    </string-array>
+
+    <!-- Имена -->
+    <string name="team_member_vitaliy">Виталий Ярош</string>
+    <string name="team_member_sergey">Сергей Васенин</string>
+    <string name="team_member_andrey">Андрей Хлоповских</string>
+    <string name="team_member_amanzhol">Аманжол Аимов</string>
+
+    <!-- Роли -->
+    <string name="team_role_testing">Тестирование</string>
+    <string name="team_role_development">Разработка</string>
+    <string name="team_role_team_lead">Team Leader</string>
+    <string name="team_role_review">Оценка</string>
+    <string name="team_role_design">Дизайн</string>
 
     <!-- DetailScreen -->
     <string name="vacancy">Вакансия</string>
@@ -73,5 +80,11 @@
     <string name="expected_salary">Ожидаемая зарплата</string>
     <string name="apply">Применить</string>
     <string name="reset">Сбросить</string>
+
+    <!-- FilterSettingsScreen -->
+    <string name="salary_from_to">от %1$s до %2$s %3$s</string>
+    <string name="salary_from">от %1$s %2$s</string>
+    <string name="salary_to">до %1$s %2$s</string>
+    <string name="salary_not_specified">зарплата не указана</string>
 
 </resources>

@@ -1,5 +1,6 @@
 [versions]
 kotlin = "2.0.21"
+ksp = "2.0.21-1.0.28"
 java = "VERSION_1_8"
 
 minSdk = "26"
@@ -100,5 +101,7 @@ paging-runtime = { group = "androidx.paging", name = "paging-runtime-ktx", versi
 paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging-compose" }
 
 [bundles]
-
 paging = ["paging-runtime", "paging-compose"]
+
+[plugins]
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

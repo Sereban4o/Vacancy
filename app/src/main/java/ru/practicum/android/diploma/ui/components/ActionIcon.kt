@@ -7,6 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import ru.practicum.android.diploma.R
 
 @Composable
 fun ActionIcon(
@@ -26,3 +28,14 @@ fun ActionIcon(
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun ActionIconDefaultPreview() {
+    MaterialTheme {
+        ActionIcon(
+            iconRes = R.drawable.ic_search_24
+        )
+    }
+}
+

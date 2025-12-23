@@ -3,6 +3,7 @@ package ru.practicum.android.diploma.presentation.filter.region
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,11 +27,11 @@ class RegionViewModel(
     // полный список регионов без поиска
     private var fullList: List<FilterParameter> = emptyList()
 
-    init {
-        loadRegions()
-    }
-
-    private fun loadRegions() {
+    /**
+     * Явный старт загрузки регионов.
+     * Вызывается из Fragment/Compose-экрана.
+     */
+    fun loadRegions() {
         viewModelScope.launch {
             startLoading()
 
@@ -69,7 +70,7 @@ class RegionViewModel(
             it.copy(
                 isLoading = false,
                 isError = false,
-                regions = fullList,
+                regions = fullList.toImmutableList(),
                 isEmptySearchResult = false
             )
         }
@@ -94,7 +95,7 @@ class RegionViewModel(
                     // Пустой запрос → показываем полный список, без "Такого региона нет"
                     state.copy(
                         query = "",
-                        regions = fullList,
+                        regions = fullList.toImmutableList(),
                         isEmptySearchResult = false
                     )
                 } else {
@@ -104,8 +105,8 @@ class RegionViewModel(
 
                     state.copy(
                         query = trimmed,
-                        regions = filtered,
-                        // ВАЖНО: пустой результат показываем только если НЕТ ошибки
+                        regions = filtered.toImmutableList(),
+                        // Пустой результат показываем только если НЕТ ошибки
                         isEmptySearchResult = trimmed.isNotBlank()
                             && filtered.isEmpty()
                             && !state.isError

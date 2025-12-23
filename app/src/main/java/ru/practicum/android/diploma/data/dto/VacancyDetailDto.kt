@@ -132,7 +132,6 @@ data class ContactsDto(
     @SerializedName("email")
     val email: String?,
 
-    // Список телефонов
     @SerializedName("phones")
     val phones: List<PhoneDto>?
 )

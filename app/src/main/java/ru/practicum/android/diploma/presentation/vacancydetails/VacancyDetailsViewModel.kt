@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -22,46 +23,55 @@ class VacancyDetailsViewModel(
     private val favoritesInteractor: FavoritesInteractor,
 ) : ViewModel() {
 
-    // достаём аргументы из SavedStateHandle
     private val vacancyId: String =
         checkNotNull(savedStateHandle[ARG_VACANCY_ID])
 
     private val fromApi: Boolean =
         savedStateHandle[ARG_FROM_API] ?: true
 
-    private val _uiState = MutableStateFlow<VacancyDetailsUiState>(VacancyDetailsUiState.Loading)
+    private val _uiState =
+        MutableStateFlow<VacancyDetailsUiState>(VacancyDetailsUiState.Loading)
     val uiState: StateFlow<VacancyDetailsUiState> = _uiState
 
     private val _events = MutableSharedFlow<VacancyDetailsEvent>()
     val events: SharedFlow<VacancyDetailsEvent> = _events
 
-    init {
-        loadDetails()
+    // 🚩 защита от повторных загрузок
+    private var isLoaded = false
+
+    /**
+     * Вызываем из UI (LaunchedEffect), чтобы не триггерить сайд-эффекты в init.
+     */
+    fun loadDetailsIfNeeded() {
+        if (isLoaded) return
+        isLoaded = true
+        loadDetailsInternal()
     }
 
-    private fun loadDetails() {
+    // опционально, если захочешь "обновить" по жесту pull-to-refresh:
+    fun reload() {
+        isLoaded = false
+        loadDetailsIfNeeded()
+    }
+
+    private fun loadDetailsInternal() {
         _uiState.value = VacancyDetailsUiState.Loading
 
         viewModelScope.launch {
             try {
-                // 1️⃣ Выбираем источник данных
                 val vacancy: VacancyDetails? = if (fromApi) {
-                    // открыли из поиска → идём в API
-                    interactor.getVacancyDetails(vacancyId) // не null
+                    interactor.getVacancyDetails(vacancyId)
                 } else {
-                    // Открыли из избранного → берём из локальной БД
-                    favoritesInteractor.getVacancyDetailsFromDb(vacancyId) // может быть null
+                    favoritesInteractor.getVacancyDetailsFromDb(vacancyId)
                 }
 
-                // 2️⃣ Если из БД ничего не нашли → показываем NoVacancy
                 if (vacancy == null) {
                     _uiState.value = VacancyDetailsUiState.NoVacancy
                 } else {
-                    // 3️⃣ Иначе — обычный успешный сценарий
                     val isFavorite = favoritesInteractor.checkFavorite(vacancyId)
 
-                    // 🆕 парсим описание ОДИН РАЗ
-                    val descriptionItems = parseVacancyDescription(vacancy.description)
+                    val descriptionItems =
+                        parseVacancyDescription(vacancy.description).toImmutableList()
 
                     _uiState.value = VacancyDetailsUiState.Content(
                         vacancy = vacancy,
@@ -71,17 +81,13 @@ class VacancyDetailsViewModel(
                 }
 
             } catch (e: IOException) {
-                // 🔌 Нет интернета / проблемы с сетью (актуально при fromApi = true)
                 Log.e("VacancyDetailsViewModel", "Internet error: $e", e)
                 _uiState.value = VacancyDetailsUiState.Error(isNetworkError = true)
 
             } catch (e: HttpException) {
-                // 🌐 HTTP-ошибки (4xx/5xx)
                 if (e.code() == HTTP_NOT_FOUND) {
-                    // 🧩 Вакансия не найдена / удалена
                     _uiState.value = VacancyDetailsUiState.NoVacancy
                 } else {
-                    // Остальные HTTP-ошибки → общий серверный плейсхолдер
                     _uiState.value = VacancyDetailsUiState.Error(isNetworkError = false)
                 }
             }
@@ -95,13 +101,15 @@ class VacancyDetailsViewModel(
             } else {
                 favoritesInteractor.addFavorite(vacancy)
             }
-            val descriptionItems = parseVacancyDescription(vacancy.description)
+
+            val descriptionItems =
+                parseVacancyDescription(vacancy.description).toImmutableList()
 
             _uiState.value = VacancyDetailsUiState.Content(
-                vacancy, !isFavorite,
+                vacancy = vacancy,
+                isFavorite = !isFavorite,
                 descriptionItems = descriptionItems
             )
-
         }
     }
 
